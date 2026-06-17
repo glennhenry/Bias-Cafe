@@ -3,7 +3,6 @@ package encore.presence
 import encore.datastore.collection.PlayerId
 import encore.fancam.Fancam
 import encore.fancam.Tags
-import encore.network.transport.UndeterminedIdentity
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
@@ -26,13 +25,8 @@ class PlayerPresenceSubunit : Subunit<ServerScope> {
      *
      * Does nothing if:
      * - the player is already online
-     * - `playerId` is equal to [UndeterminedIdentity]
      */
     fun markOnline(playerId: PlayerId) {
-        if (playerId == UndeterminedIdentity) {
-            Fancam.warn { "markOnline: Undetermined identity won't be marked online" }
-            return
-        }
         val now = TimeCenter.now()
         onlinePlayers[playerId] = PlayerPresence(
             playerId = playerId,

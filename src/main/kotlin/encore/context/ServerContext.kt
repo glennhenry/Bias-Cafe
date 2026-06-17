@@ -11,9 +11,7 @@ import encore.auth.AuthSubunit
 import encore.backstage.command.CommandDispatcher
 import encore.datastore.BlankDataStore
 import encore.datastore.DataStore
-import encore.datastore.collection.PlayerId
 import encore.fancam.Fancam
-import encore.network.lifecycle.PlayerLifecycleHandler
 import encore.session.SessionSubunit
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
@@ -31,18 +29,14 @@ import kotlin.coroutines.EmptyCoroutineContext
  * It acts as a dependency container which is distributed across the server code.
  *
  * @property dataStore [DataStore] instance of the server.
- * @property contextRegistry Tracks and manages [PlayerContext].
  * @property commandDispatcher Tracks and executes server commands.
- * @property playerLifecycleHandler Dispatches hook for player's connection activity.
  * @property stageActDirector Provide API to start and stop stage acts.
  * @property webSocketManager Manages client websocket connections.
  * @property subunits Container for server subunit instances.
  */
 data class ServerContext(
     val dataStore: DataStore,
-    val contextRegistry: ContextRegistry,
     val commandDispatcher: CommandDispatcher,
-    val playerLifecycleHandler: PlayerLifecycleHandler,
     val stageActDirector: StageActDirector,
     val webSocketManager: WebSocketManager,
     val subunits: ServerSubunits
@@ -55,16 +49,12 @@ data class ServerContext(
          * @param timeSource [TimeSource] for [StageActDirector].
          * @param dataStore Also used to build [PlayerCreationSubunit].
          * @param accountRepository Used to build [AccountSubunit].
-         * @param contextFactory Required by [ContextRegistry],
-         *                       uses [FakeContextFactory] with empty map by default.
          */
         fun createForTest(
             parentScope: CoroutineScope = CoroutineScope(EmptyCoroutineContext),
             timeSource: TimeSource = SystemTimeSource(),
             dataStore: DataStore = BlankDataStore(),
-            playerLifecycleHandler: PlayerLifecycleHandler = PlayerLifecycleHandler(true),
             accountRepository: AccountRepository = BlankAccountRepository(),
-            contextFactory: ContextFactory = FakeContextFactory(emptyMap())
         ): ServerContext {
             val account = AccountSubunit(accountRepository)
             val session = SessionSubunit.createForTest(parentScope)
@@ -72,9 +62,7 @@ data class ServerContext(
 
             return ServerContext(
                 dataStore = dataStore,
-                contextRegistry = ContextRegistry(contextFactory),
                 commandDispatcher = CommandDispatcher(),
-                playerLifecycleHandler = playerLifecycleHandler,
                 stageActDirector = StageActDirector(timeSource, ActIdStore),
                 webSocketManager = WebSocketManager(),
                 subunits = ServerSubunits(
@@ -87,16 +75,6 @@ data class ServerContext(
             )
         }
     }
-}
-
-/**
- * Shorthand to retrieve [PlayerContext] of [playerId] from [ContextRegistry].
- *
- * @throws IllegalStateException if context is not found.
- */
-fun ServerContext.requirePlayerContext(playerId: PlayerId): PlayerContext {
-    return contextRegistry.getContext(playerId)
-        ?: error("PlayerContext not found for playerId=$playerId")
 }
 
 /**

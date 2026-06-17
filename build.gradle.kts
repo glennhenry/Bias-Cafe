@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.plugin.serialization)
 }
 
-group = "dev.planetnetwork"
+group = "dev.portal"
 version = "1.0.4"
 
 application {
@@ -16,12 +16,12 @@ application {
 
 ktor {
     fatJar {
-        archiveFileName.set("planet.jar")
+        archiveFileName.set("portal.jar")
     }
 }
 
 tasks.withType<ShadowJar> {
-    archiveFileName.set("planet.jar")
+    archiveFileName.set("portal.jar")
     destinationDirectory.set(file("deploy"))
     manifest {
         attributes["Main-Class"] = "ApplicationKt"
@@ -85,7 +85,6 @@ dependencies {
     // Ktor serialization
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.serialization.kotlinx.protobuf)
 
     // Security
     implementation(libs.library.bcrypt)

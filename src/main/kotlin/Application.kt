@@ -5,14 +5,7 @@ import encore.backstage.BackstageRoutes
 import encore.backstage.command.ExampleCommand
 import encore.context.ServerContext
 import encore.datastore.MongoCollectionName
-import encore.definition.GameReference
-import encore.network.lifecycle.PlayerLifecycle
-import encore.network.stage.GameStage
-import encore.network.stage.GameStageInitContext
-import encore.network.stage.Stage
-import encore.network.transport.UndeterminedIdentity
 import encore.route.guard.DefaultSecurity
-import encore.subunit.scope.PlayerScope
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
 import encore.time.source.SystemTimeSource
@@ -86,9 +79,6 @@ suspend fun Application.configureApplication() {
         mongoDatabase = db
     )
 
-    // initialize GameReference and register definitions
-    gameReference()
-
     // create admin account
     if (Venue.encore.adminEnabled) {
         serverContext.subunits.creation.createAdmin(Globals, alwaysRecreate = false)
@@ -113,26 +103,6 @@ suspend fun Application.configureApplication() {
     // log startup
     logStartupInformation()
 
-    // initialize game server
-    val gameStage = GameStage(
-        host = Venue.encore.server.host,
-        port = Venue.encore.server.socketPort
-    ) {
-        lifecycleHooks()
-        fanchantGuides()
-        handlers(serverContext)
-    }
-
-    val servers = buildList<Stage> {
-        add(gameStage)
-    }
-
-    // initialize and start all the serverr
-    servers.forEach { server ->
-        server.initialize(appScope, serverContext)
-        server.start()
-    }
-
     // starts accepting terminal input
     acceptsTerminalInput(appScope, backstageToken)
 
@@ -141,7 +111,7 @@ suspend fun Application.configureApplication() {
     celebrate(LocalDate.now(SystemTimezone))
 
     // install shutdown hook
-    shutdownHook(appScope, serverSubunitScope, serverContext.subunits, servers)
+    shutdownHook(appScope, serverSubunitScope, serverContext.subunits)
 }
 
 fun websocketHandlers(serverContext: ServerContext) {
@@ -154,43 +124,4 @@ fun commandHandlers(serverContext: ServerContext) {
     with(serverContext.commandDispatcher) {
         register(ExampleCommand())
     }
-}
-
-fun gameReference() {
-    GameReference.initialize {
-        // add()
-    }
-}
-
-fun GameStageInitContext.lifecycleHooks() {
-    // register player lifecycle hooks...
-
-    hook(PlayerLifecycle.OnReceive, "Update activity") { serverContext, connection ->
-        serverContext.subunits.presence.updateLastActivity(connection.playerId)
-    }
-
-    hook(PlayerLifecycle.OnDisconnect, "Player cleanup") { serverContext, connection ->
-        // Only perform cleanup if playerId is set (player was authenticated)
-        val pid = connection.playerId
-        if (pid != UndeterminedIdentity) {
-            serverContext.subunits.presence.markOffline(pid)
-            serverContext.subunits.account.updateLastActivity(pid, TimeCenter.now())
-            serverContext.contextRegistry.getContext(pid)
-                ?.subunits
-                ?.disband(PlayerScope(pid))
-            serverContext.contextRegistry.removeContext(pid)
-        }
-    }
-}
-
-fun GameStageInitContext.fanchantGuides() {
-    // register fanchant guides...
-
-    // guide()
-}
-
-fun GameStageInitContext.handlers(serverContext: ServerContext) {
-    // register handlers
-
-    // handler()
 }

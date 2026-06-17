@@ -11,11 +11,9 @@ import encore.route.guard.SecurityGuard
 import encore.route.interceptResponse
 import encore.route.stringifyHttpRequest
 import encore.serialization.JSON
-import encore.serialization.Protobuf
 import encore.venue.Venue
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.serialization.kotlinx.protobuf.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
@@ -28,7 +26,6 @@ import io.ktor.server.websocket.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.protobuf.ProtoBuf
 import org.bson.Document
 import kotlin.time.Duration.Companion.seconds
 
@@ -38,7 +35,7 @@ import kotlin.time.Duration.Companion.seconds
  * This contains a general, rarely changing setting for various components
  * including Ktor or the Encore framework itself.
  *
- * 1. Serialization utilities: [JSON], [Protobuf].
+ * 1. Serialization utilities: [JSON].
  * 2. Logging capabilities via [Fancam].
  * 3. Configure CORS.
  * 4. Status pages for unhandled pages or internal server errors.
@@ -49,7 +46,7 @@ import kotlin.time.Duration.Companion.seconds
  *
  * @param module Configure advanced serialization settings, such as polymorphism,
  *               custom serializer, or sealed hierarchies. This is used for [Json]
- *               and [ProtoBuf] configuration.
+ *               configuration.
  * @param security Configure API security with [SecurityGuard].
  * @return A pair of [MongoClient] and [MongoDatabase] for application usage.
  */
@@ -79,17 +76,10 @@ fun Application.configureSerialization(module: SerializersModule = SerializersMo
         ignoreUnknownKeys = true
         encodeDefaults = true
     }
-    val protobuf = ProtoBuf {
-        serializersModule = module
-        encodeDefaults = true
-    }
-
     install(ContentNegotiation) {
         json(json)
-        protobuf(protobuf)
     }
     JSON.initialize(json)
-    Protobuf.initialize(protobuf)
 }
 
 fun configureFancam() {

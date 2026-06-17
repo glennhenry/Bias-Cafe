@@ -51,7 +51,6 @@ data class EncoreConfig(
 /**
  * @property host
  * @property port
- * @property socketPort
  */
 data class EncoreServerConfig(
     /**
@@ -65,12 +64,6 @@ data class EncoreServerConfig(
      */
     @VenueKey("server.port")
     val port: Int,
-
-    /**
-     * Server port for socket connection.
-     */
-    @VenueKey("server.socketPort")
-    val socketPort: Int
 )
 
 /**
