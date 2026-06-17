@@ -1,8 +1,10 @@
 # Planet Network
 
-<img src="progress.png" alt="website image" width=200/>
-
 Kep1er fan social portal.
+
+Latest progress:
+
+<img src="progress.png" alt="website image" style="border:1px black solid;" width=500/>
 
 Made with [Encore](https://github.com/glennhenry/Encore).
 
@@ -25,7 +27,6 @@ To run the server, ensure MongoDB is running on `mongodb://localhost:27017`. The
 ```
 
 - File and API server runs on `127.0.0.1:8080`
-- Socket server runs on `127.0.0.1:7777`
 
 You can also run the server from IntelliJ IDE run plugin on `Application.kt`.
 
@@ -49,7 +50,7 @@ Every variables can be overriden from OS environment variables. For example, in 
 
 ```ps1
 $env:ENCORE_DEV_MODE = "false"
-$env:ENCORE_SERVER_PORT = "1234"
+$env:ENCORE_SERVER_HOST = "127.0.0.1"
 java -jar encore.jar
 ```
 
@@ -106,16 +107,9 @@ description: example
 │   │   ├── annotation/             # Custom application annotations
 │   │   ├── auth/                   # Authentication components
 │   │   ├── backstage/              # Developer tooling utilities
-│   │   ├── context/                # Dependency container and player state management
+│   │   ├── context/                # Dependency container
 │   │   ├── datastore/              # Persistence and database components
-│   │   ├── definition/             # Gameplay rules and data abstractions
 │   │   ├── fancam/                 # Logging system
-│   │   ├── network/                # Server networking components
-│   │   │   ├── fanchant/           # Game message abstractions
-│   │   │   ├── handler/            # Message handler abstractions
-│   │   │   ├── lifecycle/          # Connection lifecycle hooks
-│   │   │   ├── stage/              # Game server implementation
-│   │   │   └── transport/          # Network transport mechanisms
 │   │   ├── presence/               # Player activity and presence tracking
 │   │   ├── route/                  # REST API system
 │   │   ├── security/               # Security components
@@ -128,29 +122,27 @@ description: example
 │   │   ├── websocket/              # WebSocket communication components
 │   │   ├── EncoreConfig.kt         # Encore configuration
 │   │   └── EncoreIdentity.kt       # Encore version and flavor metadata
-│   ├── game/                       # Game server implementation source
+│   ├── portal/                     # Portal implementation source
 │   │   ├── config/                 # User-defined configuration
 │   │   ├── FileRoutes.kt           # Static file serving routes
-│   │   ├── GameIdentity.kt         # Implementation version and flavor metadata
+│   │   ├── ProjectIdentity.kt      # Implementation version and flavor metadata
 │   │   ├── Globals.kt              # Global application constants
-│   │   └── RealContextFactory.kt   # Player state factory
 │   └── Application.kt              # Application entry point and wiring
 │
 ├── src/test/kotlin/
 │   ├── encoreTest/                 # Framework test suite
 │   ├── example/                    # Example implementation samples
-│   ├── gameTest/                   # Server implementation test suite
+│   ├── portalTest/                 # Server implementation test suite
 │   ├── testUtils/                  # Test utilities and helpers
 │   ├── InitMongo.kt                # MongoDB test initialization
 │   └── Playground.kt               # Quick experimentation and test runner
 │
 ├── .logs/                          # Runtime log files
-├── assets/                         # Game files and assets (untracked, use git subrepo)
+├── assets/                         # Game files and assets
 ├── backstage/                      # Developer tool assets
 ├── docs/                           # Documentation skeleton
 ├── deploy/                         # Build output directory
 ├── build.bat / build.sh            # Build scripts
-├── SocketSimulation.ps1            # Socket connection simulation script
 ├── venue.xml                       # Framework and application configuration
 └── venue.secret.xml                # Secret configuration
 ```
