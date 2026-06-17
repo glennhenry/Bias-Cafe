@@ -1,4 +1,4 @@
-package game
+package portal
 
 /**
  * Contains any uncategorized global application constants.

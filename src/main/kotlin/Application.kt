@@ -11,9 +11,9 @@ import encore.time.TimeCenter
 import encore.time.source.SystemTimeSource
 import encore.venue.Venue
 import encore.websocket.handler.WsCommandHandler
-import game.GameIdentity
-import game.Globals
-import game.fileRoutes
+import portal.ProjectIdentity
+import portal.Globals
+import portal.fileRoutes
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -107,7 +107,7 @@ suspend fun Application.configureApplication() {
     acceptsTerminalInput(appScope, backstageToken)
 
     // prints encore banner
-    println(EncoreIdentity.banner(GameIdentity))
+    println(EncoreIdentity.banner(ProjectIdentity))
     celebrate(LocalDate.now(SystemTimezone))
 
     // install shutdown hook

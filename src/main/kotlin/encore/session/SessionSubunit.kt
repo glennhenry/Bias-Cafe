@@ -7,7 +7,7 @@ import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
 import encore.time.source.MutableTimeSource
 import encore.time.source.TimeSource
-import game.Globals
+import portal.Globals
 import encore.utils.identifier.Ids
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

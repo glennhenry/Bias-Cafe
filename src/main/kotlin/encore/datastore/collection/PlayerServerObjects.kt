@@ -1,7 +1,7 @@
 package encore.datastore.collection
 
 import encore.account.model.PlayerMetadata
-import game.Globals
+import portal.Globals
 
 /**
  * Represents server-managed player data.

@@ -1,4 +1,4 @@
-package game
+package portal
 
 import encore.route.RouteHandler
 import io.ktor.http.HttpStatusCode

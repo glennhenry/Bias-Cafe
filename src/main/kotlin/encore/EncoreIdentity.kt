@@ -5,7 +5,7 @@ package encore
 import encore.fancam.Fancam
 import encore.fancam.events.Level
 import encore.utils.Emoji
-import game.GameIdentity
+import portal.ProjectIdentity
 import java.time.LocalDate
 import java.time.Month
 import java.time.MonthDay
@@ -40,7 +40,7 @@ object EncoreIdentity {
         return bannerText(gameTitle, gameVersion, gameDescription)
     }
 
-    fun banner(gameIdentity: GameIdentity): String {
+    fun banner(gameIdentity: ProjectIdentity): String {
         return bannerText(gameIdentity.Title, gameIdentity.Version, gameIdentity.Description)
     }
 

@@ -1,6 +1,6 @@
 @file:Suppress("ConstPropertyName", "unused")
 
-package game
+package portal
 
 import encore.EncoreIdentity
 
@@ -18,7 +18,7 @@ import encore.EncoreIdentity
  * - [Version]: version of this server implementation.
  * - [Description]: descriptive texts.
  */
-object GameIdentity {
+object ProjectIdentity {
     const val Title = "Planet Network"
     const val Version = "0.0.1"
     const val Description = "Under construction..."

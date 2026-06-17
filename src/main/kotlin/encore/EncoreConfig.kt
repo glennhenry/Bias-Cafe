@@ -2,9 +2,9 @@ package encore
 
 import encore.annotation.runtime.VenueKey
 import encore.fancam.events.Level
-import game.config.CustomConfig
-import game.config.SecretConfig
-import game.Globals
+import portal.config.CustomConfig
+import portal.config.SecretConfig
+import portal.Globals
 
 /**
  * Definition of config required by the framework.

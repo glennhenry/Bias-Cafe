@@ -11,7 +11,7 @@ import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
 import encore.utils.hash
-import game.Globals
+import portal.Globals
 
 /**
  * Server-scoped subunit responsible for player creation.
