@@ -16,7 +16,7 @@
         <admin enabled="true" />
         <database>
             <mongo>
-                <dbname>CHANGE_ME-prod-DB</dbname>
+                <dbname>PLANET_NETWORK-prod-DB</dbname>
                 <dburl>mongodb://localhost:27017</dburl>
             </mongo>
         </database>

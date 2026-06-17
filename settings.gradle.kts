@@ -1,4 +1,4 @@
-rootProject.name = "Encore"
+rootProject.name = "Planet-Network"
 
 dependencyResolutionManagement {
     repositories {

@@ -22,26 +22,23 @@ export default defineConfig({
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 6 },
       credits: true,
       lastUpdated: true,
-      title: "Encore", // CHANGEME
+      title: "Planet Network",
       components: {
         Pagination: "./src/components/Pagination.astro",
         PageFrame: "./src/components/PageFrame.astro",
       },
       editLink: {
-        // CHANGEME
-        baseUrl: "https://github.com/glennhenry/Encore/edit/main/",
+        baseUrl: "https://github.com/glennhenry/Planet-Network/edit/main/",
       },
       social: [
         {
           icon: "github",
           label: "GitHub",
-          // CHANGEME
-          href: "https://github.com/glennhenry/Encore",
+          href: "https://github.com/glennhenry/Planet-Network",
         },
       ],
       sidebar: [
-        { label: "Intro", slug: "index" },
-        { label: "Flow", slug: "flow" },
+        { label: "Intro", slug: "index" }
       ],
     }),
   ],
