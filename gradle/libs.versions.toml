@@ -18,6 +18,7 @@ ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", versio
 ktor-server-websockets = { module = "io.ktor:ktor-server-websockets", version.ref = "ktor" }
 ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
 ktor-server-double-receive = { module = "io.ktor:ktor-server-double-receive", version.ref = "ktor" }
+ktor-server-mustache = { module = "io.ktor:ktor-server-mustache", version.ref = "ktor" }
 logger-noop = { module = "org.slf4j:slf4j-nop", version.ref = "slf4j-noop" }
 
 # --- Ktor serialization ---

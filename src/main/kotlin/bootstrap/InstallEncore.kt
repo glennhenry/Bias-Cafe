@@ -1,5 +1,6 @@
 package bootstrap
 
+import com.github.mustachejava.DefaultMustacheFactory
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.fancam.Fancam
@@ -15,6 +16,7 @@ import encore.venue.Venue
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
+import io.ktor.server.mustache.Mustache
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.doublereceive.DoubleReceive
@@ -27,6 +29,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import org.bson.Document
+import java.io.File
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -60,6 +63,7 @@ suspend fun Application.installEncore(
     configureCors()
     configureStatusPages()
     configureDoubleReceive()
+    configureMustache()
     configureWebSocket()
     configureSecurity(security)
     interceptResponse()
@@ -139,6 +143,12 @@ fun Application.configureStatusPages() {
 
 fun Application.configureDoubleReceive() {
     install(DoubleReceive)
+}
+
+fun Application.configureMustache() {
+    install(Mustache) {
+        mustacheFactory = DefaultMustacheFactory(File("assets/templates"))
+    }
 }
 
 /**
