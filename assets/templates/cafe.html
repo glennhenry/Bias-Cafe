@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
   <link rel="stylesheet" href="/site/reset.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <title>Cafe</title>
   <style>
     body {
@@ -68,38 +69,51 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("post-form").addEventListener("submit", function (event) {
-        event.preventDefault();
+    $(document).ready(function () {
+      $("#post-form").submit(function (event) {
+        postFormSubmitListener(event)
+      })
+    })
 
-        const status = document.getElementById("post-status")
-        status.textContent = "Status: Sending"
-        status.style.color = "#b68c3e"
+    function postFormSubmitListener(event) {
+      event.preventDefault()
+      changePostStatus(0)
 
-        const text = document.getElementById("post-textarea").value
+      const text = $("#post-textarea").val();
 
-        fetch('/cafe/post', {
-          method: 'POST',
-          body: text
+      fetch('/cafe/post', {
+        method: 'POST',
+        body: text
+      })
+        .then(response => {
+          if (response.ok) {
+            console.log("Cafe post status: ", response.status)
+            changePostStatus(2)
+          }
         })
-          .then(response => {
-            if (response.ok) {
-              console.log("Cafe post status: ", response.status)
+        .catch(error => {
+          console.error('Error:', error)
+          changePostStatus(1)
+        });
+    }
 
-              const status = document.getElementById("post-status")
-              status.textContent = "Status: Success"
-              status.style.color = "green"
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error)
-
-            const status = document.getElementById("post-status")
-            status.textContent = "Status: Failed"
-            status.style.color = "red"
-          });
-      });
-    });
+    function changePostStatus(code) {
+      if (code == 0) {
+        $("#post-status")
+          .text("Status: Sending")
+          .css("color", "#b68c3e")
+      }
+      if (code == 1) {
+        $("#post-status")
+          .text("Status: Failed")
+          .css("color", "red")
+      }
+      if (code == 2) {
+        $("#post-status")
+          .text("Status: Success")
+          .css("color", "green")
+      }
+    }
   </script>
 </body>
 
