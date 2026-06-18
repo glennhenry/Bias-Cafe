@@ -13,7 +13,7 @@ import encore.venue.Venue
 import encore.websocket.handler.WsCommandHandler
 import project.ProjectIdentity
 import project.Globals
-import project.fileRoutes
+import project.routes.fileRoutes
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.modules.SerializersModule
+import project.routes.IndexHandler
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
@@ -98,6 +99,7 @@ suspend fun Application.configureApplication() {
     routing {
         fileRoutes()
         with(BackstageRoutes(serverContext, backstageToken)) { install() }
+        with(IndexHandler()) { install() }
     }
 
     // log startup
