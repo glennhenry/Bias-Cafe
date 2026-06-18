@@ -1,8 +1,6 @@
 package project.routes
 
 import encore.route.RouteHandler
-import encore.route.guard.NoAuthGuard
-import encore.route.handle
 import encore.time.TimeCenter
 import io.ktor.server.mustache.*
 import io.ktor.server.response.*
@@ -26,7 +24,31 @@ class IndexHandler : RouteHandler {
                 bias = bias
             )
 
-            call.respond(MustacheContent("index.html", mapOf("data" to data)))
+            call.respond(MustacheContent("lobby.html", mapOf("data" to data)))
+        }
+
+        get("/cafe") {
+            val systemTime = TimeCenter.now()
+            val bias = Members.all.random()
+
+            val data = ExampleTemplateData(
+                time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
+                bias = bias
+            )
+
+            call.respond(MustacheContent("cafe.html", mapOf("data" to data)))
+        }
+
+        get("/profile") {
+            val systemTime = TimeCenter.now()
+            val bias = Members.all.random()
+
+            val data = ExampleTemplateData(
+                time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
+                bias = bias
+            )
+
+            call.respond(MustacheContent("profile.html", mapOf("data" to data)))
         }
     }
 }

@@ -1,0 +1,40 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
+  <link rel="stylesheet" href="/site/reset.css">
+  <title>Lobby</title>
+  <style>
+    .navbar {
+      display: flex;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px;
+    }
+
+    .nav-link {
+      border: 1px solid black;
+      padding: 4px;
+      background-color: #dddddd;
+    }
+
+    .nav-link:hover {
+      color: gray;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Lobby</h1>
+  <p>System time: {{data.time}}</p>
+  <p>Bias: {{data.bias}}</p>
+  <div class="navbar">
+    <a class="nav-link" href="/">Lobby</a>
+    <a class="nav-link" href="/cafe">Cafe</a>
+    <a class="nav-link" href="/profile">Profile</a>
+  </div>
+</body>
+
+</html>
