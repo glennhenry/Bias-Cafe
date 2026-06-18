@@ -1,6 +1,8 @@
-# Planet Network
+# Bias Cafe
 
-Kep1er fan social portal.
+**Bias Cafe** is a social portal platform.
+
+This project is specifically fan social portal for **Kep1er**.
 
 Latest progress:
 
@@ -122,7 +124,7 @@ description: example
 │   │   ├── websocket/              # WebSocket communication components
 │   │   ├── EncoreConfig.kt         # Encore configuration
 │   │   └── EncoreIdentity.kt       # Encore version and flavor metadata
-│   ├── portal/                     # Portal implementation source
+│   ├── project/                     # Portal implementation source
 │   │   ├── config/                 # User-defined configuration
 │   │   ├── FileRoutes.kt           # Static file serving routes
 │   │   ├── ProjectIdentity.kt      # Implementation version and flavor metadata
@@ -132,7 +134,7 @@ description: example
 ├── src/test/kotlin/
 │   ├── encoreTest/                 # Framework test suite
 │   ├── example/                    # Example implementation samples
-│   ├── portalTest/                 # Server implementation test suite
+│   ├── cafeTest/                 # Server implementation test suite
 │   ├── testUtils/                  # Test utilities and helpers
 │   ├── InitMongo.kt                # MongoDB test initialization
 │   └── Playground.kt               # Quick experimentation and test runner
