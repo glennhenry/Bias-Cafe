@@ -4,11 +4,11 @@ slug: index
 description: Intro
 ---
 
-# Planet Network
+# Bias Cafe
 
-Documentation about planet network.
+Documentation about bias cafe.
 
-Fan social portal application.
+Fan social project application.
 
 17/06/2026.
 
@@ -69,4 +69,4 @@ Has:
     - cash use for buying profile border, title, badge.
     - richest user, highest level user
 
-- Homepage should look like a portal, aggregating various content such as forum board, birthday,
+- Homepage should look like a project, aggregating various content such as forum board, birthday,

@@ -3,7 +3,7 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.datastore.MongoCollectionName
 import org.bson.Document
 
-const val PLANET_NETWORK_TEST_DB_NAME = "PLANET_NETWORK-test-DB"
+const val BIAS_CAFE_TEST_DB_NAME = "BIAS_CAFE-test-DB"
 const val MONGO_TEST_URL = "mongodb://localhost:27017"
 val TestMongoCollectionName = MongoCollectionName(
     playerAccount = "test_player_account",
@@ -14,7 +14,7 @@ val TestMongoCollectionName = MongoCollectionName(
 
 suspend fun initMongo(
     dbUrl: String = MONGO_TEST_URL,
-    dbName: String = PLANET_NETWORK_TEST_DB_NAME
+    dbName: String = BIAS_CAFE_TEST_DB_NAME
 ): MongoDatabase {
     val mongoc = MongoClient.create(dbUrl)
     val db = mongoc.getDatabase(dbName)

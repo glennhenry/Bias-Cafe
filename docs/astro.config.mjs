@@ -22,19 +22,19 @@ export default defineConfig({
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 6 },
       credits: true,
       lastUpdated: true,
-      title: "Planet Network",
+      title: "Bias Cafe",
       components: {
         Pagination: "./src/components/Pagination.astro",
         PageFrame: "./src/components/PageFrame.astro",
       },
       editLink: {
-        baseUrl: "https://github.com/glennhenry/Planet-Network/edit/main/",
+        baseUrl: "https://github.com/glennhenry/Bias-Cafe/edit/main/",
       },
       social: [
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/glennhenry/Planet-Network",
+          href: "https://github.com/glennhenry/Bias-Cafe",
         },
       ],
       sidebar: [

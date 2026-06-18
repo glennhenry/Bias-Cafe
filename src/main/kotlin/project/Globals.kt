@@ -1,4 +1,4 @@
-package portal
+package project
 
 /**
  * Contains any uncategorized global application constants.

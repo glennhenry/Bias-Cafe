@@ -5,7 +5,7 @@ package encore
 import encore.fancam.Fancam
 import encore.fancam.events.Level
 import encore.utils.Emoji
-import portal.ProjectIdentity
+import project.ProjectIdentity
 import java.time.LocalDate
 import java.time.Month
 import java.time.MonthDay

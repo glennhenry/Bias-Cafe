@@ -1,4 +1,4 @@
-package portal
+package project
 
 import encore.route.RouteHandler
 import io.ktor.http.HttpStatusCode

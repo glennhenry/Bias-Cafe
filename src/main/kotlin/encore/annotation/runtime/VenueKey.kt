@@ -1,8 +1,8 @@
 package encore.annotation.runtime
 
 import encore.EncoreConfig
-import portal.config.CustomConfig
-import portal.config.SecretConfig
+import project.config.CustomConfig
+import project.config.SecretConfig
 
 /**
  * Used to annotate [EncoreConfig], [CustomConfig], and [SecretConfig]

@@ -1,6 +1,6 @@
 @file:Suppress("ConstPropertyName", "unused")
 
-package portal
+package project
 
 import encore.EncoreIdentity
 
@@ -19,7 +19,7 @@ import encore.EncoreIdentity
  * - [Description]: descriptive texts.
  */
 object ProjectIdentity {
-    const val Title = "Planet Network"
+    const val Title = "Bias Cafe"
     const val Version = "0.0.1"
     const val Description = "Under construction..."
 }

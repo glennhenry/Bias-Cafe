@@ -15,7 +15,7 @@
         <admin enabled="true" />
         <database>
             <mongo>
-                <dbname>PLANET_NETWORK-prod-DB</dbname>
+                <dbname>BIAS_CAFE-prod-DB</dbname>
                 <dburl>mongodb://localhost:27017</dburl>
             </mongo>
         </database>

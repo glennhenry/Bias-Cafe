@@ -1,6 +1,6 @@
 package encore.datastore.collection
 
-import portal.Globals
+import project.Globals
 
 /**
  * Root representation of all persistent game data for a player.

@@ -1,4 +1,4 @@
-rootProject.name = "Planet-Network"
+rootProject.name = "Bias-Cafe"
 
 dependencyResolutionManagement {
     repositories {

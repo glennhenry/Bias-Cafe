@@ -13,7 +13,7 @@ import encore.subunit.scope.ServerScope
 import encore.utils.types.Outcome
 import encore.utils.types.fold
 import encore.venue.Venue
-import portal.Globals
+import project.Globals
 import kotlin.io.encoding.Base64
 
 /**

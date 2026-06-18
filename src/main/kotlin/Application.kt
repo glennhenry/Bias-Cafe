@@ -11,9 +11,9 @@ import encore.time.TimeCenter
 import encore.time.source.SystemTimeSource
 import encore.venue.Venue
 import encore.websocket.handler.WsCommandHandler
-import portal.ProjectIdentity
-import portal.Globals
-import portal.fileRoutes
+import project.ProjectIdentity
+import project.Globals
+import project.fileRoutes
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*

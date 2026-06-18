@@ -7,8 +7,8 @@ import encore.venue.Venue.encore
 import encore.venue.Venue.secret
 import encore.fancam.Fancam
 import encore.fancam.Tags
-import portal.config.CustomConfig
-import portal.config.SecretConfig
+import project.config.CustomConfig
+import project.config.SecretConfig
 import java.io.File
 
 /**

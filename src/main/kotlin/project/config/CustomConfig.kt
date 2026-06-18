@@ -1,4 +1,4 @@
-package portal.config
+package project.config
 
 import encore.annotation.runtime.VenueKey
 
