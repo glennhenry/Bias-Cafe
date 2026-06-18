@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
   <meta charset="UTF-8">
@@ -38,23 +38,17 @@
 
 <body>
   <h1>Lobby</h1>
-  <p>System time: {{data.time}}</p>
-  <p>Bias: {{data.bias}}</p>
+  <p th:text="'System time: ' + ${data.time}"></p>
+  <p th:text="'Bias: ' + ${data.bias}"></p>
 
   <div class="posted-text">
     <h3>Posted texts:</h3>
 
-    {{#data.hasPosts}}
-    <ul>
-      {{#data.posts}}
-      <li>{{.}}</li>
-      {{/data.posts}}
+    <ul th:if="${not #lists.isEmpty(data.posts)}">
+      <li th:each="post : ${data.posts}" th:text="${post}"></li>
     </ul>
-    {{/data.hasPosts}}
 
-    {{^data.hasPosts}}
-    <p>No posted texts available.</p>
-    {{/data.hasPosts}}
+    <p th:if="${#lists.isEmpty(data.posts)}">No posted texts available.</p>
   </div>
 
   <div class="navbar">

@@ -6,17 +6,16 @@ import encore.route.guard.NoAuthGuard
 import encore.route.handle
 import encore.time.TimeCenter
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.mustache.*
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.thymeleaf.ThymeleafContent
 import project.Members
 import java.text.SimpleDateFormat
 
 data class ExampleTemplateData(
     val time: String = "",
     val bias: String = "",
-    val hasPosts: Boolean = false,
     val posts: List<String> = emptyList()
 )
 
@@ -31,11 +30,10 @@ class IndexHandler : RouteHandler {
             val data = ExampleTemplateData(
                 time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
                 bias = bias,
-                hasPosts = postedTexts.isNotEmpty(),
                 posts = postedTexts
             )
 
-            call.respond(MustacheContent("lobby.html", mapOf("data" to data)))
+            call.respond(ThymeleafContent("lobby", mapOf("data" to data)))
         }
 
         get("/cafe") {
@@ -47,7 +45,7 @@ class IndexHandler : RouteHandler {
                 bias = bias
             )
 
-            call.respond(MustacheContent("cafe.html", mapOf("data" to data)))
+            call.respond(ThymeleafContent("cafe", mapOf("data" to data)))
         }
 
         post("/cafe/post") {
@@ -68,7 +66,7 @@ class IndexHandler : RouteHandler {
                 bias = bias
             )
 
-            call.respond(MustacheContent("profile.html", mapOf("data" to data)))
+            call.respond(ThymeleafContent("profile", mapOf("data" to data)))
         }
     }
 }
