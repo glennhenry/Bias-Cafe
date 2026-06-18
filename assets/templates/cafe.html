@@ -7,11 +7,15 @@
   <link rel="stylesheet" href="/site/reset.css">
   <title>Cafe</title>
   <style>
+    body {
+      margin-left: 8px;
+    }
+
     .navbar {
       display: flex;
       gap: 8px;
       width: fit-content;
-      padding: 8px;
+      margin-top: 24px;
     }
 
     .nav-link {
@@ -23,18 +27,80 @@
     .nav-link:hover {
       color: gray;
     }
+
+    .post-container {
+      width: fit-content;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .post-textarea {
+      width: 300px;
+      height: 200px;
+      resize: none;
+      padding-right: 12px;
+    }
+
+    .post-submit {
+      width: fit-content;
+    }
+
+    .post-status {
+      color: black;
+    }
   </style>
 </head>
 
 <body>
   <h1>Cafe</h1>
-  <p>System time: {{data.time}}</p>
-  <p>Bias: {{data.bias}}</p>
+  <form id="post-form" class="post-container">
+    <label for="post-textarea">Post text</label>
+    <textarea id="post-textarea" class="post-textarea" placeholder="Type here..."></textarea>
+    <button type="submit" class="post-submit">Submit</button>
+  </form>
+  <p id="post-status" class="post-status">Status: </p>
+
   <div class="navbar">
     <a class="nav-link" href="/">Lobby</a>
     <a class="nav-link" href="/cafe">Cafe</a>
     <a class="nav-link" href="/profile">Profile</a>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("post-form").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const status = document.getElementById("post-status")
+        status.textContent = "Status: Sending"
+        status.style.color = "#b68c3e"
+
+        const text = document.getElementById("post-textarea").value
+
+        fetch('/cafe/post', {
+          method: 'POST',
+          body: text
+        })
+          .then(response => {
+            if (response.ok) {
+              console.log("Cafe post status: ", response.status)
+
+              const status = document.getElementById("post-status")
+              status.textContent = "Status: Success"
+              status.style.color = "green"
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error)
+
+            const status = document.getElementById("post-status")
+            status.textContent = "Status: Failed"
+            status.style.color = "red"
+          });
+      });
+    });
+  </script>
 </body>
 
 </html>
