@@ -27,6 +27,12 @@
     .nav-link:hover {
       color: gray;
     }
+
+    .posted-text {
+      border: 1px solid black;
+      padding: 4px;
+      width: 500px;
+    }
   </style>
 </head>
 
@@ -34,6 +40,23 @@
   <h1>Lobby</h1>
   <p>System time: {{data.time}}</p>
   <p>Bias: {{data.bias}}</p>
+
+  <div class="posted-text">
+    <h3>Posted texts:</h3>
+
+    {{#data.hasPosts}}
+    <ul>
+      {{#data.posts}}
+      <li>{{.}}</li>
+      {{/data.posts}}
+    </ul>
+    {{/data.hasPosts}}
+
+    {{^data.hasPosts}}
+    <p>No posted texts available.</p>
+    {{/data.hasPosts}}
+  </div>
+
   <div class="navbar">
     <a class="nav-link" href="/">Lobby</a>
     <a class="nav-link" href="/cafe">Cafe</a>

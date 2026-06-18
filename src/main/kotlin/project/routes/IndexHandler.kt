@@ -14,11 +14,15 @@ import project.Members
 import java.text.SimpleDateFormat
 
 data class ExampleTemplateData(
-    val time: String,
-    val bias: String
+    val time: String = "",
+    val bias: String = "",
+    val hasPosts: Boolean = false,
+    val posts: List<String> = emptyList()
 )
 
 class IndexHandler : RouteHandler {
+    private val postedTexts = mutableListOf<String>()
+
     override fun Route.install() {
         get("/") {
             val systemTime = TimeCenter.now()
@@ -26,7 +30,9 @@ class IndexHandler : RouteHandler {
 
             val data = ExampleTemplateData(
                 time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
-                bias = bias
+                bias = bias,
+                hasPosts = postedTexts.isNotEmpty(),
+                posts = postedTexts
             )
 
             call.respond(MustacheContent("lobby.html", mapOf("data" to data)))
@@ -48,6 +54,7 @@ class IndexHandler : RouteHandler {
             handle(call, NoAuthGuard) {
                 val text = call.receiveText()
                 Fancam.debug { "Received post text to /cafe/post: $text" }
+                postedTexts.add(text)
                 call.respond(HttpStatusCode.OK)
             }
         }
