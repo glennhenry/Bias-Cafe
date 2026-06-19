@@ -2,8 +2,6 @@ package encore.datastore
 
 import encore.datastore.collection.PlayerAccount
 import encore.datastore.collection.PlayerId
-import encore.datastore.collection.PlayerObjects
-import encore.datastore.collection.PlayerServerObjects
 import encore.datastore.collection.ServerObjects
 
 /**
@@ -11,8 +9,6 @@ import encore.datastore.collection.ServerObjects
  *
  * The data is separated into four core collections:
  * - [PlayerAccount]: player's account data.
- * - [PlayerObjects]: player's game data.
- * - [PlayerServerObjects]: player's non-game, server related data.
  * - [ServerObjects]: server's operational or game data.
  *
  * Implementation exposes way to retrieve the core collections and player creation.
@@ -40,17 +36,6 @@ interface DataStore {
     suspend fun getPlayerAccount(playerId: PlayerId): PlayerAccount?
 
     /**
-     * Returns the [PlayerObjects] (game data) for the given [playerId].
-     */
-    suspend fun getPlayerObjects(playerId: PlayerId): PlayerObjects?
-
-    /**
-     * Returns the [PlayerServerObjects] (server-managed player data)
-     * for the given [playerId].
-     */
-    suspend fun getPlayerServerObjects(playerId: PlayerId): PlayerServerObjects?
-
-    /**
      * Returns the [ServerObjects] (global server data).
      */
     suspend fun getServerObjects(): ServerObjects?
@@ -62,8 +47,6 @@ interface DataStore {
      */
     suspend fun create(
         account: PlayerAccount,
-        playerObjects: PlayerObjects,
-        playerServerObjects: PlayerServerObjects
     ): Result<Unit>
 
     /**

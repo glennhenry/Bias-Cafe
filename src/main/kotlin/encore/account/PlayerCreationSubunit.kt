@@ -17,8 +17,7 @@ import project.Globals
  * Server-scoped subunit responsible for player creation.
  *
  * Responsible for handling the logic to create a player, which involves
- * inserting some default data to the three base collections: [PlayerAccount],
- * [PlayerObjects], and [PlayerServerObjects].
+ * inserting some default data to the base collections: [PlayerAccount].
  *
  * This subunit doesn't handle server data update in [ServerObjects]
  * for the player. This should be handled separately via external orchestration
@@ -49,10 +48,8 @@ class PlayerCreationSubunit(private val dataStore: DataStore) : Subunit<ServerSc
             hashedPassword = hash(password),
             profile = defaultProfile(playerId),
         )
-        val pObj = PlayerObjects.newGame(playerId)
-        val psObj = PlayerServerObjects.newGame(playerId)
 
-        val result = dataStore.create(account, pObj, psObj)
+        val result = dataStore.create(account)
         if (result.isSuccess) {
             return playerId
         }
@@ -85,10 +82,8 @@ class PlayerCreationSubunit(private val dataStore: DataStore) : Subunit<ServerSc
             hashedPassword = Globals.ADMIN_HASHED_PASSWORD,
             profile = defaultProfile(Globals.ADMIN_PLAYER_ID),
         )
-        val pObj = PlayerObjects.admin()
-        val psObj = PlayerServerObjects.admin()
 
-        val result = dataStore.create(account, pObj, psObj)
+        val result = dataStore.create(account)
 
         if (result.isSuccess) {
             Fancam.info(Tags.Creation) { "New admin account created with username=${Globals.ADMIN_USERNAME}, playerId=${Globals.ADMIN_PLAYER_ID}" }

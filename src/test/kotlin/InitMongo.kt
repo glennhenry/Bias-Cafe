@@ -7,8 +7,6 @@ const val BIAS_CAFE_TEST_DB_NAME = "BIAS_CAFE-test-DB"
 const val MONGO_TEST_URL = "mongodb://localhost:27017"
 val TestMongoCollectionName = MongoCollectionName(
     playerAccount = "test_player_account",
-    playerObjects = "test_player_objects",
-    playerServerObjects = "test_player_server_objects",
     serverObjects = "test_server_objects"
 )
 
