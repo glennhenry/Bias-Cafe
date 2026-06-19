@@ -43,8 +43,10 @@ fun main() {
 
 val MongoCollectionName = MongoCollectionName(
     userAccount = "user_account",
+    serverObjects = "server_objects",
+
     profile = "profile",
-    serverObjects = "server_objects"
+    topic = "topic"
 )
 
 val SystemTimezone: ZoneId = ZoneId.systemDefault()

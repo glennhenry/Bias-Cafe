@@ -7,8 +7,10 @@ const val BIAS_CAFE_TEST_DB_NAME = "BIAS_CAFE-test-DB"
 const val MONGO_TEST_URL = "mongodb://localhost:27017"
 val TestMongoCollectionName = MongoCollectionName(
     userAccount = "test_user_account",
+    serverObjects = "test_server_objects",
+
     profile = "test_profile",
-    serverObjects = "test_server_objects"
+    topic = "test_topic"
 )
 
 suspend fun initMongo(

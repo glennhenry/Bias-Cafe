@@ -20,8 +20,10 @@ import kotlin.time.measureTime
  */
 data class MongoCollectionName(
     val userAccount: String,
+    val serverObjects: String,
+
     val profile: String,
-    val serverObjects: String
+    val topic: String
 )
 
 /**

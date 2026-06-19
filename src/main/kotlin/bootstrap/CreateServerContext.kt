@@ -21,6 +21,8 @@ import encore.time.TimeCenter
 import encore.venue.Venue
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
+import project.domain.cafe.MongoTopicRepository
+import project.domain.cafe.TopicSubunit
 import project.domain.profile.MongoProfileRepository
 import project.domain.profile.ProfileSubunit
 
@@ -42,9 +44,7 @@ suspend fun createServerContext(
     val accountRepository = MongoAccountRepository(
         accountCollection = mongoDatabase.getCollection(MongoCollectionName.userAccount)
     )
-    val profileRepository = MongoProfileRepository(
-        profileCollection = mongoDatabase.getCollection(MongoCollectionName.profile)
-    )
+
     val stageActDirector = StageActDirector(
         timeSource = TimeCenter.source,
         actStore = ActIdStore
@@ -54,19 +54,30 @@ suspend fun createServerContext(
 
     // setup ServerSubunits
     val accountSubunit = AccountSubunit(accountRepository)
-    val profileSubunit = ProfileSubunit(profileRepository)
     val userPresenceSubunit = UserPresenceSubunit()
     val sessionSubunit = SessionSubunit(appScope, TimeCenter.source)
     val userCreationSubunit = UserCreationSubunit(dataStore)
     val authSubunit = AuthSubunit(accountSubunit, userCreationSubunit, sessionSubunit)
 
+    val profileRepository = MongoProfileRepository(
+        profileCollection = mongoDatabase.getCollection(MongoCollectionName.profile)
+    )
+    val topicRepository = MongoTopicRepository(
+        topicCollection = mongoDatabase.getCollection(MongoCollectionName.topic)
+    )
+
+    val profileSubunit = ProfileSubunit(profileRepository)
+    val topicSubunit = TopicSubunit(topicRepository)
+
     val subunits = ServerSubunits(
         account = accountSubunit,
-        profile = profileSubunit,
         presence = userPresenceSubunit,
         auth = authSubunit,
         session = sessionSubunit,
-        creation = userCreationSubunit
+        creation = userCreationSubunit,
+
+        profile = profileSubunit,
+        topic = topicSubunit
     )
 
     // debut all subunits
