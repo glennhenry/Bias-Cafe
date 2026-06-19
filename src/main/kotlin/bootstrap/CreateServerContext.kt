@@ -21,8 +21,8 @@ import encore.time.TimeCenter
 import encore.venue.Venue
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
-import project.domain.MongoProfileRepository
-import project.domain.ProfileSubunit
+import project.domain.profile.MongoProfileRepository
+import project.domain.profile.ProfileSubunit
 
 /**
  * Create and return a [ServerContext] instance.

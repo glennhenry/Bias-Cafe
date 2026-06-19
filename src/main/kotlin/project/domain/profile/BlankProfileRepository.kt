@@ -1,4 +1,4 @@
-package project.domain
+package project.domain.profile
 
 import encore.datastore.collection.Profile
 import encore.datastore.collection.UserId

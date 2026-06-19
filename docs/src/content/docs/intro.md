@@ -66,7 +66,12 @@ Has:
 - Level system
     - for example, login gives 10 XP, complete quest. gain xp from post upvote
     - level up gives cash
-    - cash use for buying profile border, title, badge.
+    - cash use for buying profile border, title.
     - richest user, highest level user
+- photocard system
+  - photocards are collectibles
+  - they are put in profile alongside badge
+  - badges are quests only, while photocard can be bought through gacha
+  - display single photocard on forum profile
 
 - Homepage should look like a project, aggregating various content such as forum board, birthday,
