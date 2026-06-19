@@ -17,8 +17,8 @@ import kotlin.random.Random
  *
  * Example usage:
  * ```
- * val playerId = Ids.uuid()
- * Ids.join(playerId, Ids.random(3)) // e.g., "9d0bbb57-24aa-4727-9888-fba0e95ac114|519"
+ * val userId = Ids.uuid()
+ * Ids.join(userId, Ids.random(3)) // e.g., "9d0bbb57-24aa-4727-9888-fba0e95ac114|519"
  *
  * val buildingId = "outpost-6"
  * Ids.join(buildingId, Ids.time(), Ids.random(4)) // e.g., "outpost-6|1775575075210|8501"
@@ -29,7 +29,7 @@ import kotlin.random.Random
  * but if it shows up in multiple places, combining it with a timestamp or random number
  * helps avoid collisions.
  *
- * - Combines with [uuid] or the `playerId` itself for the safest strategy.
+ * - Combines with [uuid] or the `userId` itself for the safest strategy.
  * - Combines with [time] when the same operation is unlikely to occur simultaneously.
  * - Use [random] to add variability, preferably combined with a base identifier
  *   to reduce the chance of collisions.

@@ -4,7 +4,7 @@ import TestMongoCollectionName
 import encore.account.MongoAccountRepository
 import encore.account.model.Credentials
 import encore.account.model.Profile
-import encore.datastore.collection.PlayerAccount
+import encore.datastore.collection.UserAccount
 import encore.utils.identifier.Ids
 import encore.utils.hash
 import initMongo
@@ -21,16 +21,16 @@ class MongoAccountRepositoryTest {
     @Test
     fun `test all`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<PlayerAccount>(TestMongoCollectionName.playerAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.playerAccount)
+        mongoDb.createCollection(TestMongoCollectionName.userAccount)
 
         val repo = MongoAccountRepository(collection)
 
         val id = "id123"
         val name = "name123"
         val email = "name@email.com"
-        val account = PlayerAccount(
+        val account = UserAccount(
             id,
             name,
             email,
@@ -40,21 +40,21 @@ class MongoAccountRepositoryTest {
 
         collection.insertMany(List(20) { account() } + account)
 
-        assertEquals(account.playerId, repo.getAccountByUsername(name).getOrThrow().playerId)
-        assertEquals(id, repo.getPlayerIdByUsername(name).getOrThrow())
+        assertEquals(account.userId, repo.getAccountByUsername(name).getOrThrow().userId)
+        assertEquals(id, repo.getUserIdByUsername(name).getOrThrow())
         assertEquals(Credentials(id, account.hashedPassword), repo.getCredentials(name).getOrThrow())
 
         val newId = "id321"
 
-        repo.updatePlayerAccount(
+        repo.updateUserAccount(
             id, account.copy(
-                playerId = newId,
-                profile = account.profile.copy(playerId = newId)
+                userId = newId,
+                profile = account.profile.copy(userId = newId)
             )
         )
         val a = repo.getAccountByUsername(name).getOrThrow()
-        assertEquals(newId, a.playerId)
-        assertEquals(newId, a.profile.playerId)
+        assertEquals(newId, a.userId)
+        assertEquals(newId, a.profile.userId)
 
         repo.updateLastActivity(newId, 1000)
         assertEquals(1000, repo.getAccountByUsername(name).getOrThrow().profile.lastActiveAt)
@@ -68,7 +68,7 @@ class MongoAccountRepositoryTest {
         assertTrue(repo.emailExists(email).getOrThrow())
     }
 
-    private fun account(): PlayerAccount {
+    private fun account(): UserAccount {
         return createAccount(Ids.uuid(), randstr(), randstr())
     }
 

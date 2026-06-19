@@ -1,14 +1,14 @@
 package encore.account
 
-import encore.datastore.collection.PlayerAccount
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserAccount
+import encore.datastore.collection.UserId
 import encore.account.model.Credentials
 import encore.account.model.Profile
 
 /**
- * Repository for [PlayerAccount] core collection.
+ * Repository for [UserAccount] core collection.
  *
- * Implementation should abstract the data access to player accounts.
+ * Implementation should abstract the data access to user accounts.
  * For instance:
  * - Mongo implementation provides query and update APIs from the
  *   underlying `MongoCollection`.
@@ -21,37 +21,37 @@ import encore.account.model.Profile
  */
 interface AccountRepository {
     /**
-     * Returns [PlayerAccount] associated with the given [username], if it exists.
+     * Returns [UserAccount] associated with the given [username], if it exists.
      *
      * Returns [Result.success] with:
-     * - the [PlayerAccount] if found
+     * - the [UserAccount] if found
      * - `null` if no account exists for the given [username]
      *
      * Returns [Result.failure] if an error occurs while retrieving the data.
      */
-    suspend fun getAccountByUsername(username: String): Result<PlayerAccount?>
+    suspend fun getAccountByUsername(username: String): Result<UserAccount?>
 
     /**
-     * Returns [PlayerId] associated with the given [username], if it exists.
+     * Returns [UserId] associated with the given [username], if it exists.
      *
      * Returns [Result.success] with:
-     * - the [PlayerId] if found
+     * - the [UserId] if found
      * - `null` if no account exists for the given [username]
      *
      * Returns [Result.failure] if an error occurs while retrieving the data.
      */
-    suspend fun getPlayerIdByUsername(username: String): Result<PlayerId?>
+    suspend fun getUserIdByUsername(username: String): Result<UserId?>
 
     /**
-     * Returns [Profile] associated with the given [playerId], if it exists.
+     * Returns [Profile] associated with the given [userId], if it exists.
      *
      * Returns [Result.success] with:
      * - the [Profile] if found
-     * - `null` if no account exists for the given [playerId]
+     * - `null` if no account exists for the given [userId]
      *
      * Returns [Result.failure] if an error occurs while retrieving the data.
      */
-    suspend fun getProfile(playerId: PlayerId): Result<Profile?>
+    suspend fun getProfile(userId: UserId): Result<Profile?>
 
     /**
      * Returns the [Credentials] of the provided [username], if the account exists.
@@ -59,22 +59,22 @@ interface AccountRepository {
     suspend fun getCredentials(username: String): Result<Credentials?>
 
     /**
-     * Update [PlayerAccount] of [playerId] with the new [account].
+     * Update [UserAccount] of [userId] with the new [account].
      * @return [Result] type denoting success or failure.
      */
-    suspend fun updatePlayerAccount(playerId: PlayerId, account: PlayerAccount): Result<Unit>
+    suspend fun updateUserAccount(userId: UserId, account: UserAccount): Result<Unit>
 
     /**
-     * Update [Profile] of [playerId] with the new [profile].
+     * Update [Profile] of [userId] with the new [profile].
      * @return [Result] type denoting success or failure.
      */
-    suspend fun updateProfile(playerId: PlayerId, profile: Profile): Result<Unit>
+    suspend fun updateProfile(userId: UserId, profile: Profile): Result<Unit>
 
     /**
-     * Update [Profile.lastActiveAt] of [playerId] with [lastActivity].
+     * Update [Profile.lastActiveAt] of [userId] with [lastActivity].
      * @return [Result] type denoting success or failure.
      */
-    suspend fun updateLastActivity(playerId: PlayerId, lastActivity: Long): Result<Unit>
+    suspend fun updateLastActivity(userId: UserId, lastActivity: Long): Result<Unit>
 
     /**
      * Returns whether the provided [username] already exists.

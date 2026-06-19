@@ -42,7 +42,7 @@ import encore.fancam.Tags
  * the [checkSuspend] should be used instead.
  *
  * @param title Descriptive name of this screening (e.g., "BuildingCreate")
- * @param target Logical target of this screening (e.g., `playerId`, `username`)
+ * @param target Logical target of this screening (e.g., `userId`, `username`)
  */
 class Screening(
     private val title: String,

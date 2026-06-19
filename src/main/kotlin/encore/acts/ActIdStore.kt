@@ -8,8 +8,8 @@ package encore.acts
  * fields of the corresponding [ActConcept].
  *
  * Common examples include:
- * - `"playerId-buildingId"`
- * - `"playerId-upgradeType"`
+ * - `"userId-buildingId"`
+ * - `"userId-upgradeType"`
  *
  * Usage:
  * - [bind] and [unbind] to associate an identity with an `actId`.

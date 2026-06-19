@@ -1,18 +1,18 @@
 package encore.presence
 
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserId
 
 /**
- * Represents the current presence status of a player.
+ * Represents the current presence status of a user.
  *
- * @property playerId Unique identifier of the player.
+ * @property userId Unique identifier of the user.
  * @property onlineSince The timestamp (in milliseconds since epoch)
- *                       when the player came online.
+ *                       when the user came online.
  * @property lastNetworkActivity The timestamp (in milliseconds since epoch)
- *                               of the player's most recent network activity.
+ *                               of the user's most recent network activity.
  */
-data class PlayerPresence(
-    val playerId: PlayerId,
+data class UserPresence(
+    val userId: UserId,
     val onlineSince: Long,
     @Volatile
     var lastNetworkActivity: Long

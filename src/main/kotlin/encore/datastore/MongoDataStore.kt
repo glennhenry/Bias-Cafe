@@ -3,8 +3,8 @@ package encore.datastore
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Indexes
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import encore.datastore.collection.PlayerAccount
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserAccount
+import encore.datastore.collection.UserId
 import encore.datastore.collection.ServerObjects
 import encore.fancam.Fancam
 import encore.fancam.Tags
@@ -18,7 +18,7 @@ import kotlin.time.measureTime
  * Encompasses the name of mongo database collection for the 4 base collections.
  */
 data class MongoCollectionName(
-    val playerAccount: String,
+    val userAccount: String,
     val serverObjects: String
 )
 
@@ -31,7 +31,7 @@ data class MongoCollectionName(
  * to reduce domain modelling decision and to keep implementation faster to write.
  */
 class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : DataStore {
-    private val accounts = db.getCollection<PlayerAccount>(collectionName.playerAccount)
+    private val accounts = db.getCollection<UserAccount>(collectionName.userAccount)
     private val serverObjects = db.getCollection<ServerObjects>(collectionName.serverObjects)
 
     private val initJob = CoroutineScope(Dispatchers.IO).async { setupCollections() }
@@ -74,12 +74,12 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
         }
     }
 
-    override suspend fun playerExists(playerId: PlayerId): Boolean {
-        return accounts.find(Filters.eq(FieldPlayerId, playerId)).firstOrNull() != null
+    override suspend fun userExists(userId: UserId): Boolean {
+        return accounts.find(Filters.eq(FieldUserId, userId)).firstOrNull() != null
     }
 
-    override suspend fun getPlayerAccount(playerId: PlayerId): PlayerAccount? {
-        return accounts.find(Filters.eq(FieldPlayerId, playerId)).firstOrNull()
+    override suspend fun getUserAccount(userId: UserId): UserAccount? {
+        return accounts.find(Filters.eq(FieldUserId, userId)).firstOrNull()
     }
 
     override suspend fun getServerObjects(): ServerObjects {
@@ -88,7 +88,7 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
     }
 
     override suspend fun create(
-        account: PlayerAccount,
+        account: UserAccount,
     ): Result<Unit> {
         return try {
             val accountAck = accounts.insertOne(account).wasAcknowledged()
@@ -97,30 +97,30 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
                 Result.success(Unit)
             } else {
                 Fancam.error(tag = Tags.Datastore) {
-                    "MongoDB creation not acknowledged: playerId=${account.playerId}, accountAck=$accountAck"
+                    "MongoDB creation not acknowledged: userId=${account.userId}, accountAck=$accountAck"
                 }
                 Result.failure(
                     IllegalStateException("MongoDB insert not acknowledged")
                 )
             }
         } catch (e: Exception) {
-            Fancam.error(e, Tags.Datastore) { "MongoDB creation failed: playerId=${account.playerId}" }
+            Fancam.error(e, Tags.Datastore) { "MongoDB creation failed: userId=${account.userId}" }
             Result.failure(e)
         }
     }
 
-    override suspend fun delete(playerId: PlayerId): Result<Unit> {
+    override suspend fun delete(userId: UserId): Result<Unit> {
         return try {
-            val accountAck = accounts.deleteOne(Filters.eq(FieldPlayerId, playerId)).wasAcknowledged()
+            val accountAck = accounts.deleteOne(Filters.eq(FieldUserId, userId)).wasAcknowledged()
 
             if (accountAck) {
                 Result.success(Unit)
             } else {
-                Fancam.error(tag = Tags.Datastore) { "MongoDB deletion not acknowledged: playerId=$playerId, accountAck=$accountAck" }
+                Fancam.error(tag = Tags.Datastore) { "MongoDB deletion not acknowledged: userId=$userId, accountAck=$accountAck" }
                 Result.failure(IllegalStateException("MongoDB deletion not acknowledged"))
             }
         } catch (e: Exception) {
-            Fancam.error(e, Tags.Datastore) { "MongoDB deletion failed: playerId=$playerId" }
+            Fancam.error(e, Tags.Datastore) { "MongoDB deletion failed: userId=$userId" }
             Result.failure(e)
         }
     }

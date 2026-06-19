@@ -1,13 +1,13 @@
 package encore.subunit.scope
 
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserId
 
 /**
- * A player-scoped context.
+ * A user-scoped context.
  *
- * Subunits using this scope operate on a single player's domain.
- * They may use [playerId] to retrieve and persist player-specific data.
+ * Subunits using this scope operate on a single user's domain.
+ * They may use [userId] to retrieve and persist user-specific data.
  *
- * @property playerId Player ID associated with this scope.
+ * @property userId User ID associated with this scope.
  */
-data class PlayerScope(val playerId: PlayerId) : SubunitScope
+data class UserScope(val userId: UserId) : SubunitScope

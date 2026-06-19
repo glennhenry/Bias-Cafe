@@ -47,7 +47,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * In other circumstances:
  * - call [StageAct.onCancelled] whenever the act is stopped via [stop],
  *   which may happen manually or from conditions like process shutdown,
- *   player disconnect, etc.
+ *   user disconnect, etc.
  * - call [StageAct.onError] whenever any error was thrown throughout its
  *   lifecycle or logic.
  *
@@ -100,7 +100,7 @@ import kotlin.time.Duration.Companion.milliseconds
  * - storing remaining duration
  * - marking finished state
  *
- * During player's reconnection or application recovery, the application may:
+ * During user's reconnection or application recovery, the application may:
  * - load the persisted progress data,
  * - reconstruct the corresponding act instance, and
  * - re-run the act with the updated scheduling logic.

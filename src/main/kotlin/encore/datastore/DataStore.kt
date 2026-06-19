@@ -1,19 +1,19 @@
 package encore.datastore
 
-import encore.datastore.collection.PlayerAccount
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserAccount
+import encore.datastore.collection.UserId
 import encore.datastore.collection.ServerObjects
 
 /**
- * A suspendable persistence component that provides access to player and server data.
+ * A suspendable persistence component that provides access to user and server data.
  *
  * The data is separated into four core collections:
- * - [PlayerAccount]: player's account data.
+ * - [UserAccount]: user's account data.
  * - [ServerObjects]: server's operational or game data.
  *
- * Implementation exposes way to retrieve the core collections and player creation.
+ * Implementation exposes way to retrieve the core collections and user creation.
  *
- * Higher-level operations such as player creation or alteration of certain player
+ * Higher-level operations such as user creation or alteration of certain user
  * or server objects fields should be handled by subunits separately per-domain.
  */
 interface DataStore {
@@ -26,14 +26,14 @@ interface DataStore {
     suspend fun awaitInit()
 
     /**
-     * Returns whether an account associated with [playerId] exists.
+     * Returns whether an account associated with [userId] exists.
      */
-    suspend fun playerExists(playerId: PlayerId): Boolean
+    suspend fun userExists(userId: UserId): Boolean
 
     /**
-     * Returns the [PlayerAccount] for the given [playerId].
+     * Returns the [UserAccount] for the given [userId].
      */
-    suspend fun getPlayerAccount(playerId: PlayerId): PlayerAccount?
+    suspend fun getUserAccount(userId: UserId): UserAccount?
 
     /**
      * Returns the [ServerObjects] (global server data).
@@ -41,18 +41,18 @@ interface DataStore {
     suspend fun getServerObjects(): ServerObjects?
 
     /**
-     * Creates a new player with the given account and objects.
+     * Creates a new user with the given account and objects.
      *
      * @return [Result] type denoting success or failure.
      */
     suspend fun create(
-        account: PlayerAccount,
+        account: UserAccount,
     ): Result<Unit>
 
     /**
-     * Deletes a player associated with the [playerId].
+     * Deletes a user associated with the [userId].
      */
-    suspend fun delete(playerId: PlayerId): Result<Unit>
+    suspend fun delete(userId: UserId): Result<Unit>
 
     /**
      * Shutdown the data store.

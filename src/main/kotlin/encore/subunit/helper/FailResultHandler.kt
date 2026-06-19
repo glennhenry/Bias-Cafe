@@ -21,8 +21,8 @@ import encore.fancam.Tags
  * ```
  * result.onFailure {
  *     it.handleGet(
- *         notFoundMessage = { "Items not found for player $playerId" },
- *         unknownMessage  = { "Failed to fetch items for player $playerId" }
+ *         notFoundMessage = { "Items not found for user $userId" },
+ *         unknownMessage  = { "Failed to fetch items for user $userId" }
  *     )
  * }
  * ```
@@ -50,9 +50,9 @@ inline fun Throwable.failHandleGet(
  * ```
  * result.onFailure {
  *     it.handleGet(
- *         notFoundMessage = { "Items not found for player $playerId" },
- *         notUpdatedMessage = { "Failed to update role for player $playerId" },
- *         unknownMessage  = { "Failed to fetch items for player $playerId" }
+ *         notFoundMessage = { "Items not found for user $userId" },
+ *         notUpdatedMessage = { "Failed to update role for user $userId" },
+ *         unknownMessage  = { "Failed to fetch items for user $userId" }
  *     )
  * }
  * ```

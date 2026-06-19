@@ -1,22 +1,22 @@
 package encore.account.model
 
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserId
 import kotlinx.serialization.Serializable
 
 /**
- * Player profile information.
+ * User profile information.
  *
- * `Profile` contains the player's personal information in the server
+ * `Profile` contains the user's personal information in the server
  * such as country, avatar, locale, etc. It does not include game-specific
- * information like player's ranking or status.
+ * information like user's ranking or status.
  *
- * @property playerId Unique identifier of the player.
+ * @property userId Unique identifier of the user.
  * @property createdAt Epoch millis of the account creation date.
  * @property lastActiveAt Epoch millis of the account last activity.
  */
 @Serializable
 data class Profile(
-    val playerId: PlayerId,
+    val userId: UserId,
     val createdAt: Long,
     val lastActiveAt: Long,
 )

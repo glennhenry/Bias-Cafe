@@ -12,7 +12,7 @@ sealed class CommandResult(val message: String = "") {
     }
 
     /**
-     * Command failed during execution due to a logical or domain error (e.g., player not found, invalid item).
+     * Command failed during execution due to a logical or domain error (e.g., user not found, invalid item).
      */
     class ExecutionFailure(message: String) : CommandResult(message) {
         override fun toString(): String = "ExecutionFailure: $message"

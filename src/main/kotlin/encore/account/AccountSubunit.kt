@@ -3,8 +3,8 @@ package encore.account
 import encore.account.model.Credentials
 import encore.account.model.Profile
 import encore.auth.AuthSubunit
-import encore.datastore.collection.PlayerAccount
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserAccount
+import encore.datastore.collection.UserId
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.subunit.Subunit
@@ -15,7 +15,7 @@ import encore.utils.types.toOutcome
 import encore.utils.types.toReport
 
 /**
- * Server subunits that handles [PlayerAccount] concerns from [AccountRepository].
+ * Server subunits that handles [UserAccount] concerns from [AccountRepository].
  *
  * This subunit focuses on abstracting low-level API of `AccountRepository`.
  * Every operations here return a [Report] or [Outcome] type. It doesn't interpret
@@ -26,12 +26,12 @@ import encore.utils.types.toReport
  */
 class AccountSubunit(private val accountRepository: AccountRepository) : Subunit<ServerScope> {
     /**
-     * Returns an [Outcome] containing [PlayerAccount] associated with [username].
+     * Returns an [Outcome] containing [UserAccount] associated with [username].
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with `null` if account does not exist.
      * - [Outcome.Ok] with the account otherwise.
      */
-    suspend fun getAccountByUsername(username: String): Outcome<PlayerAccount?> {
+    suspend fun getAccountByUsername(username: String): Outcome<UserAccount?> {
         return accountRepository.getAccountByUsername(username)
             .onFailure {
                 Fancam.error(it, Tags.Account) {
@@ -42,32 +42,32 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
     }
 
     /**
-     * Returns an [Outcome] containing [PlayerId] associated with [username].
+     * Returns an [Outcome] containing [UserId] associated with [username].
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with `null` if account does not exist.
-     * - [Outcome.Ok] with the `playerId` otherwise.
+     * - [Outcome.Ok] with the `userId` otherwise.
      */
-    suspend fun getPlayerIdByUsername(username: String): Outcome<PlayerId?> {
-        return accountRepository.getPlayerIdByUsername(username)
+    suspend fun getUserIdByUsername(username: String): Outcome<UserId?> {
+        return accountRepository.getUserIdByUsername(username)
             .onFailure {
                 Fancam.error(it, Tags.Account) {
-                    "getPlayerIdByUsername failed: repository scandal for '$username'"
+                    "getUserIdByUsername failed: repository scandal for '$username'"
                 }
             }
-            .toOutcome { playerId -> return Outcome.Ok(playerId) }
+            .toOutcome { userId -> return Outcome.Ok(userId) }
     }
 
     /**
-     * Returns an [Outcome] containing [Profile] associated with [playerId].
+     * Returns an [Outcome] containing [Profile] associated with [userId].
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with `null` if account does not exist.
      * - [Outcome.Ok] with the `profile` otherwise.
      */
-    suspend fun getProfile(playerId: PlayerId): Outcome<Profile?> {
-        return accountRepository.getProfile(playerId)
+    suspend fun getProfile(userId: UserId): Outcome<Profile?> {
+        return accountRepository.getProfile(userId)
             .onFailure {
                 Fancam.error(it, Tags.Account) {
-                    "getProfile failed: repository scandal for '$playerId'"
+                    "getProfile failed: repository scandal for '$userId'"
                 }
             }
             .toOutcome { profile -> return Outcome.Ok(profile) }
@@ -92,14 +92,14 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
     }
 
     /**
-     * Update [PlayerAccount] of [playerId].
+     * Update [UserAccount] of [userId].
      * @return [Report] type denoting success or failure.
      */
-    suspend fun updatePlayerAccount(playerId: PlayerId, account: PlayerAccount): Report {
-        return accountRepository.updatePlayerAccount(playerId, account)
+    suspend fun updateUserAccount(userId: UserId, account: UserAccount): Report {
+        return accountRepository.updateUserAccount(userId, account)
             .onFailure {
                 Fancam.error(it, Tags.Account) {
-                    "updatePlayerAccount failed: repository scandal for '$playerId' on update with $account"
+                    "updateUserAccount failed: repository scandal for '$userId' on update with $account"
                 }
                 return Report.Fail
             }
@@ -107,14 +107,14 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
     }
 
     /**
-     * Update [PlayerAccount] of [playerId].
+     * Update [UserAccount] of [userId].
      * @return [Report] type denoting success or failure.
      */
-    suspend fun updateProfile(playerId: PlayerId, profile: Profile): Report {
-        return accountRepository.updateProfile(playerId, profile)
+    suspend fun updateProfile(userId: UserId, profile: Profile): Report {
+        return accountRepository.updateProfile(userId, profile)
             .onFailure {
                 Fancam.error(it, Tags.Account) {
-                    "updateProfile failed: repository scandal for '$playerId' on update with $profile"
+                    "updateProfile failed: repository scandal for '$userId' on update with $profile"
                 }
                 return Report.Fail
             }
@@ -122,14 +122,14 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
     }
 
     /**
-     * Update the last activity of [playerId].
+     * Update the last activity of [userId].
      * @return [Report] type denoting success or failure.
      */
-    suspend fun updateLastActivity(playerId: PlayerId, lastActivity: Long): Report {
-        return accountRepository.updateLastActivity(playerId, lastActivity)
+    suspend fun updateLastActivity(userId: UserId, lastActivity: Long): Report {
+        return accountRepository.updateLastActivity(userId, lastActivity)
             .onFailure {
                 Fancam.error(it, Tags.Account) {
-                    "updateLastActivity failed: repository scandal for '$playerId', lastActivity=$lastActivity"
+                    "updateLastActivity failed: repository scandal for '$userId', lastActivity=$lastActivity"
                 }
             }
             .toReport()

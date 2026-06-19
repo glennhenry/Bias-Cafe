@@ -1,7 +1,7 @@
 package encore.acts
 
 import encore.acts.choreo.BasicChoreography
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserId
 
 /**
  * Marker interface representing the input for a stage act.
@@ -9,8 +9,8 @@ import encore.datastore.collection.PlayerId
  * An `ActConcept` encapsulates all data required to execute a [StageAct].
  * This includes both static and runtime data, but excludes external dependencies.
  *
- * For instance, a building construction task for a player may include:
- * - [PlayerId] of the player
+ * For instance, a building construction task for a user may include:
+ * - [UserId] of the user
  * - `buildingId` identifiying the building being constructed.
  * - `finishAt` defining when the construction would finish, which is also used
  *   to determine the act's delay in [BasicChoreography].

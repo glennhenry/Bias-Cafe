@@ -4,15 +4,15 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.DocumentNotFoundException
-import encore.datastore.FieldPlayerId
-import encore.datastore.collection.PlayerId
+import encore.datastore.FieldUserId
+import encore.datastore.collection.UserId
 import encore.datastore.runMongoCatching
 import encore.datastore.throwIfNotModified
 import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.helper.failHandleGet
 import encore.subunit.helper.failHandleUpdate
-import encore.subunit.scope.PlayerScope
+import encore.subunit.scope.UserScope
 import encore.utils.types.Outcome
 import encore.utils.types.Report
 import encore.utils.types.isOk
@@ -47,14 +47,14 @@ class ExampleSubunitTest {
      */
     @Test
     fun testSubunits() = runTest {
-        val mockRepo = object : PlayerRepository {
-            override suspend fun getHealth(playerId: PlayerId) = Result.success(10)
-            override suspend fun getItems(playerId: PlayerId) = Result.success(listOf("s3", "s4"))
-            override suspend fun updateHealth(playerId: PlayerId, newHealth: Int) = Result.success(Unit)
-            override suspend fun updateItems(playerId: PlayerId, newItems: List<String>) = TODO()
+        val mockRepo = object : UserRepository {
+            override suspend fun getHealth(userId: UserId) = Result.success(10)
+            override suspend fun getItems(userId: UserId) = Result.success(listOf("s3", "s4"))
+            override suspend fun updateHealth(userId: UserId, newHealth: Int) = Result.success(Unit)
+            override suspend fun updateItems(userId: UserId, newItems: List<String>) = TODO()
         }
 
-        val subunit = PlayerSubunit(mockRepo).also { it.debut(PlayerScope("pid123")) }
+        val subunit = UserSubunit(mockRepo).also { it.debut(UserScope("pid123")) }
 
         // ex. get methods work correctly (in complex scenario, this may involve processing)
         assertEquals(10, subunit.getHealth())
@@ -74,23 +74,23 @@ class ExampleSubunitTest {
         val db = initMongo()
 
         // reset collection
-        val collection = db.getCollection<PlayerModel>("ex_subunit_col")
+        val collection = db.getCollection<UserModel>("ex_subunit_col")
         collection.drop()
         db.createCollection("ex_subunit_col")
 
         // insert base data
-        val baseData = PlayerModel(
-            playerId = "pid123",
+        val baseData = UserModel(
+            userId = "pid123",
             health = 42,
             items = listOf("a", "b", "c")
         )
         collection.insertOne(baseData)
 
-        val repo = MongoPlayerRepository(collection)
-        val subunit = PlayerSubunit(repo).also { it.debut(PlayerScope("pid123")) }
+        val repo = MongoUserRepository(collection)
+        val subunit = UserSubunit(repo).also { it.debut(UserScope("pid123")) }
 
         // ex. ensure initialization
-        val result = subunit.debut(PlayerScope("pid123"))
+        val result = subunit.debut(UserScope("pid123"))
         assert(result.isSuccess)
 
         // ex. ensure get
@@ -112,14 +112,14 @@ class ExampleSubunitTest {
 /**
  * Example of a domain model
  */
-data class PlayerModel(
-    val playerId: PlayerId,
+data class UserModel(
+    val userId: UserId,
     val health: Int,
     val items: List<String>
 )
 
 /**
- * Example of a repository handling PlayerModel.
+ * Example of a repository handling UserModel.
  *
  * Practically though, a repository should handle a single concern (e.g., ItemsRepository)
  * rather than aggregate (unless they are deeply related).
@@ -129,11 +129,11 @@ data class PlayerModel(
  * Each operation should return a value wrapped in a result type.
  * A `Result<Unit>` can be used when it doesn't have a return type.
  */
-interface PlayerRepository {
-    suspend fun getHealth(playerId: PlayerId): Result<Int>
-    suspend fun getItems(playerId: PlayerId): Result<List<String>>
-    suspend fun updateHealth(playerId: PlayerId, newHealth: Int): Result<Unit>
-    suspend fun updateItems(playerId: PlayerId, newItems: List<String>): Result<Unit>
+interface UserRepository {
+    suspend fun getHealth(userId: UserId): Result<Int>
+    suspend fun getItems(userId: UserId): Result<List<String>>
+    suspend fun updateHealth(userId: UserId, newHealth: Int): Result<Unit>
+    suspend fun updateItems(userId: UserId, newItems: List<String>): Result<Unit>
 }
 
 /**
@@ -167,58 +167,58 @@ interface PlayerRepository {
  *
  * Error would be propagated to the subunit layer where detailed domain
  * logging should be done. This makes error shows up like:
- * - Suppose that the `items` for playerABC does not exist.
+ * - Suppose that the `items` for userABC does not exist.
  * - By using `runMongoCatching`, getting a `null` data will throw [DocumentNotFoundException]
  *   which has a default message of "Expected document not exist".
  * - The exception will be wrapped in a [Result.failure].
  * - The result is passed to the subunit layer.
  * - Subunit checks whether the result fails and handles accordingly.
- * - It may log something like "Items not found for playerABC".
+ * - It may log something like "Items not found for userABC".
  *
  * This results in clear separation and no duplicate error logging.
  */
-class MongoPlayerRepository(val data: MongoCollection<PlayerModel>) : PlayerRepository {
-    override suspend fun getHealth(playerId: PlayerId): Result<Int> {
+class MongoUserRepository(val data: MongoCollection<UserModel>) : UserRepository {
+    override suspend fun getHealth(userId: UserId): Result<Int> {
         return runMongoCatching {
-            val filter = Filters.eq(FieldPlayerId, playerId)
+            val filter = Filters.eq(FieldUserId, userId)
             data.find(filter)
                 .firstOrNull()
                 ?.health
         }
     }
 
-    override suspend fun getItems(playerId: PlayerId): Result<List<String>> {
+    override suspend fun getItems(userId: UserId): Result<List<String>> {
         return runMongoCatching {
-            val filter = Filters.eq(FieldPlayerId, playerId)
+            val filter = Filters.eq(FieldUserId, userId)
             data.find(filter)
                 .firstOrNull()
                 ?.items
         }
     }
 
-    override suspend fun updateHealth(playerId: PlayerId, newHealth: Int): Result<Unit> {
+    override suspend fun updateHealth(userId: UserId, newHealth: Int): Result<Unit> {
         return runMongoCatching {
-            val filter = Filters.eq(FieldPlayerId, playerId)
+            val filter = Filters.eq(FieldUserId, userId)
             val update = Updates.set("health", newHealth)
 
             data.updateOne(filter, update)
-                .throwIfNotModified(playerId)
+                .throwIfNotModified(userId)
         }
     }
 
-    override suspend fun updateItems(playerId: PlayerId, newItems: List<String>): Result<Unit> {
+    override suspend fun updateItems(userId: UserId, newItems: List<String>): Result<Unit> {
         return runMongoCatching {
-            val filter = Filters.eq(FieldPlayerId, playerId)
+            val filter = Filters.eq(FieldUserId, userId)
             val update = Updates.set("items", newItems)
 
             data.updateOne(filter, update)
-                .throwIfNotModified(playerId)
+                .throwIfNotModified(userId)
         }
     }
 }
 
 /**
- * Example of a subunit scoped to a player that carries [PlayerRepository].
+ * Example of a subunit scoped to a user that carries [UserRepository].
  * Acts as a domain-level abstraction for higher-level components such as message handlers.
  *
  * **Note: Example here tries to introduces strictness. Actual code may slightly lower
@@ -231,14 +231,14 @@ class MongoPlayerRepository(val data: MongoCollection<PlayerModel>) : PlayerRepo
  *
  * All fields are initially `null` or empty collections and are populated in [debut].
  * Initialization failures are logged immediately but do not interrupt the subunit
- * or the player's connection (fail-late).
+ * or the user's connection (fail-late).
  *
  * Accessing data that failed to initialize or is missing will fail fast at the usage site.
  * Depending on the context, handlers may require these values to be present or handle
  * their absence gently.
  *
  * Example: [items] is essential for the session. If it fails to load during initialization,
- * the error is logged, but the player's session continues. When [items] is later required,
+ * the error is logged, but the user's session continues. When [items] is later required,
  * the handler may fail the operation (e.g., by throwing [error] inside the `get` methods
  * or via a `requireNotNull`-style check in handler).
  * In cases where the value is optional, the handler may instead provide a fallback.
@@ -284,16 +284,16 @@ class MongoPlayerRepository(val data: MongoCollection<PlayerModel>) : PlayerRepo
  *
  * ```
  * // request remain unhandled
- * val items = playerSubunit.getItems().ifEmptyNull ?: return
+ * val items = userSubunit.getItems().ifEmptyNull ?: return
  *
  * // runtime error thrown by subunit
- * val health = playerSubunit.getHealth()
+ * val health = userSubunit.getHealth()
  *
  * // alternatively, subunit returns nullable value and handler throws
- * val health = requireNotNull(playerSubunit.getHealth()) { "Health is null" }
+ * val health = requireNotNull(userSubunit.getHealth()) { "Health is null" }
  *
  * // handling of outcome
- * val health = playerSubunit.getHealth()
+ * val health = userSubunit.getHealth()
  * val response: Response = subunit.getItems().fold(
  *     onOk = { newHp -> ResponseSuccess("HP reduced now: $newHp") },
  *     onFail = {
@@ -304,8 +304,8 @@ class MongoPlayerRepository(val data: MongoCollection<PlayerModel>) : PlayerRepo
  * connection.send(response)
  * ```
  */
-class PlayerSubunit(private val playerRepository: PlayerRepository) : Subunit<PlayerScope> {
-    private lateinit var playerId: PlayerId
+class UserSubunit(private val userRepository: UserRepository) : Subunit<UserScope> {
+    private lateinit var userId: UserId
     private var health: Int? = null
     private var items = mutableListOf<String>()
 
@@ -318,7 +318,7 @@ class PlayerSubunit(private val playerRepository: PlayerRepository) : Subunit<Pl
     // returns Outcome, cares whether the operation succeed or fails, but also need value
     suspend fun reduceHealth(reduceBy: Int): Outcome<Int> {
         val newHealth = getHealth() - reduceBy
-        val result = playerRepository.updateHealth(playerId, newHealth)
+        val result = userRepository.updateHealth(userId, newHealth)
 
         return result
             .onSuccess {
@@ -337,7 +337,7 @@ class PlayerSubunit(private val playerRepository: PlayerRepository) : Subunit<Pl
 
     // returns Report, only cares whether the operation succeed or fails
     suspend fun updateAllItems(newItems: List<String>): Report {
-        val result = playerRepository.updateItems(playerId, newItems)
+        val result = userRepository.updateItems(userId, newItems)
 
         return result
             .onSuccess {
@@ -349,17 +349,17 @@ class PlayerSubunit(private val playerRepository: PlayerRepository) : Subunit<Pl
             .toReport()
     }
 
-    override suspend fun debut(scope: PlayerScope): Result<Unit> {
+    override suspend fun debut(scope: UserScope): Result<Unit> {
         return runCatching {
-            this.playerId = scope.playerId
-            playerRepository.getHealth(scope.playerId)
+            this.userId = scope.userId
+            userRepository.getHealth(scope.userId)
                 .onSuccess { this.health = it }
                 .onFailure { it.failHandleGet() }
-            playerRepository.getItems(scope.playerId)
+            userRepository.getItems(scope.userId)
                 .onSuccess { this.items.addAll(it) }
                 .onFailure { it.failHandleGet() }
         }
     }
 
-    override suspend fun disband(scope: PlayerScope): Result<Unit> = Result.success(Unit)
+    override suspend fun disband(scope: UserScope): Result<Unit> = Result.success(Unit)
 }

@@ -1,6 +1,6 @@
 package encore.acts
 
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserId
 import encore.datastore.collection.ServerId
 import kotlinx.coroutines.CoroutineScope
 
@@ -8,9 +8,9 @@ import kotlinx.coroutines.CoroutineScope
  * Represent the scope to which a [StageAct] is bound to.
  *
  * A stage act is bound to an owner that determines its lifetime.
- * The owner can be a particular player or the server itself.
+ * The owner can be a particular user or the server itself.
  *
- * For example, if an act is bound to a player and their connection is dead,
+ * For example, if an act is bound to a user and their connection is dead,
  * the act will seen as invalid, and thus cancelled. This is determined
  * through the owner's [coroutineScope].
  */
@@ -20,7 +20,7 @@ data class ActScope(
      *
      * This is used for debugging and diagnostic purpose.
      *
-     * For player this should be [PlayerId].
+     * For user this should be [UserId].
      * Server-owned acts should use the [ServerId].
      */
     val ownerId: String,

@@ -32,11 +32,11 @@ class CommandParserTest {
         val req = CommandRequest(
             "give",
             buildArgCollection {
-                add("player_abc")
+                add("user_abc")
                 add("y")
             }
         )
-        assertEquals(req, parser.parse("give player_abc y"))
+        assertEquals(req, parser.parse("give user_abc y"))
     }
 
     @Test
@@ -44,12 +44,12 @@ class CommandParserTest {
         val req = CommandRequest(
             "give",
             buildArgCollection {
-                add("player-abc")
+                add("user-abc")
                 add("y_s")
                 add("-")
             }
         )
-        assertEquals(req, parser.parse("give player-abc y_s -"))
+        assertEquals(req, parser.parse("give user-abc y_s -"))
     }
 
     @Test
@@ -168,7 +168,7 @@ class CommandParserTest {
     @Test
     fun `testParser input contains invalid unicode character 1 fails`() {
         assertFailsWith<IllegalArgumentException> {
-            parser.parse("give playerㅧ y")
+            parser.parse("give userㅧ y")
         }
     }
 

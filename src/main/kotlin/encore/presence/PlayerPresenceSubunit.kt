@@ -1,6 +1,6 @@
 package encore.presence
 
-import encore.datastore.collection.PlayerId
+import encore.datastore.collection.UserId
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.subunit.Subunit
@@ -9,65 +9,65 @@ import encore.time.TimeCenter
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Server subunit for tracking players presence status.
+ * Server subunit for tracking users presence status.
  *
  * This is used for:
- * - Tracking player's activity such as whether they are online or offline.
- * - Get the last active time of a player.
+ * - Tracking user's activity such as whether they are online or offline.
+ * - Get the last active time of a user.
  *
- * Typically, player presence is determined from the network activity of the socket server.
+ * Typically, user presence is determined from the network activity of the socket server.
  */
-class PlayerPresenceSubunit : Subunit<ServerScope> {
-    private val onlinePlayers = ConcurrentHashMap<String, PlayerPresence>()
+class UserPresenceSubunit : Subunit<ServerScope> {
+    private val onlineUsers = ConcurrentHashMap<String, UserPresence>()
 
     /**
-     * Mark the [playerId] as online.
+     * Mark the [userId] as online.
      *
      * Does nothing if:
-     * - the player is already online
+     * - the user is already online
      */
-    fun markOnline(playerId: PlayerId) {
+    fun markOnline(userId: UserId) {
         val now = TimeCenter.now()
-        onlinePlayers[playerId] = PlayerPresence(
-            playerId = playerId,
+        onlineUsers[userId] = UserPresence(
+            userId = userId,
             onlineSince = now,
             lastNetworkActivity = now,
         )
-        Fancam.trace(Tags.Presence) { "PlayerId $playerId is now online" }
+        Fancam.trace(Tags.Presence) { "UserId $userId is now online" }
     }
 
     /**
-     * Mark the [playerId] as offline. Does nothing if the player is already offline.
+     * Mark the [userId] as offline. Does nothing if the user is already offline.
      */
-    fun markOffline(playerId: PlayerId) {
-        onlinePlayers.remove(playerId)
-        Fancam.trace(Tags.Presence) { "PlayerId $playerId is now offline" }
+    fun markOffline(userId: UserId) {
+        onlineUsers.remove(userId)
+        Fancam.trace(Tags.Presence) { "UserId $userId is now offline" }
     }
 
     /**
-     * Returns whether player with [playerId] is currently online.
+     * Returns whether user with [userId] is currently online.
      */
-    fun isOnline(playerId: PlayerId): Boolean {
-        return onlinePlayers.contains(playerId)
+    fun isOnline(userId: UserId): Boolean {
+        return onlineUsers.contains(userId)
     }
 
     /**
-     * Returns whether player with [playerId] is currently online.
+     * Returns whether user with [userId] is currently online.
      */
-    fun isOffline(playerId: PlayerId): Boolean {
-        return !onlinePlayers.contains(playerId)
+    fun isOffline(userId: UserId): Boolean {
+        return !onlineUsers.contains(userId)
     }
 
     /**
-     * Update the last network activity of [playerId]. Does nothing if the player is not online.
+     * Update the last network activity of [userId]. Does nothing if the user is not online.
      */
-    fun updateLastActivity(playerId: PlayerId) {
-        onlinePlayers[playerId]?.lastNetworkActivity = TimeCenter.now()
+    fun updateLastActivity(userId: UserId) {
+        onlineUsers[userId]?.lastNetworkActivity = TimeCenter.now()
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> = Result.success(Unit)
     override suspend fun disband(scope: ServerScope): Result<Unit> {
-        onlinePlayers.clear()
+        onlineUsers.clear()
         return Result.success(Unit)
     }
 }

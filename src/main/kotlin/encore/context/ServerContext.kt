@@ -3,8 +3,8 @@ package encore.context
 import encore.account.AccountRepository
 import encore.account.AccountSubunit
 import encore.account.BlankAccountRepository
-import encore.account.PlayerCreationSubunit
-import encore.presence.PlayerPresenceSubunit
+import encore.account.UserCreationSubunit
+import encore.presence.UserPresenceSubunit
 import encore.acts.ActIdStore
 import encore.acts.StageActDirector
 import encore.auth.AuthSubunit
@@ -47,7 +47,7 @@ data class ServerContext(
          *
          * @param parentScope `CoroutineScope` for [SessionSubunit].
          * @param timeSource [TimeSource] for [StageActDirector].
-         * @param dataStore Also used to build [PlayerCreationSubunit].
+         * @param dataStore Also used to build [UserCreationSubunit].
          * @param accountRepository Used to build [AccountSubunit].
          */
         fun createForTest(
@@ -58,7 +58,7 @@ data class ServerContext(
         ): ServerContext {
             val account = AccountSubunit(accountRepository)
             val session = SessionSubunit.createForTest(parentScope)
-            val creation = PlayerCreationSubunit.createForTest(dataStore)
+            val creation = UserCreationSubunit.createForTest(dataStore)
 
             return ServerContext(
                 dataStore = dataStore,
@@ -69,7 +69,7 @@ data class ServerContext(
                     account = account,
                     auth = AuthSubunit(account, creation, session),
                     creation = creation,
-                    presence = PlayerPresenceSubunit(),
+                    presence = UserPresenceSubunit(),
                     session = session
                 )
             )
@@ -88,22 +88,22 @@ data class ServerContext(
  *
  * Examples:
  * - An infra-related component providing session creation and verification.
- * - A leaderboard representing global state is not owned by any single player.
+ * - A leaderboard representing global state is not owned by any single user.
  *   A `LeaderboardSubunit` may expose operations to query or update rankings.
  * - A matchmaking system may not persist data, but can maintain in-memory
  *   state and provide matchmaking-specific functionality.
  *
  * @property account Provides API related to accounts.
  * @property auth Provides authentication functions.
- * @property creation Provides player creation mechanism.
- * @property presence Tracks player's presence.
- * @property session Manages session of players.
+ * @property creation Provides user creation mechanism.
+ * @property presence Tracks user's presence.
+ * @property session Manages session of users.
  */
 data class ServerSubunits(
     val account: AccountSubunit,
     val auth: AuthSubunit,
-    val creation: PlayerCreationSubunit,
-    val presence: PlayerPresenceSubunit,
+    val creation: UserCreationSubunit,
+    val presence: UserPresenceSubunit,
     val session: SessionSubunit,
 ) {
     /**

@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * Any simple print at various level with categorical info tag:
  * ```kotlin
  * const val SubunitTag = "Subunit"
- * const val MultipleTag = "Game,Player,Inventory"
+ * const val MultipleTag = "Game,User,Inventory"
  *
  * Fancam.warn(SubunitTag) { "Subunit x under problem." }
  * Fancam.warn(MultipleTag) { "Subunit x under problem." }
@@ -61,17 +61,17 @@ import java.util.concurrent.atomic.AtomicInteger
  * // recorded to default file `events.jsonl`, not logged
  * Fancam.track("SystemHealth")
  *       .data("heat", 12)
- *       .data("playerOnline", 100)
+ *       .data("userOnline", 100)
  *       .tags("system", "metric")
  *       .note { if (heat > 10) { "WARNING OVERHEAT" } else "" }
  *       .record()
  *
  * // recorded to `loots.jsonl`, logged with info level
- * Fancam.track("PlayerLoot")
- *       .playerId("pid123")
- *       .username("playerABC")
+ * Fancam.track("UserLoot")
+ *       .userId("pid123")
+ *       .username("userABC")
  *       .data("loot", "bread")
- *       .tags("player", "rng")
+ *       .tags("user", "rng")
  *       .route("loots")
  *       .record()
  *       .log(Level.Info, full = false)

@@ -11,7 +11,7 @@ import encore.fancam.Tags
  * Dispatch and execute server registered commands.
  *
  * Server commands offers the ability to control the server from command implementation.
- * It gives the possibility to modify server's behavior, such as modifying player's data.
+ * It gives the possibility to modify server's behavior, such as modifying user's data.
  *
  * The server accepts command from a simple text input in the external web devtools (backstage).
  *
@@ -19,7 +19,7 @@ import encore.fancam.Tags
  * - Implement [Command].
  * - Register the command with [register].
  * - Via the backstage, type the command with input arguments.
- * - Syntax typically looks like 'give playerABC water 100'.
+ * - Syntax typically looks like 'give userABC water 100'.
  *
  * See example in `test.backstage.CommandDispatcherTest`.
  */

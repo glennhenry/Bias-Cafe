@@ -24,7 +24,7 @@ import kotlin.time.Duration.Companion.minutes
 /**
  * Backstage routes (devtools). In the backstage, there are three sections of tools:
  *  - **Console**: live log from server.
- *  - **Monitor**: server status and activity from server (e.g., active players, server state, running task).
+ *  - **Monitor**: server status and activity from server (e.g., active users, server state, running task).
  *  - **Command**: external input to control server runtime.
  *
  * Authentication/usage flow:

@@ -6,7 +6,7 @@ import org.bson.Document
 const val BIAS_CAFE_TEST_DB_NAME = "BIAS_CAFE-test-DB"
 const val MONGO_TEST_URL = "mongodb://localhost:27017"
 val TestMongoCollectionName = MongoCollectionName(
-    playerAccount = "test_player_account",
+    userAccount = "test_user_account",
     serverObjects = "test_server_objects"
 )
 

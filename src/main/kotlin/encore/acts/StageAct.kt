@@ -7,12 +7,12 @@ import encore.acts.choreo.PerformMode
 /**
  * Represents a scheduled server-side task.
  *
- * A `StageAct` is a deferred execution bound to a runtime owner (e.g., a player or the server)
+ * A `StageAct` is a deferred execution bound to a runtime owner (e.g., a user or the server)
  * with a defined lifecycle. It takes an [ActConcept] as input for execution.
  *
  * Stage acts are typically used for time-based or repeated operations. For example,
  * a building construction that completes after 5 minutes can be modeled as a `StageAct`
- * with a 5 minutes delay, and will notify player of its completion inside [perform].
+ * with a 5 minutes delay, and will notify user of its completion inside [perform].
  *
  * Stage acts can be run via [StageActDirector].
  *

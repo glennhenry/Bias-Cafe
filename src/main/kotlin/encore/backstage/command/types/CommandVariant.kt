@@ -8,12 +8,12 @@ package encore.backstage.command.types
  * must have unique argument counts.
  *
  * Allowed:
- * - (playerId, itemId)
- * - (playerId, itemId, amount)
+ * - (userId, itemId)
+ * - (userId, itemId, amount)
  *
  * Not allowed:
- * - (playerId, itemId)
- * - (playerName, itemName)  // same length although different type → ambiguous
+ * - (userId, itemId)
+ * - (userName, itemName)  // same length although different type → ambiguous
  *
  * Variant with same argument length can fallback by making a new command (e.g., give and give-ext)
  *

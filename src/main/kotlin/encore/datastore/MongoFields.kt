@@ -2,7 +2,7 @@ package encore.datastore
 
 import com.mongodb.client.model.Filters
 import encore.account.model.Profile
-import encore.datastore.collection.PlayerAccount
+import encore.datastore.collection.UserAccount
 import encore.datastore.collection.ServerObjects
 import encore.datastore.collection.ServerObjectsId
 import org.bson.conversions.Bson
@@ -10,20 +10,20 @@ import org.bson.conversions.Bson
 // This file contains constants of Kotlin's data class fields' name
 // that is used in Mongo queries.
 
-/** `playerId`*/
-val FieldPlayerId = PlayerAccount::playerId.name
+/** `userId`*/
+val FieldUserId = UserAccount::userId.name
 
 /** `username`*/
-val FieldUsername = PlayerAccount::username.name
+val FieldUsername = UserAccount::username.name
 
 /** `email`*/
-val FieldEmail = PlayerAccount::email.name
+val FieldEmail = UserAccount::email.name
 
 /** `hashedPassword`*/
-val FieldPassword = PlayerAccount::hashedPassword.name
+val FieldPassword = UserAccount::hashedPassword.name
 
 /** `profile`*/
-val FieldProfile = PlayerAccount::profile.name
+val FieldProfile = UserAccount::profile.name
 
 /** `profile.lastActiveAt`*/
 val FieldProfileLastActive = "$FieldProfile.${Profile::lastActiveAt.name}"

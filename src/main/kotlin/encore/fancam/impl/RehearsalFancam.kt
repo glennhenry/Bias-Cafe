@@ -35,7 +35,7 @@ import java.text.SimpleDateFormat
  * [12:32:11.444][D] message
  *
  * // trackevent
- * [12:32:11.444][D] { playerId: "abc", username: "def" }
+ * [12:32:11.444][D] { userId: "abc", username: "def" }
  * ```
  */
 class RehearsalFancam : FancamTemplate {

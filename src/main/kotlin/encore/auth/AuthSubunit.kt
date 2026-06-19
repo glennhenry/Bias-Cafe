@@ -3,7 +3,7 @@ package encore.auth
 import com.toxicbakery.bcrypt.Bcrypt
 import encore.EncoreConfig
 import encore.account.AccountSubunit
-import encore.account.PlayerCreationSubunit
+import encore.account.UserCreationSubunit
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.session.SessionSubunit
@@ -21,12 +21,12 @@ import kotlin.io.encoding.Base64
  *
  * `AuthSubunit` requires other subunits:
  * - [AccountSubunit] to get account information for registration or login.
- * - [PlayerCreationSubunit] to create account during registration.
+ * - [UserCreationSubunit] to create account during registration.
  * - [SessionSubunit] to create session after successful registration or login.
  */
 class AuthSubunit(
     private val accountSubunit: AccountSubunit,
-    private val creationSubunit: PlayerCreationSubunit,
+    private val creationSubunit: UserCreationSubunit,
     private val sessionSubunit: SessionSubunit
 ) : Subunit<ServerScope> {
     /**
@@ -42,9 +42,9 @@ class AuthSubunit(
      */
     suspend fun register(username: String, password: String, email: String): Outcome<UserSession> {
         try {
-            val playerId = creationSubunit.createPlayer(username, password, email)
+            val userId = creationSubunit.createUser(username, password, email)
             Fancam.trace(Tags.Auth) { "Registered '$username' successfully" }
-            val session = sessionSubunit.create(playerId)
+            val session = sessionSubunit.create(userId)
             return Outcome.Ok(session)
         } catch (e: Throwable) {
             Fancam.error(e, Tags.Auth) { "Failed to register '$username'" }
@@ -63,7 +63,7 @@ class AuthSubunit(
      * Returns:
      * - [Outcome.Fail] if there is an internal repository error.
      * - [Outcome.Ok] with [LoginResult.AccountNotFound] if the associated
-     *   player account of [username] is not found.
+     *   user account of [username] is not found.
      * - [Outcome.Ok] with [LoginResult.InvalidCredentials] if the password
      *   does not match.
      * - Otherwise [Outcome.Ok] with [UserSession].
@@ -79,7 +79,7 @@ class AuthSubunit(
 
                 if (verifyPassword(password, credentials.hashedPassword)) {
                     Fancam.trace(Tags.Auth) { "Login success for '$username'" }
-                    val session = sessionSubunit.create(credentials.playerId)
+                    val session = sessionSubunit.create(credentials.userId)
                     Outcome.Ok(LoginResult.Success(session))
                 } else {
                     Fancam.trace(Tags.Auth) { "Login failed: wrong password for '$username'" }
@@ -202,12 +202,12 @@ class AuthSubunit(
          * Creates a test instance of [AuthSubunit].
          *
          * @param accountSubunit created via [AccountSubunit.createForTest].
-         * @param creationSubunit created via [PlayerCreationSubunit.createForTest].
+         * @param creationSubunit created via [UserCreationSubunit.createForTest].
          * @param sessionSubunit created via [SessionSubunit.createForTest].
          */
         fun createForTest(
             accountSubunit: AccountSubunit = AccountSubunit.createForTest(),
-            creationSubunit: PlayerCreationSubunit = PlayerCreationSubunit.createForTest(),
+            creationSubunit: UserCreationSubunit = UserCreationSubunit.createForTest(),
             sessionSubunit: SessionSubunit = SessionSubunit.createForTest()
         ): AuthSubunit {
             return AuthSubunit(accountSubunit, creationSubunit, sessionSubunit)

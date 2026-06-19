@@ -112,7 +112,7 @@ description: example
 │   │   ├── context/                # Dependency container
 │   │   ├── datastore/              # Persistence and database components
 │   │   ├── fancam/                 # Logging system
-│   │   ├── presence/               # Player activity and presence tracking
+│   │   ├── presence/               # User activity and presence tracking
 │   │   ├── route/                  # REST API system
 │   │   ├── security/               # Security components
 │   │   ├── serialization/          # Serialization utilities

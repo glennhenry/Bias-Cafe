@@ -24,18 +24,18 @@ class ExampleStageAct {
      * Simple example of testing a persistent act
      *  > Construct building for some amount of time
      *      > during onStart, progress is saved
-     *  > Player disconnects, act is cancelled
-     *  > Player reconnects, user check for saved progress manually
+     *  > User disconnects, act is cancelled
+     *  > User reconnects, user check for saved progress manually
      *      > If there is progress saved, that means act is not finished and must be finished
      *      > Read progress, produce updated timing data
      *  > Resume act with the updated data
-     *      > Turns out that the act is already finished whilst player is offline
+     *      > Turns out that the act is already finished whilst user is offline
      *      > Act will execute directly and finish the building construction
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `example running building construction act`() = runTest {
-        val pid = "playerABC"
+        val pid = "userABC"
         val bid = "outpost"
 
         val time = virtualTimeSource(this)
@@ -46,7 +46,7 @@ class ExampleStageAct {
         val id = director.run(
             act = BuildingConstructionAct(repo, time),
             concept = BuildingConstructionConcept(
-                playerId = pid,
+                userId = pid,
                 buildingId = bid,
                 buildDuration = 10.minutes,
                 output = Fancam,
@@ -54,7 +54,7 @@ class ExampleStageAct {
             scope = scope
         )
 
-        // 3 minutes pass, player disconnects and act is stopped
+        // 3 minutes pass, user disconnects and act is stopped
         director.runTimer(3.minutes, scope) {
             assertTrue(director.stop(id))
             advanceUntilIdle()
@@ -65,7 +65,7 @@ class ExampleStageAct {
             assertNull(repo.constructedBuildings.find { it == bid })
         }
 
-        // 8 minutes after, player comebacks when act should be finished
+        // 8 minutes after, user comebacks when act should be finished
         // time is continuous because building construction is supposed to be active
         advanceTimeBy(8.minutes)
 
@@ -81,7 +81,7 @@ class ExampleStageAct {
             director.runContinue(
                 act = BuildingConstructionAct(repo, time),
                 concept = BuildingConstructionConcept(
-                    playerId = pid,
+                    userId = pid,
                     buildingId = bid,
                     buildDuration = remaining.minutes,
                     output = Fancam,
@@ -93,7 +93,7 @@ class ExampleStageAct {
             director.performAndContinue(
                 act = BuildingConstructionAct(repo, time),
                 concept = BuildingConstructionConcept(
-                    playerId = pid,
+                    userId = pid,
                     buildingId = bid,
                     // this won't be used because act will finish immediately
                     buildDuration = 0.milliseconds,
@@ -137,7 +137,7 @@ class BuildingConstructionAct(
     }
 
     override suspend fun onStart(concept: BuildingConstructionConcept) {
-        // onStart notify player and save unfinished progress (to make resumpsion possible)
+        // onStart notify user and save unfinished progress (to make resumpsion possible)
         concept.output.info {
             "Started building construction which " +
                     "will end in ${concept.buildDuration.inWholeMinutes} minutes."
@@ -188,9 +188,9 @@ class BuildingConstructionAct(
 }
 
 data class BuildingConstructionConcept(
-    val playerId: String,
+    val userId: String,
     val buildingId: String,
     val buildDuration: Duration,
-    // this is like the player's connection to send game message
+    // this is like the user's connection to send game message
     val output: Fancam
 ) : ActConcept

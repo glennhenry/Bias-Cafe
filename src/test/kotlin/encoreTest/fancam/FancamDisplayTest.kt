@@ -80,7 +80,7 @@ class FancamDisplayTest {
         val fancam = OfficialFancam(EncoreFancamConfig())
         Fancam.initialize(fancam)
         Fancam.track("TrackEventTest")
-            .data("playerId", "pid12345")
+            .data("userId", "pid12345")
             .data("completeAt", 12345678)
             .data("Triple", Triple("s", "s", "s"))
             .data("Liz", listOf("Liz"))

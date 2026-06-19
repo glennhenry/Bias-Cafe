@@ -12,23 +12,23 @@ import kotlin.text.toIntOrNull
  * Example of how command can be implemented.
  *
  * In this case, a 'give' command where the server gives a
- * specific item to a particular player for an amount.
+ * specific item to a particular user for an amount.
  */
 class ExampleGiveCommand : Command {
     override val commandId: String = "give"
-    override val description: String = "Give a particular item of an amount to a specific player."
+    override val description: String = "Give a particular item of an amount to a specific user."
     override val variants = listOf(
-        // give playerId itemId
+        // give userId itemId
         CommandVariant(
             listOf(
-                ArgumentDescriptor("playerId", "String", "the target playerId"),
+                ArgumentDescriptor("userId", "String", "the target userId"),
                 ArgumentDescriptor("itemId", "String", "the ID of item to be given"),
             ),
         ),
-        // give playerId itemId 100
+        // give userId itemId 100
         CommandVariant(
             listOf(
-                ArgumentDescriptor("playerId", "String", "the target playerId"),
+                ArgumentDescriptor("userId", "String", "the target userId"),
                 ArgumentDescriptor("itemId", "String", "the ID of item to be given"),
                 ArgumentDescriptor("amount", "Int", "amount of item to be sent"),
             ),
@@ -39,7 +39,7 @@ class ExampleGiveCommand : Command {
      * amount = 2 simulates uncaught exception, amount = 3 simulates failure
      */
     override fun execute(serverContext: ServerContext, args: ArgumentCollection): CommandResult {
-        val playerId = args.next() ?: return CommandResult.NotEnoughArgument("playerId is required")
+        val userId = args.next() ?: return CommandResult.NotEnoughArgument("userId is required")
         val itemId = args.next() ?: return CommandResult.NotEnoughArgument("itemId is required")
 
         val expectedAmount = args.next()
@@ -53,6 +53,6 @@ class ExampleGiveCommand : Command {
         if (amount == 2) throw Exception()
         if (amount == 3) return CommandResult.ExecutionFailure("Failed to execute")
 
-        return CommandResult.Executed("Successfully give $amount $itemId to $playerId.")
+        return CommandResult.Executed("Successfully give $amount $itemId to $userId.")
     }
 }

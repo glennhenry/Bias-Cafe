@@ -5,7 +5,7 @@ import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.account.AccountSubunit
 import encore.account.MongoAccountRepository
-import encore.account.PlayerCreationSubunit
+import encore.account.UserCreationSubunit
 import encore.acts.ActIdStore
 import encore.acts.StageActDirector
 import encore.auth.AuthSubunit
@@ -14,7 +14,7 @@ import encore.context.ServerContext
 import encore.context.ServerSubunits
 import encore.datastore.MongoCollectionName
 import encore.datastore.MongoDataStore
-import encore.presence.PlayerPresenceSubunit
+import encore.presence.UserPresenceSubunit
 import encore.session.SessionSubunit
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
@@ -38,7 +38,7 @@ suspend fun createServerContext(
         collectionName = MongoCollectionName
     )
     val accountRepository = MongoAccountRepository(
-        accountCollection = mongoDatabase.getCollection(MongoCollectionName.playerAccount)
+        accountCollection = mongoDatabase.getCollection(MongoCollectionName.userAccount)
     )
     val stageActDirector = StageActDirector(
         timeSource = TimeCenter.source,
@@ -49,17 +49,17 @@ suspend fun createServerContext(
 
     // setup ServerSubunits
     val accountSubunit = AccountSubunit(accountRepository)
-    val playerPresenceSubunit = PlayerPresenceSubunit()
+    val userPresenceSubunit = UserPresenceSubunit()
     val sessionSubunit = SessionSubunit(appScope, TimeCenter.source)
-    val playerCreationSubunit = PlayerCreationSubunit(dataStore)
-    val authSubunit = AuthSubunit(accountSubunit, playerCreationSubunit, sessionSubunit)
+    val userCreationSubunit = UserCreationSubunit(dataStore)
+    val authSubunit = AuthSubunit(accountSubunit, userCreationSubunit, sessionSubunit)
 
     val subunits = ServerSubunits(
         account = accountSubunit,
-        presence = playerPresenceSubunit,
+        presence = userPresenceSubunit,
         auth = authSubunit,
         session = sessionSubunit,
-        creation = playerCreationSubunit
+        creation = userCreationSubunit
     )
 
     // debut all subunits

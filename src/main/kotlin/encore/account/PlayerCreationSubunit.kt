@@ -14,44 +14,44 @@ import encore.utils.hash
 import project.Globals
 
 /**
- * Server-scoped subunit responsible for player creation.
+ * Server-scoped subunit responsible for user creation.
  *
- * Responsible for handling the logic to create a player, which involves
- * inserting some default data to the base collections: [PlayerAccount].
+ * Responsible for handling the logic to create a user, which involves
+ * inserting some default data to the base collections: [UserAccount].
  *
  * This subunit doesn't handle server data update in [ServerObjects]
- * for the player. This should be handled separately via external orchestration
+ * for the user. This should be handled separately via external orchestration
  * (e.g., in the account registration).
  *
- * @property dataStore [DataStore] to persist the newly created players.
+ * @property dataStore [DataStore] to persist the newly created users.
  */
-class PlayerCreationSubunit(private val dataStore: DataStore) : Subunit<ServerScope> {
+class UserCreationSubunit(private val dataStore: DataStore) : Subunit<ServerScope> {
     /**
-     * Create a player account with the specified [username], [password], and [email].
+     * Create a user account with the specified [username], [password], and [email].
      *
      * Email is optional and will be defaulted to `username@email.com`
      *
-     * @return [PlayerId] of the newly created player
+     * @return [UserId] of the newly created user
      * @throws [Throwable] an exception type from the underlying datastore or
      *         [IllegalStateException] when the account creation failed without any exception passed.
      */
-    suspend fun createPlayer(
+    suspend fun createUser(
         username: String, password: String,
         email: String = "$username@email.com"
-    ): PlayerId {
-        val playerId = Ids.uuid()
+    ): UserId {
+        val userId = Ids.uuid()
 
-        val account = PlayerAccount(
-            playerId = playerId,
+        val account = UserAccount(
+            userId = userId,
             username = username,
             email = email,
             hashedPassword = hash(password),
-            profile = defaultProfile(playerId),
+            profile = defaultProfile(userId),
         )
 
         val result = dataStore.create(account)
         if (result.isSuccess) {
-            return playerId
+            return userId
         }
 
         Fancam.error(tag = Tags.Creation) { "Account creation failed for $username" }
@@ -70,13 +70,13 @@ class PlayerCreationSubunit(private val dataStore: DataStore) : Subunit<ServerSc
     suspend fun createAdmin(adminData: Globals, alwaysRecreate: Boolean = false) {
         if (alwaysRecreate) {
             dataStore.delete(adminData.ADMIN_PLAYER_ID)
-        } else if (dataStore.playerExists(adminData.ADMIN_PLAYER_ID)) {
+        } else if (dataStore.userExists(adminData.ADMIN_PLAYER_ID)) {
             Fancam.info(Tags.Creation) { "Ignoring admin account creation (already exists)" }
             return
         }
 
-        val account = PlayerAccount(
-            playerId = Globals.ADMIN_PLAYER_ID,
+        val account = UserAccount(
+            userId = Globals.ADMIN_PLAYER_ID,
             username = Globals.ADMIN_USERNAME,
             email = Globals.ADMIN_EMAIL,
             hashedPassword = Globals.ADMIN_HASHED_PASSWORD,
@@ -86,7 +86,7 @@ class PlayerCreationSubunit(private val dataStore: DataStore) : Subunit<ServerSc
         val result = dataStore.create(account)
 
         if (result.isSuccess) {
-            Fancam.info(Tags.Creation) { "New admin account created with username=${Globals.ADMIN_USERNAME}, playerId=${Globals.ADMIN_PLAYER_ID}" }
+            Fancam.info(Tags.Creation) { "New admin account created with username=${Globals.ADMIN_USERNAME}, userId=${Globals.ADMIN_PLAYER_ID}" }
         } else {
             Fancam.error(tag = Tags.Creation) { "Admin account creation failed" }
 
@@ -95,10 +95,10 @@ class PlayerCreationSubunit(private val dataStore: DataStore) : Subunit<ServerSc
         }
     }
 
-    private fun defaultProfile(playerId: PlayerId): Profile {
+    private fun defaultProfile(userId: UserId): Profile {
         val now = TimeCenter.now()
         return Profile(
-            playerId = playerId,
+            userId = userId,
             createdAt = now,
             lastActiveAt = now
         )
@@ -109,13 +109,13 @@ class PlayerCreationSubunit(private val dataStore: DataStore) : Subunit<ServerSc
 
     companion object {
         /**
-         * Creates a test instance of [PlayerCreationSubunit].
+         * Creates a test instance of [UserCreationSubunit].
          *
          * @param dataStore dependency for persistence.
          * Use [BlankDataStore] when the behavior is not relevant to the test.
          */
-        fun createForTest(dataStore: DataStore = BlankDataStore()): PlayerCreationSubunit {
-            return PlayerCreationSubunit(dataStore)
+        fun createForTest(dataStore: DataStore = BlankDataStore()): UserCreationSubunit {
+            return UserCreationSubunit(dataStore)
         }
     }
 }

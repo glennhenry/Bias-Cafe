@@ -60,7 +60,7 @@ interface Subunit<T : SubunitScope> {
      * Disband the subunit for the given [scope].
      *
      * This method is called when the subunit closes (e.g., server shutdown,
-     * player logs off or disconnects).
+     * user logs off or disconnects).
      * Must call this after usage is finished.
      *
      * It should do the necessary clean-up or persist any in-memory state

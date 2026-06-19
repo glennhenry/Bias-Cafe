@@ -12,17 +12,17 @@ import encore.time.TimeCenter
  * // recorded to default file `events.jsonl`, not logged
  * Fancam.track("SystemHealth")
  *       .data("heat", 12)
- *       .data("playerOnline", 100)
+ *       .data("userOnline", 100)
  *       .tags("system", "metric")
  *       .note { if (heat > 10) { "WARNING OVERHEAT" } else "" }
  *       .record()
  *
  * // recorded to `loots.jsonl`, logged with info level
- * Fancam.track("PlayerLoot")
- *       .playerId("pid123")
- *       .username("playerABC")
+ * Fancam.track("UserLoot")
+ *       .userId("pid123")
+ *       .username("userABC")
  *       .data("loot", "bread")
- *       .tags("player", "rng")
+ *       .tags("user", "rng")
  *       .route("loots")
  *       .record()
  *       .log(Level.Info, full = false)
@@ -49,9 +49,9 @@ class TrackEventBuilder(
     private var route: String = "events"
 
     /**
-     * Shorthand to set the `playerId` attribute in the data.
+     * Shorthand to set the `userId` attribute in the data.
      */
-    fun playerId(pid: String) = apply { data["playerId"] = pid }
+    fun userId(pid: String) = apply { data["userId"] = pid }
 
     /**
      * Shorthand to set the `username` attribute in the data.
