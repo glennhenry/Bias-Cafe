@@ -134,7 +134,7 @@ description: example
 ├── src/test/kotlin/
 │   ├── encoreTest/                 # Framework test suite
 │   ├── example/                    # Example implementation samples
-│   ├── cafeTest/                 # Server implementation test suite
+│   ├── projectTest/                 # Server implementation test suite
 │   ├── testUtils/                  # Test utilities and helpers
 │   ├── InitMongo.kt                # MongoDB test initialization
 │   └── Playground.kt               # Quick experimentation and test runner
