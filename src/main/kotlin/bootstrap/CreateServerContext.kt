@@ -21,6 +21,8 @@ import encore.time.TimeCenter
 import encore.venue.Venue
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
+import project.domain.MongoProfileRepository
+import project.domain.ProfileSubunit
 
 /**
  * Create and return a [ServerContext] instance.
@@ -40,6 +42,9 @@ suspend fun createServerContext(
     val accountRepository = MongoAccountRepository(
         accountCollection = mongoDatabase.getCollection(MongoCollectionName.userAccount)
     )
+    val profileRepository = MongoProfileRepository(
+        profileCollection = mongoDatabase.getCollection(MongoCollectionName.profile)
+    )
     val stageActDirector = StageActDirector(
         timeSource = TimeCenter.source,
         actStore = ActIdStore
@@ -49,6 +54,7 @@ suspend fun createServerContext(
 
     // setup ServerSubunits
     val accountSubunit = AccountSubunit(accountRepository)
+    val profileSubunit = ProfileSubunit(profileRepository)
     val userPresenceSubunit = UserPresenceSubunit()
     val sessionSubunit = SessionSubunit(appScope, TimeCenter.source)
     val userCreationSubunit = UserCreationSubunit(dataStore)
@@ -56,6 +62,7 @@ suspend fun createServerContext(
 
     val subunits = ServerSubunits(
         account = accountSubunit,
+        profile = profileSubunit,
         presence = userPresenceSubunit,
         auth = authSubunit,
         session = sessionSubunit,

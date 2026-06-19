@@ -1,7 +1,7 @@
 package encore.datastore.collection
 
+import encore.account.model.UserMetadata
 import kotlinx.serialization.Serializable
-import encore.account.model.Profile
 
 /**
  * Representation of a user's account.
@@ -12,7 +12,11 @@ import encore.account.model.Profile
  * @property username Display name of the user.
  * @property email Email address associated with this account.
  * @property hashedPassword Hashed version of the account's password.
- * @property profile Representation of the user's profile.
+ * @property registeredAt Epoch millis of the account's registration date.
+ * @property lastActiveAt Epoch millis of the account's last activity.
+ *                        This denotes the last time the user send a network
+ *                        message to the server.
+ * @property metadata Any extra or uncategorized information about the user.
  */
 @Serializable
 data class UserAccount(
@@ -20,7 +24,9 @@ data class UserAccount(
     val username: String,
     val email: String,
     val hashedPassword: String,
-    val profile: Profile,
+    val registeredAt: Long,
+    val lastActiveAt: Long,
+    val metadata: UserMetadata
 )
 
 /**

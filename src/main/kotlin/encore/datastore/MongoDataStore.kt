@@ -3,6 +3,7 @@ package encore.datastore
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Indexes
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import encore.datastore.collection.Profile
 import encore.datastore.collection.UserAccount
 import encore.datastore.collection.UserId
 import encore.datastore.collection.ServerObjects
@@ -19,6 +20,7 @@ import kotlin.time.measureTime
  */
 data class MongoCollectionName(
     val userAccount: String,
+    val profile: String,
     val serverObjects: String
 )
 
@@ -32,6 +34,7 @@ data class MongoCollectionName(
  */
 class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : DataStore {
     private val accounts = db.getCollection<UserAccount>(collectionName.userAccount)
+    private val profiles = db.getCollection<Profile>(collectionName.profile)
     private val serverObjects = db.getCollection<ServerObjects>(collectionName.serverObjects)
 
     private val initJob = CoroutineScope(Dispatchers.IO).async { setupCollections() }
@@ -87,17 +90,16 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
             ?: throw NoSuchElementException("ServerObjects not found, please ensure ServerObjects creation.")
     }
 
-    override suspend fun create(
-        account: UserAccount,
-    ): Result<Unit> {
+    override suspend fun create(account: UserAccount, profile: Profile): Result<Unit> {
         return try {
             val accountAck = accounts.insertOne(account).wasAcknowledged()
+            val profileAck = profiles.insertOne(profile).wasAcknowledged()
 
-            if (accountAck) {
+            if (accountAck && profileAck) {
                 Result.success(Unit)
             } else {
                 Fancam.error(tag = Tags.Datastore) {
-                    "MongoDB creation not acknowledged: userId=${account.userId}, accountAck=$accountAck"
+                    "MongoDB creation not acknowledged: userId=${account.userId}, accountAck=$accountAck, profileAck=$profileAck"
                 }
                 Result.failure(
                     IllegalStateException("MongoDB insert not acknowledged")
@@ -112,11 +114,12 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
     override suspend fun delete(userId: UserId): Result<Unit> {
         return try {
             val accountAck = accounts.deleteOne(Filters.eq(FieldUserId, userId)).wasAcknowledged()
+            val profileAck = profiles.deleteOne(Filters.eq(FieldUserId, userId)).wasAcknowledged()
 
             if (accountAck) {
                 Result.success(Unit)
             } else {
-                Fancam.error(tag = Tags.Datastore) { "MongoDB deletion not acknowledged: userId=$userId, accountAck=$accountAck" }
+                Fancam.error(tag = Tags.Datastore) { "MongoDB deletion not acknowledged: userId=$userId, accountAck=$accountAck, profileAck=$profileAck" }
                 Result.failure(IllegalStateException("MongoDB deletion not acknowledged"))
             }
         } catch (e: Exception) {

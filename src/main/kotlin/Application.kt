@@ -43,6 +43,7 @@ fun main() {
 
 val MongoCollectionName = MongoCollectionName(
     userAccount = "user_account",
+    profile = "profile",
     serverObjects = "server_objects"
 )
 

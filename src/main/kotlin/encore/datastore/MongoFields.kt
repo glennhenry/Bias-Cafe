@@ -1,7 +1,6 @@
 package encore.datastore
 
 import com.mongodb.client.model.Filters
-import encore.account.model.Profile
 import encore.datastore.collection.UserAccount
 import encore.datastore.collection.ServerObjects
 import encore.datastore.collection.ServerObjectsId
@@ -22,11 +21,8 @@ val FieldEmail = UserAccount::email.name
 /** `hashedPassword`*/
 val FieldPassword = UserAccount::hashedPassword.name
 
-/** `profile`*/
-val FieldProfile = UserAccount::profile.name
-
-/** `profile.lastActiveAt`*/
-val FieldProfileLastActive = "$FieldProfile.${Profile::lastActiveAt.name}"
+/** `lastActiveAt`*/
+val FieldLastActive = UserAccount::lastActiveAt.name
 
 /** `dbId`*/
 val ServerObjectsDbId = ServerObjects::dbId.name

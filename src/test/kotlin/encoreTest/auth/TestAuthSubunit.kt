@@ -7,7 +7,7 @@ import encore.account.AccountSubunit
 import encore.account.MongoAccountRepository
 import encore.account.UserCreationSubunit
 import encore.account.model.Credentials
-import encore.account.model.Profile
+import encore.account.model.UserMetadata
 import encore.auth.AuthSubunit
 import encore.auth.LoginResult
 import encore.datastore.MongoDataStore
@@ -22,16 +22,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 /**
- * Integration test for [encore.auth.AuthSubunit] and [encore.account.AccountRepository].
+ * Integration test for [AuthSubunit] and [AccountRepository].
  *
  * Ensure MongoDB is running.
  *
- * [encore.auth.AuthSubunit.isUsernameAvailable] has extra logic than [encore.account.AccountRepository.usernameExists]
+ * [AuthSubunit.isUsernameAvailable] has extra logic than [AccountRepository.usernameExists]
  * try calling `repo.usernameExists("name").getOrThrow()` in addition to `isUsernameAvailable`.
  */
 class TestAuthSubunit {
@@ -58,7 +57,9 @@ class TestAuthSubunit {
             username = "name",
             email = "anyemail",
             hashedPassword = "anypassword",
-            profile = createProfile("pid12345")
+            registeredAt = 0,
+            lastActiveAt = 0,
+            metadata = UserMetadata(),
         )
         collection.insertOne(account)
 
@@ -155,9 +156,7 @@ class TestAuthSubunit {
             override suspend fun getUserIdByUsername(username: String): Result<UserId?> = TODO()
             override suspend fun getCredentials(username: String): Result<Credentials?> =
                 Result.failure(RuntimeException("xiaoting"))
-            override suspend fun getProfile(userId: UserId): Result<Profile?> = TODO()
             override suspend fun updateUserAccount(userId: UserId, account: UserAccount): Result<Unit> = TODO()
-            override suspend fun updateProfile(userId: UserId, profile: Profile): Result<Unit> = TODO()
             override suspend fun updateLastActivity(userId: UserId, lastActivity: Long): Result<Unit> = TODO()
             override suspend fun usernameExists(username: String): Result<Boolean> = TODO()
             override suspend fun emailExists(email: String): Result<Boolean> = TODO()

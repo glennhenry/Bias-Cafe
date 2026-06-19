@@ -20,6 +20,9 @@ import encore.time.source.TimeSource
 import encore.utils.support.className
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
+import project.domain.BlankProfileRepository
+import project.domain.ProfileRepository
+import project.domain.ProfileSubunit
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -49,14 +52,17 @@ data class ServerContext(
          * @param timeSource [TimeSource] for [StageActDirector].
          * @param dataStore Also used to build [UserCreationSubunit].
          * @param accountRepository Used to build [AccountSubunit].
+         * @param profileRepository Used to build [ProfileSubunit].
          */
         fun createForTest(
             parentScope: CoroutineScope = CoroutineScope(EmptyCoroutineContext),
             timeSource: TimeSource = SystemTimeSource(),
             dataStore: DataStore = BlankDataStore(),
             accountRepository: AccountRepository = BlankAccountRepository(),
+            profileRepository: ProfileRepository = BlankProfileRepository(),
         ): ServerContext {
             val account = AccountSubunit(accountRepository)
+            val profile = ProfileSubunit(profileRepository)
             val session = SessionSubunit.createForTest(parentScope)
             val creation = UserCreationSubunit.createForTest(dataStore)
 
@@ -67,6 +73,7 @@ data class ServerContext(
                 webSocketManager = WebSocketManager(),
                 subunits = ServerSubunits(
                     account = account,
+                    profile = profile,
                     auth = AuthSubunit(account, creation, session),
                     creation = creation,
                     presence = UserPresenceSubunit(),
@@ -94,6 +101,7 @@ data class ServerContext(
  *   state and provide matchmaking-specific functionality.
  *
  * @property account Provides API related to accounts.
+ * @property profile Provides API related to profiles.
  * @property auth Provides authentication functions.
  * @property creation Provides user creation mechanism.
  * @property presence Tracks user's presence.
@@ -101,6 +109,7 @@ data class ServerContext(
  */
 data class ServerSubunits(
     val account: AccountSubunit,
+    val profile: ProfileSubunit,
     val auth: AuthSubunit,
     val creation: UserCreationSubunit,
     val presence: UserPresenceSubunit,
@@ -110,7 +119,7 @@ data class ServerSubunits(
      * Return all server subunit instances.
      */
     fun all(): Set<Subunit<ServerScope>> {
-        return setOf(account, auth, creation, presence, session)
+        return setOf(account, profile, auth, creation, presence, session)
     }
 
     /**

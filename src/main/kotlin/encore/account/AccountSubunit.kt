@@ -1,7 +1,6 @@
 package encore.account
 
 import encore.account.model.Credentials
-import encore.account.model.Profile
 import encore.auth.AuthSubunit
 import encore.datastore.collection.UserAccount
 import encore.datastore.collection.UserId
@@ -58,22 +57,6 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
     }
 
     /**
-     * Returns an [Outcome] containing [Profile] associated with [userId].
-     * - [Outcome.Fail] when there is internal repository error.
-     * - [Outcome.Ok] with `null` if account does not exist.
-     * - [Outcome.Ok] with the `profile` otherwise.
-     */
-    suspend fun getProfile(userId: UserId): Outcome<Profile?> {
-        return accountRepository.getProfile(userId)
-            .onFailure {
-                Fancam.error(it, Tags.Account) {
-                    "getProfile failed: repository scandal for '$userId'"
-                }
-            }
-            .toOutcome { profile -> return Outcome.Ok(profile) }
-    }
-
-    /**
      * Returns an [Outcome] containing the credentials of [username].
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with the credentials result.
@@ -100,21 +83,6 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
             .onFailure {
                 Fancam.error(it, Tags.Account) {
                     "updateUserAccount failed: repository scandal for '$userId' on update with $account"
-                }
-                return Report.Fail
-            }
-            .toReport()
-    }
-
-    /**
-     * Update [UserAccount] of [userId].
-     * @return [Report] type denoting success or failure.
-     */
-    suspend fun updateProfile(userId: UserId, profile: Profile): Report {
-        return accountRepository.updateProfile(userId, profile)
-            .onFailure {
-                Fancam.error(it, Tags.Account) {
-                    "updateProfile failed: repository scandal for '$userId' on update with $profile"
                 }
                 return Report.Fail
             }

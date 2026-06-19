@@ -5,7 +5,6 @@ import com.mongodb.client.model.Projections
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.account.model.Credentials
-import encore.account.model.Profile
 import encore.datastore.*
 import encore.datastore.collection.UserAccount
 import encore.datastore.collection.UserId
@@ -40,17 +39,6 @@ class MongoAccountRepository(val accountCollection: MongoCollection<UserAccount>
         }
     }
 
-    override suspend fun getProfile(userId: UserId): Result<Profile?> {
-        return runMongoCatching {
-            accountCollection
-                .withDocumentClass<QueryProfile>()
-                .find(Filters.eq(FieldUserId, userId))
-                .projection(Projections.include(FieldProfile))
-                .firstOrNull()
-                ?.profile
-        }
-    }
-
     override suspend fun getCredentials(username: String): Result<Credentials?> {
         return runMongoCatching {
             val account = accountCollection
@@ -81,26 +69,13 @@ class MongoAccountRepository(val accountCollection: MongoCollection<UserAccount>
         }
     }
 
-    override suspend fun updateProfile(
-        userId: UserId,
-        profile: Profile
-    ): Result<Unit> {
-        return runMongoCatching {
-            val filter = Filters.eq(FieldUserId, userId)
-            val update = Updates.set(FieldProfile, profile)
-            accountCollection
-                .updateOne(filter, update)
-                .throwIfNotModified("updateProfile not updated for $userId", { filter }, { update })
-        }
-    }
-
     override suspend fun updateLastActivity(
         userId: UserId,
         lastActivity: Long
     ): Result<Unit> {
         return runMongoCatching {
             val filter = Filters.eq(FieldUserId, userId)
-            val update = Updates.set(FieldProfileLastActive, lastActivity)
+            val update = Updates.set(FieldLastActive, lastActivity)
             accountCollection
                 .updateOne(filter, update)
                 .throwIfNotModified("updateLastActivity not updated for $userId", { filter }, { update })
@@ -141,12 +116,4 @@ data class QueryCredentials(
     @field:BsonId val id: String? = null,
     val userId: UserId,
     val hashedPassword: String
-)
-
-/**
- * Mongo projection class to query the `profile` of [UserAccount].
- */
-data class QueryProfile(
-    @field:BsonId val id: String? = null,
-    val profile: Profile
 )

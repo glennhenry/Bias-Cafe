@@ -1,6 +1,7 @@
 package encore.account
 
-import encore.account.model.Profile
+import encore.account.model.UserMetadata
+import encore.datastore.collection.Profile
 import encore.datastore.BlankDataStore
 import encore.datastore.DataStore
 import encore.datastore.collection.*
@@ -41,15 +42,19 @@ class UserCreationSubunit(private val dataStore: DataStore) : Subunit<ServerScop
     ): UserId {
         val userId = Ids.uuid()
 
+        val now = TimeCenter.now()
         val account = UserAccount(
             userId = userId,
             username = username,
             email = email,
             hashedPassword = hash(password),
-            profile = defaultProfile(userId),
+            registeredAt = now,
+            lastActiveAt = now,
+            metadata = UserMetadata(),
         )
+        val profile = Profile(userId)
 
-        val result = dataStore.create(account)
+        val result = dataStore.create(account, profile)
         if (result.isSuccess) {
             return userId
         }
@@ -75,15 +80,19 @@ class UserCreationSubunit(private val dataStore: DataStore) : Subunit<ServerScop
             return
         }
 
+        val now = TimeCenter.now()
         val account = UserAccount(
             userId = Globals.ADMIN_PLAYER_ID,
             username = Globals.ADMIN_USERNAME,
             email = Globals.ADMIN_EMAIL,
             hashedPassword = Globals.ADMIN_HASHED_PASSWORD,
-            profile = defaultProfile(Globals.ADMIN_PLAYER_ID),
+            registeredAt = now,
+            lastActiveAt = now,
+            metadata = UserMetadata(),
         )
+        val profile = Profile(Globals.ADMIN_PLAYER_ID)
 
-        val result = dataStore.create(account)
+        val result = dataStore.create(account, profile)
 
         if (result.isSuccess) {
             Fancam.info(Tags.Creation) { "New admin account created with username=${Globals.ADMIN_USERNAME}, userId=${Globals.ADMIN_PLAYER_ID}" }
@@ -96,11 +105,8 @@ class UserCreationSubunit(private val dataStore: DataStore) : Subunit<ServerScop
     }
 
     private fun defaultProfile(userId: UserId): Profile {
-        val now = TimeCenter.now()
         return Profile(
-            userId = userId,
-            createdAt = now,
-            lastActiveAt = now
+            userId = userId
         )
     }
 

@@ -3,7 +3,8 @@ package encoreTest.account
 import TestMongoCollectionName
 import encore.account.MongoAccountRepository
 import encore.account.model.Credentials
-import encore.account.model.Profile
+import encore.account.model.UserMetadata
+import encore.datastore.collection.Profile
 import encore.datastore.collection.UserAccount
 import encore.utils.identifier.Ids
 import encore.utils.hash
@@ -35,7 +36,9 @@ class MongoAccountRepositoryTest {
             name,
             email,
             hash("pw123"),
-            createProfile("id123"),
+            registeredAt = 1,
+            lastActiveAt = 1,
+            metadata = UserMetadata(),
         )
 
         collection.insertMany(List(20) { account() } + account)
@@ -46,23 +49,12 @@ class MongoAccountRepositoryTest {
 
         val newId = "id321"
 
-        repo.updateUserAccount(
-            id, account.copy(
-                userId = newId,
-                profile = account.profile.copy(userId = newId)
-            )
-        )
+        repo.updateUserAccount(id, account.copy(userId = newId))
         val a = repo.getAccountByUsername(name).getOrThrow()
         assertEquals(newId, a.userId)
-        assertEquals(newId, a.profile.userId)
 
         repo.updateLastActivity(newId, 1000)
-        assertEquals(1000, repo.getAccountByUsername(name).getOrThrow().profile.lastActiveAt)
-
-        repo.updateProfile(newId, Profile(newId, createdAt = 1234, lastActiveAt = 5678))
-        val pr = repo.getAccountByUsername(name).getOrThrow().profile
-        assertEquals(1234, pr.createdAt)
-        assertEquals(5678, pr.lastActiveAt)
+        assertEquals(1000, repo.getAccountByUsername(name).getOrThrow().lastActiveAt)
 
         assertTrue(repo.usernameExists(name).getOrThrow())
         assertTrue(repo.emailExists(email).getOrThrow())
