@@ -100,7 +100,7 @@ suspend fun Application.configureApplication() {
     routing {
         fileRoutes()
         with(BackstageRoutes(serverContext, backstageToken)) { install() }
-        with(IndexHandler()) { install() }
+        with(IndexHandler(serverContext)) { install() }
     }
 
     // log startup

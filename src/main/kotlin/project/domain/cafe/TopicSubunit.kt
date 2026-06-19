@@ -5,7 +5,9 @@ import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.Outcome
+import encore.utils.types.Report
 import encore.utils.types.toOutcome
+import encore.utils.types.toReport
 
 /**
  * Server subunits that handles [Topic] concerns from [TopicRepository].
@@ -15,6 +17,27 @@ import encore.utils.types.toOutcome
  */
 class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<ServerScope> {
     /**
+     * Returns an [Outcome] containing the requested topic.
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the topic.
+     */
+    suspend fun getTopic(topicId: String): Outcome<Topic> {
+        return topicRepository.getTopic(topicId)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "getTopic query failed for topicId=$topicId"
+                }
+            }
+            .toOutcome { topic ->
+                return if (topic == null) {
+                    Outcome.Fail
+                } else {
+                    Outcome.Ok(topic)
+                }
+            }
+    }
+
+    /**
      * Returns an [Outcome] containing list of topics.
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with the topics.
@@ -23,6 +46,48 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
         return topicRepository.getTopics()
             .onFailure { Fancam.error(it, "topic") { "getTopics query failed" } }
             .toOutcome { topics -> return Outcome.Ok(topics) }
+    }
+
+    /**
+     * Add the [topic].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun addTopic(topic: Topic): Report {
+        return topicRepository.addTopic(topic)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "addTopic failed for topic=$topic"
+                }
+            }
+            .toReport()
+    }
+
+    /**
+     * Delete the topic identified by [topicId].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun deleteTopic(topicId: String): Report {
+        return topicRepository.deleteTopic(topicId)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "deleteTopic failed for topicId=$topicId"
+                }
+            }
+            .toReport()
+    }
+
+    /**
+     * Delete every topics in the database.
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun deleteAllTopics(): Report {
+        return topicRepository.deleteAllTopics()
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "deleteAllTopics failed"
+                }
+            }
+            .toReport()
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> {

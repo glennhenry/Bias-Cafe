@@ -9,6 +9,15 @@ import encore.datastore.collection.Topic
  */
 interface TopicRepository {
     /**
+     * Get the topic identified by [topicId].
+     *
+     * Returns:
+     * - [Result.success] with the topic.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getTopic(topicId: String): Result<Topic?>
+
+    /**
      * Get every available topics.
      *
      * Returns:
@@ -16,4 +25,31 @@ interface TopicRepository {
      * - [Result.failure] if an error occurs while retrieving the data.
      */
     suspend fun getTopics(): Result<List<Topic>>
+
+    /**
+     * Add the [topic].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if an error occurs during the operation.
+     */
+    suspend fun addTopic(topic: Topic): Result<Unit>
+
+    /**
+     * Delete the topic identified by [topicId].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if an error occurs during the operation.
+     */
+    suspend fun deleteTopic(topicId: String): Result<Unit>
+
+    /**
+     * Delete all topics.
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if an error occurs during the operation.
+     */
+    suspend fun deleteAllTopics(): Result<Unit>
 }
