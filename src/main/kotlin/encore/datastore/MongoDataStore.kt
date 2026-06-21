@@ -9,6 +9,7 @@ import encore.datastore.collection.UserId
 import encore.datastore.collection.ServerObjects
 import encore.fancam.Fancam
 import encore.fancam.Tags
+import encore.utils.support.asUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -93,40 +94,18 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
     }
 
     override suspend fun create(account: UserAccount, profile: Profile): Result<Unit> {
-        return try {
-            val accountAck = accounts.insertOne(account).wasAcknowledged()
-            val profileAck = profiles.insertOne(profile).wasAcknowledged()
-
-            if (accountAck && profileAck) {
-                Result.success(Unit)
-            } else {
-                Fancam.error(tag = Tags.Datastore) {
-                    "MongoDB creation not acknowledged: userId=${account.userId}, accountAck=$accountAck, profileAck=$profileAck"
-                }
-                Result.failure(
-                    IllegalStateException("MongoDB insert not acknowledged")
-                )
-            }
-        } catch (e: Exception) {
-            Fancam.error(e, Tags.Datastore) { "MongoDB creation failed: userId=${account.userId}" }
-            Result.failure(e)
+        return runMongoCatching {
+            ensureAck(accounts.insertOne(account))
+                .and(profiles.insertOne(profile))
+                .asUnit()
         }
     }
 
     override suspend fun delete(userId: UserId): Result<Unit> {
-        return try {
-            val accountAck = accounts.deleteOne(Filters.eq(FieldUserId, userId)).wasAcknowledged()
-            val profileAck = profiles.deleteOne(Filters.eq(FieldUserId, userId)).wasAcknowledged()
-
-            if (accountAck) {
-                Result.success(Unit)
-            } else {
-                Fancam.error(tag = Tags.Datastore) { "MongoDB deletion not acknowledged: userId=$userId, accountAck=$accountAck, profileAck=$profileAck" }
-                Result.failure(IllegalStateException("MongoDB deletion not acknowledged"))
-            }
-        } catch (e: Exception) {
-            Fancam.error(e, Tags.Datastore) { "MongoDB deletion failed: userId=$userId" }
-            Result.failure(e)
+        return runMongoCatching {
+            ensureAck(accounts.deleteOne(Filters.eq(FieldUserId, userId)))
+                .and(profiles.deleteOne(Filters.eq(FieldUserId, userId)))
+                .asUnit()
         }
     }
 
