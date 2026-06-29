@@ -29,6 +29,12 @@
       color: gray;
     }
 
+    .topic-lists {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
     .posted-text {
       width: 500px;
     }
@@ -46,12 +52,25 @@
     }
 
     .topic-author-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       border-bottom: 1px solid black;
       padding-bottom: 4px;
     }
 
+    .topic-author-left {
+      flex-grow: 1;
+    }
+
     .topic-author-name {
       font-style: italic;
+      flex: 1;
+    }
+
+    .topic-postedat {
+      text-align: end;
     }
 
     .topic-content {
@@ -68,14 +87,20 @@
   <div class="posted-text">
     <h3>All topics:</h3>
 
-    <ul th:if="${not #lists.isEmpty(data.topics)}">
+    <ul class="topic-lists" th:if="${not #lists.isEmpty(data.topics)}">
       <li class="post-list-item" th:each="topic : ${data.topics}">
         <div>
           <p class="topic-title" th:text="${topic.title}"></p>
-          <p class="topic-author-row" th:inline="text">
-            Posted by <span class="topic-author-name" th:text="${topic.author}">Author Name</span> at <span
-              class="js-format-date" th:data-raw-date="${topic.postedAt}">[[${topic.postedAt}]]</span>
-          </p>
+          <div class="topic-author-row">
+            <span class="topic-author-left">
+              Posted by <span class="topic-author-name" th:text="${topic.author}"></span>
+            </span>
+            <span class="topic-postedat" th:data-raw-date="${topic.postedAt}">
+              <span>at</span>
+              <span class="js-format-date" th:data-raw-date="${topic.postedAt}" th:text="${topic.postedAt}">
+              </span>
+            </span>
+          </div>
 
           <p class="topic-content" th:text="${topic.content}"></p>
         </div>
