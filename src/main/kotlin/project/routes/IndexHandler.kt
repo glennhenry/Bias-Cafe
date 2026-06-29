@@ -6,6 +6,7 @@ import encore.fancam.Fancam
 import encore.route.RouteHandler
 import encore.route.guard.NoAuthGuard
 import encore.route.handle
+import encore.serialization.JSON
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
 import encore.utils.types.okOrNull
@@ -15,13 +16,28 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
+import kotlinx.serialization.Serializable
 import project.Members
 import java.text.SimpleDateFormat
 
 data class ExampleTemplateData(
     val time: String = "",
     val bias: String = "",
-    val posts: List<String> = emptyList()
+    val topics: List<TopicModel> = emptyList()
+)
+
+@Serializable
+data class PostPayload(
+    val title: String,
+    val author: String,
+    val content: String
+)
+
+data class TopicModel(
+    val title: String,
+    val author: String,
+    val content: String,
+    val postedAt: Long
 )
 
 class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
@@ -39,7 +55,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             val data = ExampleTemplateData(
                 time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
                 bias = bias,
-                posts = topics.map { it.content }
+                topics = topics.map { TopicModel(it.title, it.author, it.content, it.postedAt) }
             )
 
             call.respond(ThymeleafContent("lobby", mapOf("data" to data)))
@@ -59,12 +75,15 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 
         post("/cafe/post") {
             handle(call, NoAuthGuard) {
-                val text = call.receiveText()
+                val post = JSON.decode<PostPayload>(call.receiveText())
 
                 val id = Ids.uuid()
                 val topic = Topic(
                     topicId = id,
-                    content = text
+                    title = post.title,
+                    author = post.author,
+                    content = post.content,
+                    postedAt = TimeCenter.now(),
                 )
                 serverContext.subunits.topic.addTopic(topic)
                     .onFail {

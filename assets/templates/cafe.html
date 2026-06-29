@@ -36,6 +36,12 @@
       gap: 8px;
     }
 
+    .post-section {
+      display: flex;
+      flex-direction: column;
+      margin-top: 16px;
+    }
+
     .post-textarea {
       width: 300px;
       height: 200px;
@@ -50,15 +56,31 @@
     .post-status {
       color: black;
     }
+
+    .topic-title-textarea {
+      field-sizing: content;
+      width: 300px;
+      resize: none;
+      padding-right: 12px;
+    }
+
+    .topic-author-input {
+      width: 200px;
+    }
   </style>
 </head>
 
 <body>
   <h1>Cafe</h1>
   <form id="post-form" class="post-container">
-    <label for="post-textarea">Post text</label>
-    <textarea id="post-textarea" class="post-textarea" placeholder="Type here..."></textarea>
-    <button type="submit" class="post-submit">Submit</button>
+    <p>Post a topic</p>
+    <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title" maxlength="80"></textarea>
+    <input id="topic-author-input" class="topic-author-input" type="text" placeholder="Author" maxlength="30" />
+    <div class="post-section">
+      <label for="post-textarea">Content</label>
+      <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
+    </div>
+    <button type="submit" class="post-submit">Post</button>
   </form>
   <p id="post-status" class="post-status">Status: </p>
 
@@ -79,11 +101,15 @@
       event.preventDefault()
       changePostStatus(0)
 
-      const text = $("#post-textarea").val();
+      const titleText = $("#topic-title-textarea").val();
+      const authorText = $("#topic-author-input").val();
+      const postText = $("#post-textarea").val();
+      const payload = { title: titleText, author: authorText, content: postText }
+      console.log(JSON.stringify(payload))
 
       fetch('/cafe/post', {
         method: 'POST',
-        body: text
+        body: JSON.stringify(payload)
       })
         .then(response => {
           if (response.ok) {
