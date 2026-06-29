@@ -1,6 +1,7 @@
 package project.domain.cafe
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Sorts
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.collection.Topic
 import encore.datastore.runMongoCatching
@@ -9,6 +10,8 @@ import kotlinx.coroutines.flow.toList
 
 /** `topicId`*/
 val FieldTopicId = Topic::topicId.name
+/** `postedAt` */
+val FieldPostedAt = Topic::postedAt.name
 
 class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) : TopicRepository {
     override suspend fun getTopic(topicId: String): Result<Topic?> {
@@ -21,7 +24,10 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
 
     override suspend fun getTopics(): Result<List<Topic>> {
         return runMongoCatching {
-            topicCollection.find().toList()
+            topicCollection
+                .find()
+                .sort(Sorts.descending(FieldPostedAt))
+                .toList()
         }
     }
 

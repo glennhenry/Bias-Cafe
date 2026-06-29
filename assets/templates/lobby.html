@@ -69,7 +69,7 @@
     <h3>All topics:</h3>
 
     <ul th:if="${not #lists.isEmpty(data.topics)}">
-      <li class="post-list-item" th:each="topic : ${#data.topics.sort()}">
+      <li class="post-list-item" th:each="topic : ${data.topics}">
         <div>
           <p class="topic-title" th:text="${topic.title}"></p>
           <p class="topic-author-row" th:inline="text">
