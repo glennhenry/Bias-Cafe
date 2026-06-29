@@ -3,6 +3,7 @@ package projectTest
 import TestMongoCollectionName
 import encore.datastore.collection.Topic
 import initMongo
+import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.test.runTest
 import project.domain.cafe.topic.MongoTopicRepository
 import testUtils.randomString
@@ -24,7 +25,7 @@ class MongoTopicRepositoryTest {
         val repo = MongoTopicRepository(collection)
 
         // setup
-        val targetTopic = Topic("topicId123", "content123")
+        val targetTopic = Topic("topicId123", "title123", "author123", "content123", 0)
         collection.insertMany(createTopic(20) + targetTopic)
 
         // tests
@@ -37,7 +38,7 @@ class MongoTopicRepositoryTest {
         )
 
         // 3. addTopic
-        assertTrue(repo.addTopic(Topic("topicId456", "content456")).isSuccess)
+        assertTrue(repo.addTopic(Topic("topicId456", "title456", "author456", "content456", 0)).isSuccess)
         assertNotNull(repo.getTopic("topicId456"))
 
         // 4. deleteTopic
@@ -47,7 +48,7 @@ class MongoTopicRepositoryTest {
 
     private fun createTopic(amount: Int): List<Topic> {
         return List(amount) {
-            Topic(randstr(), randstr())
+            Topic(randstr(), randstr(), randstr(), randstr(), getTimeMillis())
         }
     }
 
