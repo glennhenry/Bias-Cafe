@@ -1,4 +1,4 @@
-package project.domain.cafe
+package project.domain.cafe.topic
 
 import encore.datastore.collection.Topic
 

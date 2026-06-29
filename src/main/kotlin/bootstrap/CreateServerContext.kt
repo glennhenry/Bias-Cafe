@@ -21,8 +21,8 @@ import encore.time.TimeCenter
 import encore.venue.Venue
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
-import project.domain.cafe.MongoTopicRepository
-import project.domain.cafe.TopicSubunit
+import project.domain.cafe.topic.MongoTopicRepository
+import project.domain.cafe.topic.TopicSubunit
 import project.domain.profile.MongoProfileRepository
 import project.domain.profile.ProfileSubunit
 

@@ -1,14 +1,12 @@
 package projectTest
 
 import TestMongoCollectionName
-import encore.datastore.DocumentNotFoundException
 import encore.datastore.collection.Topic
 import initMongo
 import kotlinx.coroutines.test.runTest
-import project.domain.cafe.MongoTopicRepository
+import project.domain.cafe.topic.MongoTopicRepository
 import testUtils.randomString
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 

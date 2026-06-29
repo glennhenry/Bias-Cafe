@@ -20,9 +20,9 @@ import encore.time.source.TimeSource
 import encore.utils.support.className
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
-import project.domain.cafe.InMemoryTopicRepository
-import project.domain.cafe.TopicRepository
-import project.domain.cafe.TopicSubunit
+import project.domain.cafe.topic.InMemoryTopicRepository
+import project.domain.cafe.topic.TopicRepository
+import project.domain.cafe.topic.TopicSubunit
 import project.domain.profile.BlankProfileRepository
 import project.domain.profile.ProfileRepository
 import project.domain.profile.ProfileSubunit

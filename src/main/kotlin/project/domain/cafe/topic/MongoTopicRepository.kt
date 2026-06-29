@@ -1,4 +1,4 @@
-package project.domain.cafe
+package project.domain.cafe.topic
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
