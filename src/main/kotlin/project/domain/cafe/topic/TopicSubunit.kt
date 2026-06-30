@@ -1,5 +1,6 @@
 package project.domain.cafe.topic
 
+import encore.datastore.DocumentNotFoundException
 import encore.datastore.collection.Topic
 import encore.fancam.Fancam
 import encore.subunit.Subunit
@@ -64,16 +65,22 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
 
     /**
      * Delete the topic identified by [topicId].
-     * @return [Report] type denoting success or failure.
+     * @return [Outcome] type with [TopicDeletionOutcome].
      */
-    suspend fun deleteTopic(topicId: String): Report {
-        return topicRepository.deleteTopic(topicId)
+    suspend fun deleteTopic(topicId: String): Outcome<TopicDeletionOutcome> {
+        val result = topicRepository.deleteTopic(topicId)
+        return result
             .onFailure {
                 Fancam.error(it, "topic") {
                     "deleteTopic failed for topicId=$topicId"
                 }
+
+                return when (it) {
+                    is DocumentNotFoundException -> Outcome.Ok(TopicDeletionOutcome.TopicNotFound)
+                    else -> Outcome.Fail
+                }
             }
-            .toReport()
+            .toOutcome { TopicDeletionOutcome.Success }
     }
 
     /**
@@ -110,4 +117,21 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
             return TopicSubunit(topicRepository)
         }
     }
+}
+
+/**
+ * Represent outcome for topic deletion.
+ * - [Success]
+ * - [TopicNotFound]
+ */
+enum class TopicDeletionOutcome {
+    /**
+     * Topic deleted successfully.
+     */
+    Success,
+
+    /**
+     * Failed to delete topic because it wasn't found.
+     */
+    TopicNotFound
 }

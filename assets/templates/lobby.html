@@ -45,10 +45,18 @@
       padding: 4px;
     }
 
+    .topic-title-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: top;
+    }
+
     .topic-title {
       font-size: 24px;
       font-weight: bold;
       margin-bottom: 4px;
+      flex-grow: 1;
     }
 
     .topic-author-row {
@@ -90,7 +98,12 @@
     <ul class="topic-lists" th:if="${not #lists.isEmpty(data.topics)}">
       <li class="post-list-item" th:each="topic : ${data.topics}">
         <div>
-          <p class="topic-title" th:text="${topic.title}"></p>
+          <div class="topic-title-row">
+            <p class="topic-title" th:text="${topic.title}"></p>
+            <a class="delete-post" href="/" th:data-topic-id="${topic.topicId}">
+              <img src="/site/favicon.ico" alt="delete" width="20">
+            </a>
+          </div>
           <div class="topic-author-row">
             <span class="topic-author-left">
               Posted by <span class="topic-author-name" th:text="${topic.author}"></span>
@@ -125,6 +138,24 @@
       $(".js-format-date").each(function () {
         const rawDate = $(this).attr('data-raw-date')
         $(this).text(formatDate(rawDate))
+      })
+
+      $(document).on("click", ".delete-post", function (event) {
+        event.preventDefault()
+        const topicId = $(this).attr('data-topic-id')
+
+        fetch("/delete", {
+          method: "POST",
+          body: topicId
+        })
+          .then(response => {
+            if (response.ok) {
+              location.reload();
+            } else {
+              console.error("Delete failed");
+            }
+          })
+          .catch(console.error);
       })
     })
   </script>

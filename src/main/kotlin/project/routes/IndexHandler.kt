@@ -9,6 +9,7 @@ import encore.route.handle
 import encore.serialization.JSON
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
+import encore.utils.types.Outcome
 import encore.utils.types.okOrNull
 import encore.utils.types.onFail
 import io.ktor.http.*
@@ -18,6 +19,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
 import kotlinx.serialization.Serializable
 import project.Members
+import project.domain.cafe.topic.TopicDeletionOutcome
 import java.text.SimpleDateFormat
 
 data class ExampleTemplateData(
@@ -34,6 +36,7 @@ data class PostPayload(
 )
 
 data class TopicModel(
+    val topicId: String,
     val title: String,
     val author: String,
     val content: String,
@@ -55,10 +58,27 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             val data = ExampleTemplateData(
                 time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
                 bias = bias,
-                topics = topics.map { TopicModel(it.title, it.author, it.content, it.postedAt) }
+                topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedAt) }
             )
 
             call.respond(ThymeleafContent("lobby", mapOf("data" to data)))
+        }
+
+        post("/delete") {
+            val topicId = call.receiveText()
+
+            when (val outcome = serverContext.subunits.topic.deleteTopic(topicId)) {
+                is Outcome.Fail ->
+                    call.respond(HttpStatusCode.InternalServerError)
+
+                is Outcome.Ok -> when (outcome.value) {
+                    TopicDeletionOutcome.Success ->
+                        call.respond(HttpStatusCode.NoContent)
+
+                    TopicDeletionOutcome.TopicNotFound ->
+                        call.respond(HttpStatusCode.NotFound, "Topic not found")
+                }
+            }
         }
 
         get("/cafe") {
