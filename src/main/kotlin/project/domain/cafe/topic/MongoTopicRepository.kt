@@ -3,6 +3,7 @@ package project.domain.cafe.topic
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import encore.datastore.DocumentNotFoundException
 import encore.datastore.collection.Topic
 import encore.datastore.runMongoCatching
 import encore.fancam.Fancam
@@ -57,8 +58,13 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
 
     override suspend fun deleteTopic(topicId: String): Result<Unit> {
         return runMongoCatching {
-            if (!topicCollection.deleteOne(Filters.eq(FieldTopicId, topicId)).wasAcknowledged()) {
+            val result = topicCollection.deleteOne(Filters.eq(FieldTopicId, topicId))
+            if (!result.wasAcknowledged()) {
                 throw IllegalStateException("Topic deletion not acknowledged")
+            }
+
+            if (result.deletedCount <= 0) {
+                throw DocumentNotFoundException("Topic $topicId is not found")
             }
         }
     }
