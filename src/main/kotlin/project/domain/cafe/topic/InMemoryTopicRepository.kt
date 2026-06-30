@@ -8,6 +8,8 @@ import encore.datastore.collection.Topic
 class InMemoryTopicRepository(
     private val topics: MutableList<Topic> = mutableListOf()
 ) : TopicRepository {
+    override suspend fun awaitInit() = Unit
+
     override suspend fun getTopic(topicId: String): Result<Topic?> {
         return Result.success(topics.find { it.topicId == topicId })
     }

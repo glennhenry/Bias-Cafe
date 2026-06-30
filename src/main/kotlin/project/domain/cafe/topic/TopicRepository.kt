@@ -9,6 +9,13 @@ import encore.datastore.collection.Topic
  */
 interface TopicRepository {
     /**
+     * Ensures the repository is fully initialized.
+     *
+     * Use this for repository initialization that may utilize suspendable code.
+     */
+    suspend fun awaitInit()
+
+    /**
      * Get the topic identified by [topicId].
      *
      * Returns:

@@ -5,15 +5,31 @@ import com.mongodb.client.model.Sorts
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.collection.Topic
 import encore.datastore.runMongoCatching
+import encore.fancam.Fancam
+import encore.venue.Venue
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 
 /** `topicId`*/
 val FieldTopicId = Topic::topicId.name
+
 /** `postedAt` */
 val FieldPostedAt = Topic::postedAt.name
 
 class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) : TopicRepository {
+    override suspend fun awaitInit() {
+        if (Venue.custom.deletePostsEveryRestart) {
+            topicCollection.drop()
+            Fancam.info("mongotopic") { "Topic collection reseted" }
+        }
+
+        if (topicCollection.estimatedDocumentCount() < 10 && Venue.custom.prepareDummyPosts) {
+            if (topicCollection.insertMany(TopicFactory.dummyTopics(20)).wasAcknowledged()) {
+                Fancam.info("mongotopic") { "Inserted 20 dummy posts successfully" }
+            }
+        }
+    }
+
     override suspend fun getTopic(topicId: String): Result<Topic?> {
         return runMongoCatching {
             topicCollection

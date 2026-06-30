@@ -64,7 +64,7 @@ suspend fun createServerContext(
     )
     val topicRepository = MongoTopicRepository(
         topicCollection = mongoDatabase.getCollection(MongoCollectionName.topic)
-    )
+    ).also { it.awaitInit() }
 
     val profileSubunit = ProfileSubunit(profileRepository)
     val topicSubunit = TopicSubunit(topicRepository)
