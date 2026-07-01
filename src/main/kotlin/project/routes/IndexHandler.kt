@@ -22,9 +22,12 @@ import project.Members
 import project.domain.cafe.topic.TopicDeletionOutcome
 import java.text.SimpleDateFormat
 
-data class ExampleTemplateData(
+data class LobbyModel(
     val time: String = "",
-    val bias: String = "",
+    val bias: String = ""
+)
+
+data class CafeModel(
     val topics: List<TopicModel> = emptyList()
 )
 
@@ -49,7 +52,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             val systemTime = TimeCenter.now()
             val bias = Members.all.random()
 
-            val data = ExampleTemplateData(
+            val data = LobbyModel(
                 time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
                 bias = bias,
             )
@@ -57,7 +60,21 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             call.respond(ThymeleafContent("lobby", mapOf("data" to data)))
         }
 
-        post("/delete") {
+        get("/cafe") {
+            val topics = serverContext.subunits.topic.getTopics().okOrNull()
+            if (topics == null) {
+                call.respond(HttpStatusCode.InternalServerError, "internal server error")
+                return@get
+            }
+
+            val data = CafeModel(
+                topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedAt) }
+            )
+
+            call.respond(ThymeleafContent("cafe/cafe", mapOf("data" to data)))
+        }
+
+        post("/cafe/delete") {
             val topicId = call.receiveText()
 
             when (val outcome = serverContext.subunits.topic.deleteTopic(topicId)) {
@@ -74,30 +91,11 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             }
         }
 
-        get("/cafe") {
-            val systemTime = TimeCenter.now()
-            val bias = Members.all.random()
-
-            val topics = serverContext.subunits.topic.getTopics().okOrNull()
-            if (topics == null) {
-                call.respond(HttpStatusCode.InternalServerError, "internal server error")
-                return@get
-            }
-
-            val data = ExampleTemplateData(
-                time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
-                bias = bias,
-                topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedAt) }
-            )
-
-            call.respond(ThymeleafContent("cafe/cafe", mapOf("data" to data)))
-        }
-
         get("/cafe/post") {
             call.respond(ThymeleafContent("cafe/post", emptyMap()))
         }
 
-        post("/cafe/post") {
+        post("/cafe/post/new") {
             handle(call, NoAuthGuard) {
                 val post = JSON.decode<PostPayload>(call.receiveText())
 
@@ -121,15 +119,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         }
 
         get("/profile") {
-            val systemTime = TimeCenter.now()
-            val bias = Members.all.random()
-
-            val data = ExampleTemplateData(
-                time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
-                bias = bias
-            )
-
-            call.respond(ThymeleafContent("profile", mapOf("data" to data)))
+            call.respond(ThymeleafContent("profile", emptyMap()))
         }
     }
 }
