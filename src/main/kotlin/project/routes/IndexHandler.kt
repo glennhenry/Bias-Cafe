@@ -49,16 +49,9 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             val systemTime = TimeCenter.now()
             val bias = Members.all.random()
 
-            val topics = serverContext.subunits.topic.getTopics().okOrNull()
-            if (topics == null) {
-                call.respond(HttpStatusCode.InternalServerError, "internal server error")
-                return@get
-            }
-
             val data = ExampleTemplateData(
                 time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
                 bias = bias,
-                topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedAt) }
             )
 
             call.respond(ThymeleafContent("lobby", mapOf("data" to data)))
@@ -85,12 +78,23 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             val systemTime = TimeCenter.now()
             val bias = Members.all.random()
 
+            val topics = serverContext.subunits.topic.getTopics().okOrNull()
+            if (topics == null) {
+                call.respond(HttpStatusCode.InternalServerError, "internal server error")
+                return@get
+            }
+
             val data = ExampleTemplateData(
                 time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
-                bias = bias
+                bias = bias,
+                topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedAt) }
             )
 
-            call.respond(ThymeleafContent("cafe", mapOf("data" to data)))
+            call.respond(ThymeleafContent("cafe/cafe", mapOf("data" to data)))
+        }
+
+        get("/cafe/post") {
+            call.respond(ThymeleafContent("cafe/post", emptyMap()))
         }
 
         post("/cafe/post") {

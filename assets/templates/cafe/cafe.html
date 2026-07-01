@@ -1,0 +1,163 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
+  <link rel="stylesheet" href="/site/reset.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <title>Cafe</title>
+  <style>
+    body {
+      margin-left: 8px;
+    }
+
+    .navbar {
+      display: flex;
+      gap: 8px;
+      width: fit-content;
+      margin-top: 24px;
+    }
+
+    .nav-link {
+      border: 1px solid black;
+      padding: 4px;
+      background-color: #dddddd;
+    }
+
+    .nav-link:hover {
+      color: gray;
+    }
+
+    .topic-lists {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .posted-text {
+      width: 500px;
+    }
+
+    .post-list-item {
+      border: 1px solid black;
+      list-style: none;
+      padding: 4px;
+    }
+
+    .topic-title-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: top;
+    }
+
+    .topic-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 4px;
+      flex-grow: 1;
+    }
+
+    .topic-author-row {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid black;
+      padding-bottom: 4px;
+    }
+
+    .topic-author-left {
+      flex-grow: 1;
+    }
+
+    .topic-author-name {
+      font-style: italic;
+      flex: 1;
+    }
+
+    .topic-postedat {
+      text-align: end;
+    }
+
+    .topic-content {
+      margin-top: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Cafe</h1>
+  <div class="posted-text">
+    <h3>All topics:</h3>
+
+    <ul class="topic-lists" th:if="${not #lists.isEmpty(data.topics)}">
+      <li class="post-list-item" th:each="topic : ${data.topics}">
+        <div>
+          <div class="topic-title-row">
+            <p class="topic-title" th:text="${topic.title}"></p>
+            <a class="delete-post" href="/" th:data-topic-id="${topic.topicId}">
+              <img src="/site/favicon.ico" alt="delete" width="20">
+            </a>
+          </div>
+          <div class="topic-author-row">
+            <span class="topic-author-left">
+              Posted by <span class="topic-author-name" th:text="${topic.author}"></span>
+            </span>
+            <span class="topic-postedat" th:data-raw-date="${topic.postedAt}">
+              <span>at</span>
+              <span class="js-format-date" th:data-raw-date="${topic.postedAt}" th:text="${topic.postedAt}">
+              </span>
+            </span>
+          </div>
+
+          <p class="topic-content" th:text="${topic.content}"></p>
+        </div>
+      </li>
+    </ul>
+
+    <p th:if="${#lists.isEmpty(data.topics)}">No posted texts available.</p>
+  </div>
+
+  <div class="navbar">
+    <a class="nav-link" href="/">Lobby</a>
+    <a class="nav-link" href="/cafe">Cafe</a>
+    <a class="nav-link" href="/cafe/post">Cafe.Post</a>
+    <a class="nav-link" href="/profile">Profile</a>
+  </div>
+
+  <script>
+    function formatDate(millis) {
+      const date = new Date(Number(millis))
+      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+    }
+
+    $(document).ready(function () {
+      $(".js-format-date").each(function () {
+        const rawDate = $(this).attr('data-raw-date')
+        $(this).text(formatDate(rawDate))
+      })
+
+      $(document).on("click", ".delete-post", function (event) {
+        event.preventDefault()
+        const topicId = $(this).attr('data-topic-id')
+
+        fetch("/delete", {
+          method: "POST",
+          body: topicId
+        })
+          .then(response => {
+            if (response.ok) {
+              location.reload();
+            } else {
+              console.error("Delete failed");
+            }
+          })
+          .catch(console.error);
+      })
+    })
+  </script>
+</body>
+
+</html>
