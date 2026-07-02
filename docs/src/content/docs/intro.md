@@ -116,27 +116,111 @@ Cafe
     Games
 
 Cafe
-└─ Section
-   └─ Space
+└─ Space
+   └─ Section
        └─ Topic
             └─ Reply
 ```
 
-- Section: a group of related discussions;
+The atomic unit of the cafe system is _topic_. It represents a single forum post. User create a topic with a title and content. Each post within the topic is considered a reply. The author of the topic is considered as the first reply. Other users can make reply too.
+
+The forum will be divided into _spaces_, then _sections_, and finally individual topics.
+
+- Space: a group of discussions with similar subject. This is imagined as a real spot in a cafe.
   - e.g., living area, bias corner, terrace
-- Space: single discussions topic;
-  - e.g., Kep1er Discussion, Yujin's Space, Media
-- Topic: single post within a discussion;
-  - e.g., the post1 with title "Oh, Yujin is so pretty..."
-- Reply: unit of content within a topic, where the author is the first reply itself;
-  - e.g., reply1 in post1 with content "I think I have fallen for her..."
+- Section: discussion subject within a space; a _collection of topics_. This does not relate to any location terminology. A section restrict users to only discuss about the relevant subject.
+  - e.g.,
+    - Kep1er Discussion, discussion related to Kep1er. Others K-pop group discussion shouldn't belong here.
+    - Yujin's Space, discussion related to Yujin; e.g., solo activities, talk directly related to Yujin. Other members' discussions shouldn't belong here unless related or talk about Yujin specifically. If it's more like a group activity, it may belong to Kep1er Discussion instead.
+    - Media and Games, off-topic discussion; e.g., other media culture and gaming discussions.
+- Topic: a single forum post. They are exclusively within a section.
+  - e.g., the topic1 with title "Oh, Yujin is so pretty..."
+- Reply: unit of content within a topic.
+  - e.g., reply1 in topic1 with content "I think I have fallen for her..."
 
-Technically, we would model it like:
+The internal name does not need to reflect the cosmetic name used in the application. e.g., "Yujin's Space" when technically it's a section.
 
+Section and space will be stored in a separate collection in the database from the topics. Technically, opening the cafe page will retrieve the available spaces, group them within all the sections, and fetch the latest topics from each section.
+
+Section and space won't likely be created often, so the server should cache them in memory to avoid repeated DB query. In reality, creation could be once every few months or even never. Though, they should still be stored in the DB instead of hardcoded in the app to avoid administrator editing the code just to create new. This makes it possible to implement a "create new section" feature.
+
+Space and section will be a very tiny collection. We can model it like:
+
+```json
+spaces: [
+  {
+    id: "living-area",
+    name: "Living Area",
+    order: 0
+  },
+  {
+    id: "bias-corner",
+    name: "Bias Corner",
+    order: 1
+  },
+  {
+    id: "terrace",
+    name: "Terrace",
+    order: 2
+  }
+]
 ```
+
+Order is a numerical value that will determine the cafe layout display. The `id` here is merely for referential purpose. It isn't shown in the cafe application. User either open the cafe which shows every space and sections within them, or open individual sections to see every topics.
+
+```json
+sections: [
+  {
+    id: "kep1er",
+    spaceId: "living-area",
+    name: "Kep1er Discussion",
+    order: 0
+  },
+  {
+    id: "kpop",
+    spaceId: "living-area",
+    name: "K-pop Discussion",
+    order: 1
+  },
+  {
+    id: "yujin",
+    spaceId: "bias-corner",
+    name: "Yujin's Space",
+    order: 0
+  },
+  {
+    id: "xiaoting",
+    spaceId: "bias-corner",
+    name: "Xiaoting's Space",
+    order: 1
+  },
+  {
+    id: "media",
+    spaceId: "terrace",
+    name: "Media",
+    order: 0
+  },
+  {
+    id: "games",
+    spaceId: "terrace",
+    name: "Games",
+    order: 1
+  }
+]
+```
+
+Order value of each section represents their order on their respective space; e.g., "Xiaoting's Space" is ordered as the second within the "bias_corner" space, preceded by "Yujin's Space" which is the first.
+
+Unlike space, section's `id` will be displayed to users. It will be used as the forum URL. Therefore, the `id` shouldn't contain any special characters. It should also be manually created instead of produced from section's name. This avoid long URL just because the section's name is long.
+
+For example, clicking "Yujin's Space" in the cafe homepage will redirect user to `/cafe/yujin`.
+
+We can model topic like:
+
+```json
 topics: [
   {
-    topicId: "xxxx-yyyy",
+    topicId: "123e4567-e89b-12d3-a456-426614174000",
     spaceId: "yujin",
     title: "Oh, Yujin is so pretty...",
     author: "UtokkiForever",
@@ -154,34 +238,30 @@ topics: [
 ]
 ```
 
-Section and space is not stored in database and located in code.
+A request to `/cafe/yujin` would filter every topics of `spaceId == "yujin"`. On a bigger scale though, maybe topics should be partitioned into their respective section. This results in multiple collections of topics grouped by their section.
 
-```kotlin
-enum class SectionId {
-    LIVING_AREA,
-    BIAS_CORNER,
-    TERRACE
-}
+The `topicId` must be unique and can rely on UUID. The first 8-characters will also be used for URL generation of the topic. In this case, the server should check for possible collision of the first 8-characters of the newly generated UUID.
 
-data class Space(
-    val id: Int,
-    val sectionId: SectionId,
-    val name: String
-)
+More specifically, the URL of a topic will be a combination of the topic's title and its unique ID.
 
-val spaces = listOf(
-    Space(0, LIVING_AREA, "Kep1er Discussion"),
-    Space(1, LIVING_AREA, "K-pop Discussion"),
+For example, `forumdomain.com/cafe/yujin/123e4567/oh-yujin-is-so-pretty`:
 
-    Space(2, BIAS_CORNER, "Yujin's Space"),
-    Space(3, BIAS_CORNER, "Xiaoting's Space"),
+- `forumdomain.com` the domain name of the social portal website.
+- `cafe` represent the cafe section of the website.
+- `yujin` the section identifier `yujin`.
+- `123e4567` is the first 8-characters of the `topicId`.
+- `oh-yujin-is-so-pretty` is a Base62 (a-z, A-Z, 0-9) encoded string of the topic's title.
 
-    Space(4, TERRACE, "Media"),
-    Space(5, TERRACE, "Games")
-)
-```
+Key points:
 
-A page request to Yujin's space (e.g., `/cafe/yujin`) would filter the available topics of `spaceId == "yujin"`.
+- The topic title is included in the URL for UX. This will let users know the rough subject of a forum post just by seeing the URL. This is also often called as _slug_.
+- The purpose of including UUID in the URL is to prepare for potential URL change. The UUID is only the first 8-characters to avoid long URL.
+  - User can edit the topic's title. When it is edited, a new URL will be produced.
+  - The goal is to prevent dead links. When users open the old URL, they should be redirected to the new URL.
+  - The server can achieve this by using the UUID for identification.
+  - It would retrieve the specific topic associated with this UUID, identified by the first 8-characters.
+  - An actual dead link occurs when there are no matching IDs.
+  - There are 4.2 billion unique combinations from the first 8-characters of UUID. Though, collision can still occur, so server should re-generate until the first 8-characters are different.
 
 ### Mailbox (private message)
 
