@@ -19,6 +19,7 @@ import java.io.File
 fun Route.fileRoutes() {
     // serve site assets
     staticFiles("site", File("assets/site"))
+    staticFiles("icons", File("assets/icons"))
 
     val docsDir = File("docs_build")
     if (File(docsDir, "index.html").exists()) {
