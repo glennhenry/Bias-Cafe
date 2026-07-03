@@ -20,6 +20,9 @@ import encore.time.source.TimeSource
 import encore.utils.support.className
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
+import project.domain.cafe.collection.BlankCollectionRepository
+import project.domain.cafe.collection.CollectionRepository
+import project.domain.cafe.collection.CollectionSubunit
 import project.domain.cafe.topic.InMemoryTopicRepository
 import project.domain.cafe.topic.TopicRepository
 import project.domain.cafe.topic.TopicSubunit
@@ -56,6 +59,7 @@ data class ServerContext(
          * @param dataStore Also used to build [UserCreationSubunit].
          * @param accountRepository Used to build [AccountSubunit].
          * @param profileRepository Used to build [ProfileSubunit].
+         * @param collectionRepository Used to build [CollectionSubunit].
          * @param topicRepository Used to build [TopicSubunit].
          */
         fun createForTest(
@@ -64,6 +68,7 @@ data class ServerContext(
             dataStore: DataStore = BlankDataStore(),
             accountRepository: AccountRepository = BlankAccountRepository(),
             profileRepository: ProfileRepository = BlankProfileRepository(),
+            collectionRepository: CollectionRepository = BlankCollectionRepository(),
             topicRepository: TopicRepository = InMemoryTopicRepository(),
         ): ServerContext {
             val account = AccountSubunit(accountRepository)
@@ -71,6 +76,7 @@ data class ServerContext(
             val creation = UserCreationSubunit.createForTest(dataStore)
 
             val profile = ProfileSubunit(profileRepository)
+            val collection = CollectionSubunit(collectionRepository)
             val topic = TopicSubunit(topicRepository)
 
             return ServerContext(
@@ -86,6 +92,7 @@ data class ServerContext(
                     session = session,
 
                     profile = profile,
+                    collection = collection,
                     topic = topic
                 )
             )
@@ -126,6 +133,7 @@ data class ServerSubunits(
     val session: SessionSubunit,
 
     val profile: ProfileSubunit,
+    val collection: CollectionSubunit,
     val topic: TopicSubunit
 ) {
     /**

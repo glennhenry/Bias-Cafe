@@ -21,6 +21,8 @@ import encore.time.TimeCenter
 import encore.venue.Venue
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
+import project.domain.cafe.collection.CollectionSubunit
+import project.domain.cafe.collection.MongoCollectionRepository
 import project.domain.cafe.topic.MongoTopicRepository
 import project.domain.cafe.topic.TopicSubunit
 import project.domain.profile.MongoProfileRepository
@@ -65,9 +67,14 @@ suspend fun createServerContext(
     val topicRepository = MongoTopicRepository(
         topicCollection = mongoDatabase.getCollection(MongoCollectionName.topic)
     ).also { it.awaitInit() }
+    val collectionRepository = MongoCollectionRepository(
+        spaceCollection = mongoDatabase.getCollection(MongoCollectionName.spaces),
+        sectionCollection = mongoDatabase.getCollection(MongoCollectionName.sections)
+    )
 
     val profileSubunit = ProfileSubunit(profileRepository)
     val topicSubunit = TopicSubunit(topicRepository)
+    val collectionSubunit = CollectionSubunit(collectionRepository)
 
     val subunits = ServerSubunits(
         account = accountSubunit,
@@ -77,7 +84,8 @@ suspend fun createServerContext(
         creation = userCreationSubunit,
 
         profile = profileSubunit,
-        topic = topicSubunit
+        topic = topicSubunit,
+        collection = collectionSubunit
     )
 
     // debut all subunits

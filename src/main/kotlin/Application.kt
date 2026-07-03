@@ -46,7 +46,9 @@ val MongoCollectionName = MongoCollectionName(
     serverObjects = "server_objects",
 
     profile = "profile",
-    topic = "topic"
+    topic = "topic",
+    spaces = "spaces",
+    sections = "sections"
 )
 
 val SystemTimezone: ZoneId = ZoneId.systemDefault()

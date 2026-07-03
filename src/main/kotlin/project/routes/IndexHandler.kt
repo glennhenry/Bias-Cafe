@@ -27,8 +27,24 @@ data class LobbyModel(
     val bias: String = ""
 )
 
-data class CafeModel(
+data class CafeInsideModel(
     val topics: List<TopicModel> = emptyList()
+)
+
+data class CafeLandingModel(
+    val username: String,
+    val spaces: List<SpaceItem>
+)
+
+// combining Space and Section
+data class SpaceItem(
+    val name: String,
+    val sections: List<SectionItem>
+)
+
+data class SectionItem(
+    val id: String,
+    val name: String
 )
 
 @Serializable
@@ -61,17 +77,21 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         }
 
         get("/cafe") {
+            val spaces = serverContext.subunits.collection.getSpaces()
+        }
+
+        get("/cafeposts") {
             val topics = serverContext.subunits.topic.getTopics().okOrNull()
             if (topics == null) {
                 call.respond(HttpStatusCode.InternalServerError, "internal server error")
                 return@get
             }
 
-            val data = CafeModel(
+            val data = CafeInsideModel(
                 topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedAt) }
             )
 
-            call.respond(ThymeleafContent("cafe/cafe", mapOf("data" to data)))
+            call.respond(ThymeleafContent("cafe/cafeposts", mapOf("data" to data)))
         }
 
         post("/cafe/delete") {

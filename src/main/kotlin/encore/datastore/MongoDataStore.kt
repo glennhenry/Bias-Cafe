@@ -25,7 +25,9 @@ data class MongoCollectionName(
     val serverObjects: String,
 
     val profile: String,
-    val topic: String
+    val topic: String,
+    val spaces: String,
+    val sections: String
 )
 
 /**

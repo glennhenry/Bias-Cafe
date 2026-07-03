@@ -10,7 +10,9 @@ val TestMongoCollectionName = MongoCollectionName(
     serverObjects = "test_server_objects",
 
     profile = "test_profile",
-    topic = "test_topic"
+    topic = "test_topic",
+    spaces = "test_spaces",
+    sections = "test_sections"
 )
 
 suspend fun initMongo(
