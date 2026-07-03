@@ -85,7 +85,7 @@ The cafe is structured like:
 
 ```
 Cafe
-  [Living Area]
+  [Lounge]
     Kep1er Discussion
     K-pop Discussion
 
@@ -127,7 +127,7 @@ The atomic unit of the cafe system is _topic_. It represents a single forum post
 The forum will be divided into _spaces_, then _sections_, and finally individual topics.
 
 - Space: a group of discussions with similar subject. This is imagined as a real spot in a cafe.
-  - e.g., living area, bias corner, terrace
+  - e.g., lounge, bias corner, terrace
 - Section: discussion subject within a space; a _collection of topics_. This does not relate to any location terminology. A section restrict users to only discuss about the relevant subject.
   - e.g.,
     - Kep1er Discussion, discussion related to Kep1er. Others K-pop group discussion shouldn't belong here.
@@ -149,8 +149,8 @@ Space and section will be a very tiny collection. We can model it like:
 ```json
 spaces: [
   {
-    id: "living-area",
-    name: "Living Area",
+    id: "lounge",
+    name: "Lounge",
     order: 0
   },
   {
@@ -172,13 +172,13 @@ Order is a numerical value that will determine the cafe layout display. The `id`
 sections: [
   {
     id: "kep1er",
-    spaceId: "living-area",
+    spaceId: "lounge",
     name: "Kep1er Discussion",
     order: 0
   },
   {
     id: "kpop",
-    spaceId: "living-area",
+    spaceId: "lounge",
     name: "K-pop Discussion",
     order: 1
   },
