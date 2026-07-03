@@ -1,0 +1,17 @@
+[
+  {
+    "id": "lounge",
+    "name": "Lounge",
+    "order": 0
+  },
+  {
+    "id": "bias-corner",
+    "name": "Bias Corner",
+    "order": 1
+  },
+  {
+    "id": "terrace",
+    "name": "Terrace",
+    "order": 2
+  }
+]

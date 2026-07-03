@@ -1,0 +1,80 @@
+[
+  {
+    "id": "kep1er",
+    "spaceId": "lounge",
+    "name": "Kep1er Discussion",
+    "order": 0
+  },
+  {
+    "id": "kpop",
+    "spaceId": "lounge",
+    "name": "K-pop Discussion",
+    "order": 1
+  },
+  {
+    "id": "yujin",
+    "spaceId": "bias-corner",
+    "name": "Yujin's Space",
+    "order": 0
+  },
+  {
+    "id": "xiaoting",
+    "spaceId": "bias-corner",
+    "name": "Xiaoting's Space",
+    "order": 1
+  },
+  {
+    "id": "mashiro",
+    "spaceId": "bias-corner",
+    "name": "Mashiro's Space",
+    "order": 2
+  },
+  {
+    "id": "chaehyun",
+    "spaceId": "bias-corner",
+    "name": "Chaehyun's Space",
+    "order": 3
+  },
+  {
+    "id": "dayeon",
+    "spaceId": "bias-corner",
+    "name": "Dayeon's Space",
+    "order": 4
+  },
+  {
+    "id": "hikaru",
+    "spaceId": "bias-corner",
+    "name": "Hikaru's Space",
+    "order": 5
+  },
+  {
+    "id": "bahiyyih",
+    "spaceId": "bias-corner",
+    "name": "Bahiyyih's Space",
+    "order": 6
+  },
+  {
+    "id": "youngeun",
+    "spaceId": "bias-corner",
+    "name": "Youngeun's Space",
+    "order": 7
+  },
+  {
+    "id": "yeseo",
+    "spaceId": "bias-corner",
+    "name": "Yeseo's Space",
+    "order": 8
+  },
+  {
+    "id": "media",
+    "spaceId": "terrace",
+    "name": "Media",
+    "order": 0
+  },
+  {
+    "id": "games",
+    "spaceId": "terrace",
+    "name": "Games",
+    "order": 1
+  }
+]

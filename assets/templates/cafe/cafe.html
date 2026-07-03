@@ -32,7 +32,24 @@
 </head>
 
 <body>
-  <h1>Profile</h1>
+  <h1>Cafe</h1>
+  <p th:text="'Hello, ' + ${data.username} + '. Welcome back.'"></p>
+
+  <ul class="space-lists" th:if="${not #lists.isEmpty(data.spaces)}">
+    <li class="space-list-item" th:each="space : ${data.spaces}">
+      <div>
+        <p th:text="${space.name}"></p>
+        <ul>
+          <li th:each="section : ${space.sections}">
+            <p th:text="${section.id} + ' ' + ${section.name}"></p>
+          </li>
+        </ul>
+      </div>
+    </li>
+  </ul>
+
+  <p th:if="${#lists.isEmpty(data.spaces)}">No spaces have been made yet ㅠㅠ</p>
+
   <div class="navbar">
     <a class="nav-link" href="/">Lobby</a>
     <a class="nav-link" href="/cafe">Cafe</a>
