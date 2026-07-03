@@ -1,7 +1,7 @@
 package projectTest
 
 import TestMongoCollectionName
-import encore.datastore.collection.Topic
+import project.domain.cafe.topic.Topic
 import initMongo
 import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.test.runTest

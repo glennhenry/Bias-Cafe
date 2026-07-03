@@ -4,7 +4,6 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Sorts
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.DocumentNotFoundException
-import encore.datastore.collection.Topic
 import encore.datastore.runMongoCatching
 import encore.fancam.Fancam
 import encore.venue.Venue

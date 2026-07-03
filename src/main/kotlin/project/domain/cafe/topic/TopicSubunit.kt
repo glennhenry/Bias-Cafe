@@ -1,7 +1,6 @@
 package project.domain.cafe.topic
 
 import encore.datastore.DocumentNotFoundException
-import encore.datastore.collection.Topic
 import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope

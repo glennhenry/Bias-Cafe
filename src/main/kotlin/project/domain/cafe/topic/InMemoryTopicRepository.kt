@@ -1,7 +1,5 @@
 package project.domain.cafe.topic
 
-import encore.datastore.collection.Topic
-
 /**
  * In-memory implementation for [TopicRepository].
  */

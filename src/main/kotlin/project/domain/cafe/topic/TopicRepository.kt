@@ -1,7 +1,5 @@
 package project.domain.cafe.topic
 
-import encore.datastore.collection.Topic
-
 /**
  * Repository for [Topic] collection.
  *

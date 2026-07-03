@@ -1,6 +1,5 @@
 package project.domain.cafe.topic
 
-import encore.datastore.collection.Topic
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
 import project.Members

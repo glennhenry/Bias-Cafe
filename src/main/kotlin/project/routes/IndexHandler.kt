@@ -1,7 +1,7 @@
 package project.routes
 
 import encore.context.ServerContext
-import encore.datastore.collection.Topic
+import project.domain.cafe.topic.Topic
 import encore.fancam.Fancam
 import encore.route.RouteHandler
 import encore.route.guard.NoAuthGuard

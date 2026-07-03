@@ -1,4 +1,4 @@
-package encore.datastore.collection
+package project.domain.cafe.topic
 
 import kotlinx.serialization.Serializable
 
