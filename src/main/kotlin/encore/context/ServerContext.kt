@@ -133,14 +133,14 @@ data class ServerSubunits(
     val session: SessionSubunit,
 
     val profile: ProfileSubunit,
-    val collection: CollectionSubunit,
-    val topic: TopicSubunit
+    val topic: TopicSubunit,
+    val collection: CollectionSubunit
 ) {
     /**
      * Return all server subunit instances.
      */
     fun all(): Set<Subunit<ServerScope>> {
-        return setOf(account, auth, creation, presence, session, profile, topic)
+        return setOf(account, auth, creation, presence, session, profile, topic, collection)
     }
 
     /**
