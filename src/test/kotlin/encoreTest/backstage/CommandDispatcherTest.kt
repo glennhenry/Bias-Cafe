@@ -1,6 +1,5 @@
 package encoreTest.backstage
 
-import com.mongodb.assertions.Assertions.assertTrue
 import encore.backstage.command.types.ArgumentCollection
 import encore.backstage.command.types.ArgumentDescriptor
 import encore.backstage.command.Command
@@ -201,7 +200,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("userAbc")
+                add("playerAbc")
                 add("water")
             }
         )
@@ -217,7 +216,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("userAbc")
+                add("playerAbc")
                 add("water")
                 add("100")
             }
@@ -234,7 +233,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("userABC")
+                add("playerABC")
             }
         )
         val result = dispatcher.handleCommand(request, context)
@@ -249,7 +248,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("userABC")
+                add("playerABC")
                 add("water")
                 add("notNumber")
             }
@@ -266,7 +265,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("userABC")
+                add("playerABC")
                 add("water")
                 add("2")
             }
@@ -283,7 +282,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("userABC")
+                add("playerABC")
                 add("water")
                 add("3")
             }
@@ -300,7 +299,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("userABC")
+                add("playerABC")
                 add("water")
                 add("4")
                 add("4")
