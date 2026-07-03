@@ -23,22 +23,19 @@ class CollectionSubunit(
     fun getSections() = sections
 
     fun getSpacesForLandingModel(): List<SpaceItem> {
-        val m = mutableMapOf<String, MutableList<Section>>()
-        for (s in sections) {
-            val x = m.getOrDefault(s.spaceId, mutableListOf()).also { it.add(s) }
-            m[s.spaceId] = x
-        }
+        val sectionsBySpace = sections.groupBy { it.spaceId }
 
-        val y = mutableListOf<SpaceItem>()
-        for ((spaceId, sections) in m) {
-            val sp = requireNotNull(spaces.find { it.id == spaceId })
-            val ex = y.find { it.name == sp.name }
-            if (ex == null) {
-                y.add(SpaceItem(sp.name, sections.sortedBy { it.order }.map { SectionItem(it.id, it.name) }))
+        return spaces
+            .sortedBy { it.order }
+            .map { space ->
+                SpaceItem(
+                    name = space.name,
+                    sections = sectionsBySpace[space.id]
+                        .orEmpty()
+                        .sortedBy { it.order }
+                        .map { SectionItem(it.id, it.name) }
+                )
             }
-        }
-
-        return y.sortedBy { x -> spaces.find { it.name == x.name }?.order }
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> {
