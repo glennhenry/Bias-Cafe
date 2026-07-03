@@ -20,6 +20,7 @@ import io.ktor.server.thymeleaf.*
 import kotlinx.serialization.Serializable
 import project.Members
 import project.domain.cafe.topic.TopicDeletionOutcome
+import project.domain.cafe.topic.TopicFactory
 import java.text.SimpleDateFormat
 
 data class LobbyModel(
@@ -77,7 +78,15 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         }
 
         get("/cafe") {
-            val spaces = serverContext.subunits.collection.getSpaces()
+            val username = TopicFactory.dummyAuthor()
+            val spaces = serverContext.subunits.collection.getSpacesForLandingModel()
+
+            val data = CafeLandingModel(
+                username = username,
+                spaces = spaces
+            )
+
+            call.respond(ThymeleafContent("cafe/cafe", mapOf("data" to data)))
         }
 
         get("/cafeposts") {
