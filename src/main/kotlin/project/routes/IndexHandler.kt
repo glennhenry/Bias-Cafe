@@ -119,7 +119,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedDate) }
             )
 
-            call.respond(ThymeleafContent("cafe/cafeposts", mapOf("data" to data)))
+            call.respond(ThymeleafContent("cafe/topiclist", mapOf("data" to data)))
         }
 
         post("/cafe/delete") {
@@ -139,11 +139,11 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             }
         }
 
-        get("/cafe/post") {
-            call.respond(ThymeleafContent("cafe/post", emptyMap()))
+        get("/cafe/createtopic") {
+            call.respond(ThymeleafContent("cafe/createtopic", emptyMap()))
         }
 
-        post("/cafe/post/new") {
+        post("/cafe/createtopic") {
             handle(call, NoAuthGuard) {
                 val post = JSON.decode<PostPayload>(call.receiveText())
 

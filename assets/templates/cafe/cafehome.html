@@ -6,7 +6,7 @@
   <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
   <link rel="stylesheet" href="/site/reset.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <title>Cafe</title>
+  <title>Cafe.Home</title>
   <style>
     body {
       margin-left: 8px;
@@ -79,7 +79,7 @@
 </head>
 
 <body>
-  <h1>Cafe</h1>
+  <h1>Cafe.Home</h1>
   <p th:text="'Hello, ' + ${data.username} + '. Welcome back.'"></p>
 
   <ul class="space-lists" th:if="${not #lists.isEmpty(data.spaces)}">
@@ -107,7 +107,7 @@
   <div class="navbar">
     <a class="nav-link" href="/">Lobby</a>
     <a class="nav-link" href="/cafe">Cafe</a>
-    <a class="nav-link" href="/cafe/post">Cafe.NewPost</a>
+    <a class="nav-link" href="/cafe/createtopic">Cafe.CreateTopic</a>
     <a class="nav-link" href="/profile">Profile</a>
   </div>
 </body>
