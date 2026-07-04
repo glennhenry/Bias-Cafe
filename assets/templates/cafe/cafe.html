@@ -33,7 +33,7 @@
       display: flex;
       flex-direction: column;
       gap: 50px;
-      width: max-content;
+      width: 500px;
     }
 
     .space-item {
@@ -43,9 +43,37 @@
     .space-name-row {
       padding: 2px;
       padding-left: 8px;
-      background-color: beige;
-      border: 1px solid gray;
+      background-color: rgb(210, 171, 212);
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .section-lists {
+      display: flex;
+      flex-direction: column;
+      background-color: rgb(227, 212, 228);
+    }
+
+    .section-item {
+      padding: 4px;
+      padding-left: 24px;
+    }
+
+    .section-item:not(:last-child) {
+      border-bottom: 1px solid black;
+    }
+
+    .section-name {
       font-size: 18px;
+      font-weight: bold;
+    }
+
+    .section-name:hover {
+      color: #545248;
+    }
+
+    .section-description {
+      font-size: 14px;
     }
   </style>
 </head>
@@ -58,9 +86,12 @@
     <li class="space-item" th:each="space : ${data.spaces}">
       <div>
         <p class="space-name-row" th:text="${space.name}"></p>
-        <ul>
-          <li th:each="section : ${space.sections}">
-            <p th:text="${section.id} + ' ' + ${section.name} + ' ' + ${section.description}"></p>
+        <ul class="section-lists">
+          <li class="section-item" th:each="section : ${space.sections}">
+            <div>
+              <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}"></a>
+              <p class="section-description" th:text="${section.description}"></p>
+            </div>
           </li>
         </ul>
       </div>
