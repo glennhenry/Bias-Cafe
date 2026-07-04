@@ -17,5 +17,6 @@ data class Section(
     val id: String,
     val spaceId: String,
     val name: String,
+    val description: String,
     val order: Int
 )

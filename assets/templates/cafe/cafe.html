@@ -36,12 +36,12 @@
   <p th:text="'Hello, ' + ${data.username} + '. Welcome back.'"></p>
 
   <ul class="space-lists" th:if="${not #lists.isEmpty(data.spaces)}">
-    <li class="space-list-item" th:each="space : ${data.spaces}">
+    <li class="space-item" th:each="space : ${data.spaces}">
       <div>
-        <p th:text="${space.name}"></p>
+        <p class="space-name" th:text="${space.name}"></p>
         <ul>
           <li th:each="section : ${space.sections}">
-            <p th:text="${section.id} + ' ' + ${section.name}"></p>
+            <p th:text="${section.id} + ' ' + ${section.name} + ' ' + ${section.description}"></p>
           </li>
         </ul>
       </div>

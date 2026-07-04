@@ -3,78 +3,91 @@
     "id": "kep1er",
     "spaceId": "lounge",
     "name": "Kep1er Discussion",
+    "description": "Talk anything about Kep1er",
     "order": 0
   },
   {
     "id": "kpop",
     "spaceId": "lounge",
     "name": "K-pop Discussion",
+    "description": "K-pop general discussion",
     "order": 1
   },
   {
     "id": "yujin",
     "spaceId": "bias-corner",
     "name": "Yujin's Space",
+    "description": "Talk about Yujin, ...<description>...",
     "order": 0
   },
   {
     "id": "xiaoting",
     "spaceId": "bias-corner",
     "name": "Xiaoting's Space",
+    "description": "Talk about Xiaoting, ...<description>...",
     "order": 1
   },
   {
     "id": "mashiro",
     "spaceId": "bias-corner",
     "name": "Mashiro's Space",
+    "description": "Talk about Mashiro, ...<description>...",
     "order": 2
   },
   {
     "id": "chaehyun",
     "spaceId": "bias-corner",
     "name": "Chaehyun's Space",
+    "description": "Talk about Chaehyun, ...<description>...",
     "order": 3
   },
   {
     "id": "dayeon",
     "spaceId": "bias-corner",
     "name": "Dayeon's Space",
+    "description": "Talk about Dayeon, ...<description>...",
     "order": 4
   },
   {
     "id": "hikaru",
     "spaceId": "bias-corner",
     "name": "Hikaru's Space",
+    "description": "Talk about Hikaru, ...<description>...",
     "order": 5
   },
   {
     "id": "bahiyyih",
     "spaceId": "bias-corner",
     "name": "Bahiyyih's Space",
+    "description": "Talk about Bahiyyih, ...<description>...",
     "order": 6
   },
   {
     "id": "youngeun",
     "spaceId": "bias-corner",
     "name": "Youngeun's Space",
+    "description": "Talk about Youngeun, ...<description>...",
     "order": 7
   },
   {
     "id": "yeseo",
     "spaceId": "bias-corner",
     "name": "Yeseo's Space",
+    "description": "Talk about Yeseo, ...<description>...",
     "order": 8
   },
   {
     "id": "media",
     "spaceId": "terrace",
     "name": "Media",
+    "description": "Talk about others media",
     "order": 0
   },
   {
     "id": "games",
     "spaceId": "terrace",
     "name": "Games",
+    "description": "Gaming talk",
     "order": 1
   }
 ]

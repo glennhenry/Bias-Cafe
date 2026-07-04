@@ -45,7 +45,8 @@ data class SpaceItem(
 
 data class SectionItem(
     val id: String,
-    val name: String
+    val name: String,
+    val description: String
 )
 
 @Serializable

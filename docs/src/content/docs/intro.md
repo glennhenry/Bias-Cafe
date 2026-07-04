@@ -160,7 +160,7 @@ spaces: [
   },
   {
     id: "terrace",
-    name: "Terrace",
+    name: "Terrace (off-topic)",
     order: 2
   }
 ]
