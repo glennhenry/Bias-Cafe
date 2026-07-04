@@ -60,6 +60,17 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     }
 
     /**
+     * Returns an [Outcome] containing a map between every `sectionId` to its topic count.
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the map.
+     */
+    suspend fun getTopicsCountForEachSection(): Outcome<Map<String, Int>> {
+        return topicRepository.getTopicsCountForEachSection()
+            .onFailure { Fancam.error(it, "topic") { "getTopicsCountForEachSection query failed" } }
+            .toOutcome { counts -> return Outcome.Ok(counts) }
+    }
+
+    /**
      * Add the [topic].
      * @return [Report] type denoting success or failure.
      */
