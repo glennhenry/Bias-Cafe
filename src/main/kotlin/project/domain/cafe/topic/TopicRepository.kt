@@ -32,6 +32,15 @@ interface TopicRepository {
     suspend fun getTopics(): Result<List<Topic>>
 
     /**
+     * Get every available topics on a specific section identified by [sectionId].
+     *
+     * Returns:
+     * - [Result.success] with the list of topic.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getTopicsOfSection(sectionId: String): Result<List<Topic>>
+
+    /**
      * Add the [topic].
      *
      * Returns:

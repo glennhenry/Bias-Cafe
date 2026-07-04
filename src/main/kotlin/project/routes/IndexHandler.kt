@@ -61,7 +61,7 @@ data class TopicModel(
     val title: String,
     val author: String,
     val content: String,
-    val postedAt: Long
+    val postedDate: Long
 )
 
 class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
@@ -98,7 +98,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             }
 
             val data = CafeInsideModel(
-                topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedAt) }
+                topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedDate) }
             )
 
             call.respond(ThymeleafContent("cafe/cafeposts", mapOf("data" to data)))
@@ -132,10 +132,11 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val id = Ids.uuid()
                 val topic = Topic(
                     topicId = id,
+                    sectionId = "",
                     title = post.title,
                     author = post.author,
                     content = post.content,
-                    postedAt = TimeCenter.now(),
+                    postedDate = TimeCenter.now(),
                 )
                 serverContext.subunits.topic.addTopic(topic)
                     .onFail {

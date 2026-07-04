@@ -13,8 +13,11 @@ import kotlinx.coroutines.flow.toList
 /** `topicId`*/
 val FieldTopicId = Topic::topicId.name
 
-/** `postedAt` */
-val FieldPostedAt = Topic::postedAt.name
+/** `postedDate` */
+val FieldPostedDate = Topic::postedDate.name
+
+/** `sectionId` */
+val FieldSectionId = Topic::sectionId.name
 
 class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) : TopicRepository {
     override suspend fun awaitInit() {
@@ -42,7 +45,16 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
         return runMongoCatching {
             topicCollection
                 .find()
-                .sort(Sorts.descending(FieldPostedAt))
+                .sort(Sorts.descending(FieldPostedDate))
+                .toList()
+        }
+    }
+
+    override suspend fun getTopicsOfSection(sectionId: String): Result<List<Topic>> {
+        return runMongoCatching {
+            topicCollection
+                .find(Filters.eq(FieldSectionId, sectionId))
+                .sort(Sorts.descending(FieldPostedDate))
                 .toList()
         }
     }

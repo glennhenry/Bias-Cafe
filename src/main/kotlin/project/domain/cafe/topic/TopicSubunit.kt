@@ -49,6 +49,17 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     }
 
     /**
+     * Returns an [Outcome] containing list of topics from [sectionId].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the topics.
+     */
+    suspend fun getTopicsOfSection(sectionId: String): Outcome<List<Topic>> {
+        return topicRepository.getTopicsOfSection(sectionId)
+            .onFailure { Fancam.error(it, "topic") { "getTopicsOfSection '$sectionId' failed" } }
+            .toOutcome { topics -> return Outcome.Ok(topics) }
+    }
+
+    /**
      * Add the [topic].
      * @return [Report] type denoting success or failure.
      */

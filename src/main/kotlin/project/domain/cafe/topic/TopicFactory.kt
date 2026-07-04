@@ -13,13 +13,22 @@ object TopicFactory {
             val member = Members.all.random()
             Topic(
                 topicId = Ids.uuid(),
+                sectionId = sections.random(),
                 title = dummyTitle(member),
                 author = dummyAuthor(),
                 content = dummyContent(member),
-                postedAt = TimeCenter.now()
+                postedDate = TimeCenter.now()
             )
         }
     }
+
+    private val sections = listOf(
+        "kep1er", "kpop",
+        "yujin", "xiaoting", "mashiro",
+        "chaehyun", "dayeon", "hikaru",
+        "bahiyyih", "youngeun", "yeseo",
+        "media", "games"
+    )
 
     private val adjectives = listOf(
         "cute", "talented", "beautiful", "lovely", "best",
@@ -54,6 +63,10 @@ object TopicFactory {
         return "${nouns.random().capitalizeFirstLetter()}${
             adjectives.random().capitalizeFirstLetter()
         }-${Ids.random(3)}"
+    }
+
+    fun randomSection(): String {
+        return sections.random()
     }
 
     fun dummyContent(member: String = Members.all.random()): String {

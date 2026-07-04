@@ -77,7 +77,7 @@
       flex: 1;
     }
 
-    .topic-postedat {
+    .topic-posted-date {
       text-align: end;
     }
 
@@ -105,9 +105,9 @@
             <span class="topic-author-left">
               Posted by <span class="topic-author-name" th:text="${topic.author}"></span>
             </span>
-            <span class="topic-postedat" th:data-raw-date="${topic.postedAt}">
+            <span class="topic-posted-date" th:data-raw-date="${topic.postedDate}">
               <span>at</span>
-              <span class="js-format-date" th:data-raw-date="${topic.postedAt}" th:text="${topic.postedAt}">
+              <span class="js-format-date" th:data-raw-date="${topic.postedDate}" th:text="${topic.postedDate}">
               </span>
             </span>
           </div>

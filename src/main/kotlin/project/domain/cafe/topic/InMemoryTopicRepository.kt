@@ -16,6 +16,10 @@ class InMemoryTopicRepository(
         return Result.success(topics)
     }
 
+    override suspend fun getTopicsOfSection(sectionId: String): Result<List<Topic>> {
+        return Result.success(topics.filter { it.sectionId == sectionId })
+    }
+
     override suspend fun addTopic(topic: Topic): Result<Unit> {
         topics.add(topic)
         return Result.success(Unit)

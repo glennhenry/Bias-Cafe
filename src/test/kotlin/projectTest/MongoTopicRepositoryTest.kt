@@ -25,7 +25,7 @@ class MongoTopicRepositoryTest {
         val repo = MongoTopicRepository(collection)
 
         // setup
-        val targetTopic = Topic("topicId123", "title123", "author123", "content123", 0)
+        val targetTopic = Topic("topicId123", "sectionId123", "title123", "author123", "content123", 0)
         collection.insertMany(createTopic(20) + targetTopic)
 
         // tests
@@ -37,8 +37,13 @@ class MongoTopicRepositoryTest {
             repo.getTopics().getOrThrow().find { it.topicId == targetTopic.topicId }
         )
 
+        // 2. getTopics
+        assertNotNull(
+            repo.getTopicsOfSection("sectionId123").getOrThrow().find { it.sectionId == targetTopic.sectionId }
+        )
+
         // 3. addTopic
-        assertTrue(repo.addTopic(Topic("topicId456", "title456", "author456", "content456", 0)).isSuccess)
+        assertTrue(repo.addTopic(Topic("topicId456", "sectionId456", "title456", "author456", "content456", 0)).isSuccess)
         assertNotNull(repo.getTopic("topicId456"))
 
         // 4. deleteTopic
@@ -48,7 +53,7 @@ class MongoTopicRepositoryTest {
 
     private fun createTopic(amount: Int): List<Topic> {
         return List(amount) {
-            Topic(randstr(), randstr(), randstr(), randstr(), getTimeMillis())
+            Topic(randstr(), randstr(), randstr(), randstr(), randstr(), getTimeMillis())
         }
     }
 
