@@ -89,7 +89,11 @@
         <ul class="section-lists">
           <li class="section-item" th:each="section : ${space.sections}">
             <div>
-              <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}"></a>
+              <span th:inline="text">
+                <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}">
+                </a>
+                ([[${data.counts.getOrDefault(section.id, 0)}]] posts)
+              </span>
               <p class="section-description" th:text="${section.description}"></p>
             </div>
           </li>
