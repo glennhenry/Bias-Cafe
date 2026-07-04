@@ -8,6 +8,8 @@ Latest progress:
 
 <img src="progress.png" alt="website image" style="border:1px black solid;" width=500/>
 
+Still establishing core system...
+
 Made with [Encore](https://github.com/glennhenry/Encore).
 
 # Server Manual
