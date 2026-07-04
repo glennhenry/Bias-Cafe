@@ -35,7 +35,7 @@ class CollectionSubunit(
                     sections = sectionsBySpace[space.id]
                         .orEmpty()
                         .sortedBy { it.order }
-                        .map { SectionItem(it.id, it.name, it.description, 0) }
+                        .map { SectionItem(it.id, it.name, it.description) }
                 )
             }
     }

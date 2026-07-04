@@ -11,6 +11,7 @@ import encore.time.TimeCenter
 import encore.utils.identifier.Ids
 import encore.utils.types.Outcome
 import encore.utils.types.okOrNull
+import encore.utils.types.okOrThrow
 import encore.utils.types.onFail
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -34,7 +35,8 @@ data class CafeInsideModel(
 
 data class CafeLandingModel(
     val username: String,
-    val spaces: List<SpaceItem>
+    val spaces: List<SpaceItem>,
+    val counts: Map<String, Int>
 )
 
 // combining Space and Section
@@ -65,6 +67,14 @@ data class TopicModel(
 )
 
 class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
+    private val availableSections = listOf(
+        "kep1er", "kpop",
+        "yujin", "xiaoting", "mashiro",
+        "chaehyun", "dayeon", "hikaru",
+        "bahiyyih", "youngeun", "yeseo",
+        "media", "games"
+    )
+
     override fun Route.install() {
         get("/") {
             val systemTime = TimeCenter.now()
@@ -81,17 +91,25 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         get("/cafe") {
             val username = TopicFactory.dummyAuthor()
             val spaces = serverContext.subunits.collection.getSpacesForLandingModel()
+            val counts = serverContext.subunits.topic.getTopicsCountForEachSection().okOrThrow()
 
             val data = CafeLandingModel(
                 username = username,
-                spaces = spaces
+                spaces = spaces,
+                counts = counts
             )
 
-            call.respond(ThymeleafContent("cafe/cafe", mapOf("data" to data)))
+            call.respond(ThymeleafContent("cafe/cafehome", mapOf("data" to data)))
         }
 
-        get("/cafeposts") {
-            val topics = serverContext.subunits.topic.getTopics().okOrNull()
+        get("/cafe/{section}") {
+            val path = requireNotNull(call.request.pathVariables["section"])
+            if (!availableSections.contains(path)) {
+                call.respond(HttpStatusCode.NotFound, "Section not found")
+                return@get
+            }
+
+            val topics = serverContext.subunits.topic.getTopicsOfSection(path).okOrNull()
             if (topics == null) {
                 call.respond(HttpStatusCode.InternalServerError, "internal server error")
                 return@get
