@@ -18,11 +18,13 @@ class CollectionSubunit(
 ) : Subunit<ServerScope> {
     private lateinit var spaces: List<Space>
     private lateinit var sections: List<Section>
+    private lateinit var landingModel: List<SpaceItem>
 
     fun getSpaces() = spaces
     fun getSections() = sections
+    fun getSpacesForLandingModel(): List<SpaceItem> = landingModel
 
-    fun getSpacesForLandingModel(): List<SpaceItem> {
+    fun createLandingModel(): List<SpaceItem> {
         val sectionsBySpace = sections.groupBy { it.spaceId }
 
         return spaces
@@ -42,6 +44,7 @@ class CollectionSubunit(
         return runCatching {
             spaces = collectionRepository.getSpaces().getOrThrow()
             sections = collectionRepository.getSections().getOrThrow()
+            landingModel = createLandingModel()
         }
     }
 
