@@ -55,6 +55,7 @@ data class SectionItem(
 data class PostPayload(
     val title: String,
     val author: String,
+    val section: String,
     val content: String
 )
 
@@ -150,7 +151,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val id = Ids.uuid()
                 val topic = Topic(
                     topicId = id,
-                    sectionId = "",
+                    sectionId = post.section,
                     title = post.title,
                     author = post.author,
                     content = post.content,

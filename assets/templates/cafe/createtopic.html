@@ -77,6 +77,7 @@
     <p>Create a topic</p>
     <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title" maxlength="80"></textarea>
     <input id="topic-author-input" class="topic-author-input" type="text" placeholder="Author" maxlength="30" />
+    <input id="topic-section-input" class="topic-section-input" type="text" placeholder="Section" maxlength="30" />
     <div class="post-section">
       <label for="post-textarea">Content</label>
       <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
@@ -105,8 +106,9 @@
 
       const titleText = $("#topic-title-textarea").val();
       const authorText = $("#topic-author-input").val();
+      const sectionText = $("#topic-section-input").val();
       const postText = $("#post-textarea").val();
-      const payload = { title: titleText, author: authorText, content: postText }
+      const payload = { title: titleText, author: authorText, section: sectionText, content: postText }
       console.log(JSON.stringify(payload))
 
       fetch('/cafe/createtopic', {
