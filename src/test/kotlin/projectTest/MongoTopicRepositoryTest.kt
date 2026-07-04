@@ -1,13 +1,14 @@
 package projectTest
 
 import TestMongoCollectionName
-import project.domain.cafe.topic.Topic
 import initMongo
-import io.ktor.util.date.getTimeMillis
+import io.ktor.util.date.*
 import kotlinx.coroutines.test.runTest
 import project.domain.cafe.topic.MongoTopicRepository
+import project.domain.cafe.topic.Topic
 import testUtils.randomString
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -37,16 +38,30 @@ class MongoTopicRepositoryTest {
             repo.getTopics().getOrThrow().find { it.topicId == targetTopic.topicId }
         )
 
-        // 2. getTopics
+        // 3. getTopicsOfSection
         assertNotNull(
             repo.getTopicsOfSection("sectionId123").getOrThrow().find { it.sectionId == targetTopic.sectionId }
         )
 
-        // 3. addTopic
-        assertTrue(repo.addTopic(Topic("topicId456", "sectionId456", "title456", "author456", "content456", 0)).isSuccess)
+        // 4. getTopicsCountForEachSection
+        assertEquals(1, repo.getTopicsCountForEachSection().getOrThrow()["sectionId123"])
+
+        // 5. addTopic
+        assertTrue(
+            repo.addTopic(
+                Topic(
+                    "topicId456",
+                    "sectionId456",
+                    "title456",
+                    "author456",
+                    "content456",
+                    0
+                )
+            ).isSuccess
+        )
         assertNotNull(repo.getTopic("topicId456"))
 
-        // 4. deleteTopic
+        // 6. deleteTopic
         assertTrue(repo.deleteTopic("topicId456").isSuccess)
         assertTrue(repo.getTopic("topicId456").isFailure)
     }

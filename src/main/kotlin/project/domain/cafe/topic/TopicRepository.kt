@@ -41,6 +41,15 @@ interface TopicRepository {
     suspend fun getTopicsOfSection(sectionId: String): Result<List<Topic>>
 
     /**
+     * Get the amount of topic that exist on each section of the cafe.
+     *
+     * Returns:
+     * - [Result.success] with map of each `sectionId` to its count.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getTopicsCountForEachSection(): Result<Map<String, Int>>
+
+    /**
      * Add the [topic].
      *
      * Returns:

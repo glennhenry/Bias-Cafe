@@ -20,6 +20,14 @@ class InMemoryTopicRepository(
         return Result.success(topics.filter { it.sectionId == sectionId })
     }
 
+    override suspend fun getTopicsCountForEachSection(): Result<Map<String, Int>> {
+        return Result.success(
+            topics
+                .groupBy { it.sectionId }
+                .mapValues { it.value.size }
+        )
+    }
+
     override suspend fun addTopic(topic: Topic): Result<Unit> {
         topics.add(topic)
         return Result.success(Unit)

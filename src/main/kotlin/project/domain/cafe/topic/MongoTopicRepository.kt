@@ -1,12 +1,12 @@
 package project.domain.cafe.topic
 
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Sorts
+import com.mongodb.client.model.*
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.DocumentNotFoundException
 import encore.datastore.runMongoCatching
 import encore.fancam.Fancam
 import encore.venue.Venue
+import kotlinx.coroutines.flow.associate
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 
@@ -59,6 +59,24 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
         }
     }
 
+    override suspend fun getTopicsCountForEachSection(): Result<Map<String, Int>> {
+        return runMongoCatching {
+            topicCollection
+                .withDocumentClass<SectionCount>()
+                .aggregate(
+                    listOf(
+                        Aggregates.group("$$FieldSectionId", Accumulators.sum("count", 1)),
+                        Aggregates.project(
+                            Projections.fields(
+                                Projections.computed("sectionId", $$"$_id"),
+                                Projections.include("count")
+                            )
+                        )
+                    )
+                ).associate { it.sectionId to it.count }
+        }
+    }
+
     override suspend fun addTopic(topic: Topic): Result<Unit> {
         return runMongoCatching {
             if (!topicCollection.insertOne(topic).wasAcknowledged()) {
@@ -84,3 +102,8 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
         return runMongoCatching { topicCollection.drop() }
     }
 }
+
+data class SectionCount(
+    val sectionId: String,
+    val count: Int
+)
