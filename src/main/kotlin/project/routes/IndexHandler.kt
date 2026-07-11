@@ -101,7 +101,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 counts = counts
             )
 
-            call.respond(ThymeleafContent("cafe/cafehome", mapOf("data" to data)))
+            call.respond(ThymeleafContent("cafe", mapOf("data" to data)))
         }
 
         get("/cafe/{section}") {
