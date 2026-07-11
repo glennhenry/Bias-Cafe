@@ -56,7 +56,6 @@ data class SectionItem(
 data class PostPayload(
     val title: String,
     val author: String,
-    val section: String,
     val content: String
 )
 
@@ -144,18 +143,28 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 
         get("/cafe/{section}/create") {
             val section = requireNotNull(call.request.pathVariables["section"])
-            Fancam.debug { "Got create to $section" }
+            if (!availableSections.contains(section)) {
+                call.respond(HttpStatusCode.NotFound, "Section not found")
+                return@get
+            }
+
             call.respond(ThymeleafContent("cafe/create", emptyMap()))
         }
 
         post("/cafe/{section}/create") {
             handle(call, NoAuthGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                if (!availableSections.contains(section)) {
+                    call.respond(HttpStatusCode.NotFound, "Section not found")
+                    return@handle
+                }
+
                 val post = JSON.decode<PostPayload>(call.receiveText())
 
                 val id = Ids.uuid()
                 val topic = Topic(
                     topicId = id,
-                    sectionId = post.section,
+                    sectionId = section,
                     title = post.title,
                     author = post.author,
                     content = post.content,
