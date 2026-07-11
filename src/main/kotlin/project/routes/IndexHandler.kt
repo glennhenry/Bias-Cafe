@@ -30,6 +30,7 @@ data class LobbyModel(
 )
 
 data class CafeInsideModel(
+    val sectionId: String,
     val topics: List<TopicModel> = emptyList()
 )
 
@@ -117,6 +118,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             }
 
             val data = CafeInsideModel(
+                sectionId = path,
                 topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedDate) }
             )
 
@@ -140,11 +142,13 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             }
         }
 
-        get("/cafe/createtopic") {
-            call.respond(ThymeleafContent("cafe/createtopic", emptyMap()))
+        get("/cafe/{section}/create") {
+            val section = requireNotNull(call.request.pathVariables["section"])
+            Fancam.debug { "Got create to $section" }
+            call.respond(ThymeleafContent("cafe/create", emptyMap()))
         }
 
-        post("/cafe/createtopic") {
+        post("/cafe/{section}/create") {
             handle(call, NoAuthGuard) {
                 val post = JSON.decode<PostPayload>(call.receiveText())
 
