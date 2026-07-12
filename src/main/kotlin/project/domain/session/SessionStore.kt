@@ -22,6 +22,12 @@ interface SessionStore {
     suspend fun put(token: String, expiresAt: Long): Result<Unit>
 
     /**
+     * Update the session identified with [token] with a new [expiresAt].
+     * @return `Result.failure` for internal store error, otherwise `Result.success`.
+     */
+    suspend fun update(token: String, expiresAt: Long): Result<Unit>
+
+    /**
      * Delete the session identified by [token].
      * @return `Result.failure` for internal store error, otherwise `Result.success`.
      */

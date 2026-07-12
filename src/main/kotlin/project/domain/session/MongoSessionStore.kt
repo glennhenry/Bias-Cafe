@@ -1,9 +1,11 @@
 package project.domain.session
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.ensureAck
 import encore.datastore.runMongoCatching
+import encore.datastore.throwIfNotModified
 import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
@@ -22,6 +24,15 @@ class MongoSessionStore(private val sessionCollection: MongoCollection<SessionSt
         return runMongoCatching {
             ensureAck(sessionCollection.insertOne(SessionStoreModel(token, expiresAt)))
                 .asUnit()
+        }
+    }
+
+    override suspend fun update(token: String, expiresAt: Long): Result<Unit> {
+        val filter = Filters.eq(FieldToken, token)
+        val update = Updates.set(FieldExpiresAt, expiresAt)
+        return runMongoCatching {
+            sessionCollection.updateOne(filter, update)
+                .throwIfNotModified("MongoSessionStore update", { filter }, { update })
         }
     }
 

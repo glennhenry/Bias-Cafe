@@ -14,9 +14,9 @@ class TestMongoSessionStore {
     @Test
     fun `test all`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<SessionStoreModel>(TestMongoCollectionName.session)
+        val collection = mongoDb.getCollection<SessionStoreModel>(TestMongoCollectionName.websiteSession)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.session)
+        mongoDb.createCollection(TestMongoCollectionName.websiteSession)
 
         val store = MongoSessionStore(collection)
 
@@ -36,11 +36,18 @@ class TestMongoSessionStore {
         val putResult = store.put("xyz123", 2)
         assertTrue(putResult.isSuccess)
 
-        // 3. delete
+        // 3. update
+        val updateResult = store.update("xyz123", 1000)
+        assertTrue(updateResult.isSuccess)
+        assertNotNull(
+            store.load().getOrThrow().find { it.token == "xyz123" && it.expiresAt == 1000L }
+        )
+
+        // 4. delete
         val deleteResult = store.delete("xyz123")
         assertTrue(deleteResult.isSuccess)
 
-        // 4. batchDeleteExpiredSessions
+        // 5. batchDeleteExpiredSessions
         val result = store.batchDeleteExpiredSessions(getTimeMillis())
         assertTrue(result.isSuccess)
         val loadResult2 = store.load().getOrThrow()
