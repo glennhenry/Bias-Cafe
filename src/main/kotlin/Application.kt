@@ -45,7 +45,7 @@ val MongoCollectionName = MongoCollectionName(
     userAccount = "user_account",
     serverObjects = "server_objects",
 
-    session = "session",
+    websiteSession = "website_session",
 
     profile = "profile",
     topic = "topic",
