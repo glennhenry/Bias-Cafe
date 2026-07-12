@@ -1,16 +1,20 @@
-package encoreTest.session
+package projectTest
 
 import TestMongoCollectionName
-import project.domain.session.MongoSessionStore
-import project.domain.session.SessionStoreModel
 import encore.utils.identifier.Ids
 import initMongo
-import io.ktor.util.date.*
+import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.test.runTest
-import kotlin.test.*
+import project.domain.session.MongoSessionStore
+import project.domain.session.SessionStoreModel
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
-class TestMongoSessionStore {
+class MongoSessionStoreTest {
     @Test
     fun `test all`() = runTest {
         val mongoDb = initMongo()
