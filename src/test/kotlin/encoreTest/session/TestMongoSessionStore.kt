@@ -1,8 +1,8 @@
 package encoreTest.session
 
 import TestMongoCollectionName
-import encore.session.MongoSessionStore
-import encore.session.SessionStoreModel
+import project.domain.session.MongoSessionStore
+import project.domain.session.SessionStoreModel
 import encore.utils.identifier.Ids
 import initMongo
 import io.ktor.util.date.*

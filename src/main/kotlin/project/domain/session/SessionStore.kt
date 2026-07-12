@@ -1,4 +1,4 @@
-package encore.session
+package project.domain.session
 
 /**
  * Represent a persistent session storage.
