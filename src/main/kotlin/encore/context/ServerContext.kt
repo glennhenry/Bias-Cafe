@@ -29,6 +29,9 @@ import project.domain.cafe.topic.TopicSubunit
 import project.domain.profile.BlankProfileRepository
 import project.domain.profile.ProfileRepository
 import project.domain.profile.ProfileSubunit
+import project.domain.session.BlankSessionStore
+import project.domain.session.SessionStore
+import project.domain.session.WebsiteSessionSubunit
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
@@ -58,6 +61,7 @@ data class ServerContext(
          * @param timeSource [TimeSource] for [StageActDirector].
          * @param dataStore Also used to build [UserCreationSubunit].
          * @param accountRepository Used to build [AccountSubunit].
+         * @param sessionStore Used to build [WebsiteSessionSubunit].
          * @param profileRepository Used to build [ProfileSubunit].
          * @param collectionRepository Used to build [CollectionSubunit].
          * @param topicRepository Used to build [TopicSubunit].
@@ -67,6 +71,7 @@ data class ServerContext(
             timeSource: TimeSource = SystemTimeSource(),
             dataStore: DataStore = BlankDataStore(),
             accountRepository: AccountRepository = BlankAccountRepository(),
+            sessionStore: SessionStore = BlankSessionStore(),
             profileRepository: ProfileRepository = BlankProfileRepository(),
             collectionRepository: CollectionRepository = BlankCollectionRepository(),
             topicRepository: TopicRepository = InMemoryTopicRepository(),
@@ -75,6 +80,7 @@ data class ServerContext(
             val session = SessionSubunit.createForTest(parentScope)
             val creation = UserCreationSubunit.createForTest(dataStore)
 
+            val websiteSessionSubunit = WebsiteSessionSubunit.createForTest(parentScope, timeSource, sessionStore)
             val profile = ProfileSubunit(profileRepository)
             val collection = CollectionSubunit(collectionRepository)
             val topic = TopicSubunit(topicRepository)
@@ -91,6 +97,7 @@ data class ServerContext(
                     presence = UserPresenceSubunit(),
                     session = session,
 
+                    websiteSessionSubunit = websiteSessionSubunit,
                     profile = profile,
                     collection = collection,
                     topic = topic
@@ -122,8 +129,10 @@ data class ServerContext(
  * @property presence Tracks user's presence.
  * @property session Manages session of users.
 
+ * @property websiteSessionSubunit Provides API related to [WebsiteSessionSubunit].
  * @property profile Provides API related to profiles.
  * @property topic Provides API related to topics.
+ * @property collection Provides API related to cafe collection.
  */
 data class ServerSubunits(
     val account: AccountSubunit,
@@ -132,6 +141,7 @@ data class ServerSubunits(
     val presence: UserPresenceSubunit,
     val session: SessionSubunit,
 
+    val websiteSessionSubunit: WebsiteSessionSubunit,
     val profile: ProfileSubunit,
     val topic: TopicSubunit,
     val collection: CollectionSubunit
@@ -140,7 +150,7 @@ data class ServerSubunits(
      * Return all server subunit instances.
      */
     fun all(): Set<Subunit<ServerScope>> {
-        return setOf(account, auth, creation, presence, session, profile, topic, collection)
+        return setOf(account, auth, creation, presence, session, websiteSessionSubunit, profile, topic, collection)
     }
 
     /**

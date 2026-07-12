@@ -27,6 +27,8 @@ import project.domain.cafe.topic.MongoTopicRepository
 import project.domain.cafe.topic.TopicSubunit
 import project.domain.profile.MongoProfileRepository
 import project.domain.profile.ProfileSubunit
+import project.domain.session.MongoSessionStore
+import project.domain.session.WebsiteSessionSubunit
 
 /**
  * Create and return a [ServerContext] instance.
@@ -61,6 +63,7 @@ suspend fun createServerContext(
     val userCreationSubunit = UserCreationSubunit(dataStore)
     val authSubunit = AuthSubunit(accountSubunit, userCreationSubunit, sessionSubunit)
 
+    val sessionStore = MongoSessionStore(mongoDatabase.getCollection(MongoCollectionName.websiteSession))
     val profileRepository = MongoProfileRepository(
         profileCollection = mongoDatabase.getCollection(MongoCollectionName.profile)
     )
@@ -72,6 +75,7 @@ suspend fun createServerContext(
         sectionCollection = mongoDatabase.getCollection(MongoCollectionName.sections)
     )
 
+    val websiteSessionSubunit = WebsiteSessionSubunit(appScope, TimeCenter.source, sessionStore)
     val profileSubunit = ProfileSubunit(profileRepository)
     val topicSubunit = TopicSubunit(topicRepository)
     val collectionSubunit = CollectionSubunit(collectionRepository)
@@ -83,6 +87,7 @@ suspend fun createServerContext(
         session = sessionSubunit,
         creation = userCreationSubunit,
 
+        websiteSessionSubunit = websiteSessionSubunit,
         profile = profileSubunit,
         topic = topicSubunit,
         collection = collectionSubunit
