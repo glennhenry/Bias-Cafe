@@ -3,8 +3,10 @@ package project.domain.cafe.topic
 import com.mongodb.client.model.*
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.DocumentNotFoundException
+import encore.datastore.ensureAck
 import encore.datastore.runMongoCatching
 import encore.fancam.Fancam
+import encore.utils.support.asUnit
 import encore.venue.Venue
 import kotlinx.coroutines.flow.associate
 import kotlinx.coroutines.flow.firstOrNull
@@ -79,21 +81,15 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
 
     override suspend fun addTopic(topic: Topic): Result<Unit> {
         return runMongoCatching {
-            if (!topicCollection.insertOne(topic).wasAcknowledged()) {
-                throw IllegalStateException("Topic insertion not acknowledged")
-            }
+            ensureAck(topicCollection.insertOne(topic))
+                .asUnit()
         }
     }
 
     override suspend fun deleteTopic(topicId: String): Result<Unit> {
         return runMongoCatching {
-            val result = topicCollection.deleteOne(Filters.eq(FieldTopicId, topicId))
-            if (!result.wasAcknowledged()) {
-                throw IllegalStateException("Topic deletion not acknowledged")
-            }
-
-            if (result.deletedCount <= 0) {
-                throw DocumentNotFoundException("Topic $topicId is not found")
+            if (ensureAck(topicCollection.deleteOne(Filters.eq(FieldTopicId, topicId))).deletedCount <= 0) {
+                error("Topic $topicId wasn't deleted (deletedCount <= 0)")
             }
         }
     }
