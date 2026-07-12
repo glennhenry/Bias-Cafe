@@ -9,6 +9,8 @@ val TestMongoCollectionName = MongoCollectionName(
     userAccount = "test_user_account",
     serverObjects = "test_server_objects",
 
+    session = "test_session",
+
     profile = "test_profile",
     topic = "test_topic",
     spaces = "test_spaces",

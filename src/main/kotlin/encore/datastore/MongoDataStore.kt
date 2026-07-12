@@ -24,6 +24,8 @@ data class MongoCollectionName(
     val userAccount: String,
     val serverObjects: String,
 
+    val session: String,
+
     val profile: String,
     val topic: String,
     val spaces: String,

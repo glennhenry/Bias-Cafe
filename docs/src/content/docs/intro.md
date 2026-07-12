@@ -286,7 +286,7 @@ For example:
 The session model used in the website is as follow:
 
 - A session is identified with a UUID.
-- It has `validFor` which is the timestamp when it will expire.
+- It has `expiresAt` which is the timestamp when it will expire.
 - A session will last for 365 days, and this can be refreshed every 30 days.
 - User that register or login will create a new session, this is stored as cookie in local storage.
 - The server will store every user sessions in the memory and in MongoDB as backup. The memory remain as the main operator.
@@ -299,7 +299,7 @@ Some routes require cookie check and some do not. There should be three models:
 
 Refresh behavior:
 - Session can be refreshed unlimited times.
-- Refresh is done when at least 30 days passed on validFor (e.g., <= 335 days)
+- Refresh is done when at least 30 days passed on expiresAt (e.g., <= 335 days)
 - Server will also periodically clean token session, maybe every 1 day, if the token is no longer valid (more than 365 days)
 
 The behavior:
@@ -313,7 +313,7 @@ The behavior:
      - if cookie is valid
         - server returns "logged in" text in the template
         - user can do any auth required action (e.g., create new post)
-        - if there is at least 30 days passed on validFor (e.g., <= 335 days), server will reset it back to 365 days.
+        - if there is at least 30 days passed on expiresAt (e.g., <= 335 days), server will reset it back to 365 days.
      - if cookie is invalid (expired)
         - server returns "not logged in" text in the template
         - the session saved in the server will also be deleted, if exists
@@ -328,9 +328,9 @@ Also need persistence backup with mongodb.
 - on server startup, load the persistented session data
 - on new session created (each register/login) run mongodb insertone
 - on session refresh run mongodb updateone
-- on session deleted (user logout, cleanup expired session) run mongodb deletemany
-- data model should be {sessionId: validUntil}
-- can use ttl index which is 365 days in seconds
+- on session deleted (user logout) run mongodb deleteone
+- data model should be {sessionId: expiresAt}
+- do a periodic cleanup which delete every expired session (expiresAt is more than now millis)
 
 for example:
 
