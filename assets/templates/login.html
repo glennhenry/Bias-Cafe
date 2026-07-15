@@ -1,0 +1,70 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
+    <link rel="stylesheet" href="/site/reset.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <title>Login</title>
+    <style>
+        body {
+            margin-left: 8px;
+        }
+
+        .navbar {
+            display: flex;
+            gap: 8px;
+            width: fit-content;
+            margin-top: 24px;
+        }
+
+        .nav-link {
+            border: 1px solid black;
+            padding: 4px;
+            background-color: #dddddd;
+        }
+
+        .nav-link:hover {
+            color: gray;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Login</h1>
+    <form id="post-form" class="post-container">
+        <input type="text">
+        <button type="submit" class="post-submit">Post</button>
+    </form>
+    <div class="navbar">
+        <a class="nav-link" href="/">Lobby</a>
+        <a class="nav-link" href="/cafe">Cafe</a>
+        <a class="nav-link" href="/profile">Profile</a>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $("#post-form").submit(function (event) {
+                postFormSubmitListener(event)
+            })
+        })
+
+        function postFormSubmitListener(event) {
+            event.preventDefault()
+
+            fetch(window.location.href, {
+                method: 'POST',
+                body: JSON.stringify(new URLSearchParams(window.location.search).get("return"))
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log("Cafe post status: ", response.status)
+                    }
+                })
+                .catch(error => { console.error('Error:', error) });
+        }
+    </script>
+</body>
+
+</html>
