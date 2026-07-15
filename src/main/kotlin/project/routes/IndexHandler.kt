@@ -1,9 +1,10 @@
 package project.routes
 
 import encore.context.ServerContext
-import project.domain.cafe.topic.Topic
 import encore.fancam.Fancam
 import encore.route.RouteHandler
+import encore.route.guard.AuthGuard
+import encore.route.guard.GuardResult
 import encore.route.guard.NoAuthGuard
 import encore.route.handle
 import encore.serialization.JSON
@@ -14,14 +15,18 @@ import encore.utils.types.okOrNull
 import encore.utils.types.okOrThrow
 import encore.utils.types.onFail
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
+import io.ktor.util.*
 import kotlinx.serialization.Serializable
 import project.Members
+import project.domain.cafe.topic.Topic
 import project.domain.cafe.topic.TopicDeletionOutcome
 import project.domain.cafe.topic.TopicFactory
+import project.domain.session.WebsiteSessionSubunit
 import java.text.SimpleDateFormat
 
 data class LobbyModel(
@@ -67,6 +72,18 @@ data class TopicModel(
     val postedDate: Long
 )
 
+data class ErrorModel(
+    val title: String,
+    val heading: String,
+    val message: String,
+    val action: Action? = null
+)
+
+data class Action(
+    val href: String,
+    val text: String
+)
+
 class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
     private val availableSections = listOf(
         "kep1er", "kpop",
@@ -75,6 +92,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         "bahiyyih", "youngeun", "yeseo",
         "media", "games"
     )
+    private val requireAccountGuard = RequireAccountGuard(serverContext.subunits.websiteSession)
 
     override fun Route.install() {
         get("/") {
@@ -142,13 +160,15 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         }
 
         get("/cafe/{section}/create") {
-            val section = requireNotNull(call.request.pathVariables["section"])
-            if (!availableSections.contains(section)) {
-                call.respond(HttpStatusCode.NotFound, "Section not found")
-                return@get
-            }
+            handle(call, requireAccountGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                if (!availableSections.contains(section)) {
+                    call.respond(HttpStatusCode.NotFound, "Section not found")
+                    return@handle
+                }
 
-            call.respond(ThymeleafContent("cafe/create", emptyMap()))
+                call.respond(ThymeleafContent("cafe/create", emptyMap()))
+            }
         }
 
         post("/cafe/{section}/create") {
@@ -184,5 +204,55 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         get("/profile") {
             call.respond(ThymeleafContent("profile", emptyMap()))
         }
+
+        get("/login") {
+            call.respond(ThymeleafContent("login", emptyMap()))
+        }
+    }
+}
+
+val SessionCookieKey = AttributeKey<String>("session")
+
+/**
+ * This guard tolerate the absence of session cookie and will always
+ * returns a [GuardResult.Welcome].
+ *
+ * If session cookie is found and valid, it will set the [SessionCookieKey]
+ * with the session's token on [ApplicationCall.attributes].
+ */
+class OptionalAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubunit) : AuthGuard {
+    override suspend fun verify(call: ApplicationCall): GuardResult {
+        val token = call.request.cookies["session"]
+        if (token != null && websiteSessionSubunit.verify(token)) {
+            call.attributes[SessionCookieKey] = token
+        }
+        return GuardResult.Welcome
+    }
+}
+
+/**
+ * This guard obligates session cookie and will return [GuardResult.GetOut]
+ * if it's not found or invalid.
+ *
+ * It guarantees that [SessionCookieKey] is set on [ApplicationCall.attributes]
+ * with the session's token.
+ */
+class RequireAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubunit) : AuthGuard {
+    override suspend fun verify(call: ApplicationCall): GuardResult {
+        val token = call.request.cookies["session"]
+        if (token != null && websiteSessionSubunit.verify(token)) {
+            call.attributes[SessionCookieKey] = token
+            return GuardResult.Welcome
+        }
+
+        val data = ErrorModel(
+            title = "Login required",
+            heading = "You need to log in",
+            message = "This action requires an account",
+            action = Action("/login?return=${call.request.uri}", "Log in")
+        )
+
+        call.respond(HttpStatusCode.Forbidden, ThymeleafContent("error", mapOf("data" to data)))
+        return GuardResult.Reject("User is not logged in")
     }
 }
