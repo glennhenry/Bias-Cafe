@@ -75,7 +75,7 @@ suspend fun createServerContext(
         sectionCollection = mongoDatabase.getCollection(MongoCollectionName.sections)
     )
 
-    val websiteSessionSubunit = WebsiteSessionSubunit(appScope, TimeCenter.source, sessionStore)
+    val websiteSession = WebsiteSessionSubunit(appScope, TimeCenter.source, sessionStore)
     val profileSubunit = ProfileSubunit(profileRepository)
     val topicSubunit = TopicSubunit(topicRepository)
     val collectionSubunit = CollectionSubunit(collectionRepository)
@@ -87,7 +87,7 @@ suspend fun createServerContext(
         session = sessionSubunit,
         creation = userCreationSubunit,
 
-        websiteSessionSubunit = websiteSessionSubunit,
+        websiteSession = websiteSession,
         profile = profileSubunit,
         topic = topicSubunit,
         collection = collectionSubunit

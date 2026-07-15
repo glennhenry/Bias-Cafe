@@ -80,7 +80,7 @@ data class ServerContext(
             val session = SessionSubunit.createForTest(parentScope)
             val creation = UserCreationSubunit.createForTest(dataStore)
 
-            val websiteSessionSubunit = WebsiteSessionSubunit.createForTest(parentScope, timeSource, sessionStore)
+            val websiteSession = WebsiteSessionSubunit.createForTest(parentScope, timeSource, sessionStore)
             val profile = ProfileSubunit(profileRepository)
             val collection = CollectionSubunit(collectionRepository)
             val topic = TopicSubunit(topicRepository)
@@ -97,7 +97,7 @@ data class ServerContext(
                     presence = UserPresenceSubunit(),
                     session = session,
 
-                    websiteSessionSubunit = websiteSessionSubunit,
+                    websiteSession = websiteSession,
                     profile = profile,
                     collection = collection,
                     topic = topic
@@ -129,7 +129,7 @@ data class ServerContext(
  * @property presence Tracks user's presence.
  * @property session Manages session of users.
 
- * @property websiteSessionSubunit Provides API related to [WebsiteSessionSubunit].
+ * @property websiteSession Provides API related to [WebsiteSessionSubunit].
  * @property profile Provides API related to profiles.
  * @property topic Provides API related to topics.
  * @property collection Provides API related to cafe collection.
@@ -141,7 +141,7 @@ data class ServerSubunits(
     val presence: UserPresenceSubunit,
     val session: SessionSubunit,
 
-    val websiteSessionSubunit: WebsiteSessionSubunit,
+    val websiteSession: WebsiteSessionSubunit,
     val profile: ProfileSubunit,
     val topic: TopicSubunit,
     val collection: CollectionSubunit
@@ -150,7 +150,7 @@ data class ServerSubunits(
      * Return all server subunit instances.
      */
     fun all(): Set<Subunit<ServerScope>> {
-        return setOf(account, auth, creation, presence, session, websiteSessionSubunit, profile, topic, collection)
+        return setOf(account, auth, creation, presence, session, websiteSession, profile, topic, collection)
     }
 
     /**
