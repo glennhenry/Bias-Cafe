@@ -2,7 +2,6 @@ package encore.auth
 
 import com.mongodb.MongoWriteException
 import com.toxicbakery.bcrypt.Bcrypt
-import encore.EncoreConfig
 import encore.account.AccountSubunit
 import encore.account.UserCreationSubunit
 import encore.fancam.Fancam
@@ -39,21 +38,21 @@ class AuthSubunit(
      * Returns:
      * - [Report.Fail] if there is an internal repository error or
      *   if username or email already exists.
-     * - Otherwise [Report.Ok].
+     * - Otherwise [Report.Ok] with newly created `userId`.
      */
-    suspend fun register(username: String, password: String, email: String): Report {
+    suspend fun register(username: String, password: String, email: String): Outcome<String> {
         try {
-            creationSubunit.createUser(username, password, email)
+            val userId = creationSubunit.createUser(username, password, email)
             Fancam.trace(Tags.Auth) { "Registered '$username' successfully" }
-            return Report.Ok
+            return Outcome.Ok(userId)
         } catch (e: Throwable) {
             if (e is MongoWriteException && e.code == 11000) {
                 Fancam.error(e, Tags.Auth) { "Duplicate field encountered on '$username' registration" }
-                return Report.Fail
+                return Outcome.Fail
             }
 
             Fancam.error(e, Tags.Auth) { "Failed to register '$username'" }
-            return Report.Fail
+            return Outcome.Fail
         }
     }
 
@@ -82,7 +81,7 @@ class AuthSubunit(
 
                 if (verifyPassword(password, credentials.hashedPassword)) {
                     Fancam.trace(Tags.Auth) { "Login success for '$username'" }
-                    Outcome.Ok(LoginResult.Success)
+                    Outcome.Ok(LoginResult.Success(credentials.userId))
                 } else {
                     Fancam.trace(Tags.Auth) { "Login failed: wrong password for '$username'" }
                     Outcome.Ok(LoginResult.InvalidCredentials("Wrong password for '$username'"))

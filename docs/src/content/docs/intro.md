@@ -286,6 +286,7 @@ For example:
 The session model used in the website is as follow:
 
 - A session is identified with a UUID.
+- It has `userId` to which account does the session belongs to.
 - It has `expiresAt` which is the timestamp when it will expire.
 - A session will last for 365 days, and this can be refreshed every 30 days.
 - User that register or login will create a new session, this is stored as cookie in local storage.
@@ -322,6 +323,7 @@ Other case:
 
 - when user log out, the session will be deleted
 - when user login again, maybe in another device, new session is created normally
+- in other word, multiple session can exist for one userId
 
 Also need persistence backup with mongodb.
 

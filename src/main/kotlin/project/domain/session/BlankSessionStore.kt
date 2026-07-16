@@ -5,7 +5,11 @@ class BlankSessionStore: SessionStore {
         TODO("Not yet implemented")
     }
 
-    override suspend fun put(token: String, expiresAt: Long): Result<Unit> {
+    override suspend fun put(
+        userId: String,
+        token: String,
+        expiresAt: Long
+    ): Result<Unit> {
         TODO("Not yet implemented")
     }
 

@@ -20,9 +20,9 @@ class MongoSessionStore(private val sessionCollection: MongoCollection<SessionSt
         }
     }
 
-    override suspend fun put(token: String, expiresAt: Long): Result<Unit> {
+    override suspend fun put(userId: String, token: String, expiresAt: Long): Result<Unit> {
         return runMongoCatching {
-            ensureAck(sessionCollection.insertOne(SessionStoreModel(token, expiresAt)))
+            ensureAck(sessionCollection.insertOne(SessionStoreModel(userId, token, expiresAt)))
                 .asUnit()
         }
     }
@@ -54,6 +54,7 @@ class MongoSessionStore(private val sessionCollection: MongoCollection<SessionSt
 
 @Serializable
 data class SessionStoreModel(
+    val userId: String,
     val token: String,
     val expiresAt: Long
 )

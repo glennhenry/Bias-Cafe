@@ -44,18 +44,18 @@ class WebsiteSessionSubunit(
      * To create a new session which will be valid for 365 days.
      * @return The newly created session identifier.
      */
-    suspend fun create(): String {
+    suspend fun create(userId: String): String {
         val now = timeSource.now()
         val expiresAt = now + sessionDuration.inWholeMilliseconds
-        val id = Ids.uuid()
+        val token = Ids.uuid()
 
-        sessions[id] = SessionMemoryModel(id, expiresAt)
-        sessionStore.put(id, expiresAt)
+        sessions[token] = SessionMemoryModel(userId, token, expiresAt)
+        sessionStore.put(userId, token, expiresAt)
             .onFailure {
                 Fancam.error(it, "web_session") { "Failed to create website session" }
             }
 
-        return id
+        return token
     }
 
     /**
@@ -68,16 +68,16 @@ class WebsiteSessionSubunit(
      * This will also refresh the session back to 365 days
      * if at least 30 days has passed.
      *
-     * @return `true` if session is valid, `false` otherwise.
+     * @return `userId` which is the owner of this token, `null` otherwise.
      */
-    suspend fun verify(token: String): Boolean {
-        val session = sessions[token] ?: return false
+    suspend fun verify(token: String): String? {
+        val session = sessions[token] ?: return null
         val now = timeSource.now()
 
         // expired
         if (now >= session.expiresAt) {
             delete(token)
-            return false
+            return null
         }
 
         // optionally, refresh the token
@@ -89,7 +89,7 @@ class WebsiteSessionSubunit(
                 }
         }
 
-        return true
+        return session.userId
     }
 
     /**
@@ -124,7 +124,7 @@ class WebsiteSessionSubunit(
         return runCatching {
             val result = sessionStore.load().getOrThrow()
             result.forEach { model ->
-                sessions[model.token] = SessionMemoryModel(model.token, model.expiresAt)
+                sessions[model.token] = SessionMemoryModel(model.userId, model.token, model.expiresAt)
             }
 
             // clean session on startup
@@ -158,6 +158,7 @@ class WebsiteSessionSubunit(
 }
 
 data class SessionMemoryModel(
+    val userId: String,
     val token: String,
     var expiresAt: Long
 )

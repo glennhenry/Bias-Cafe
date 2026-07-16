@@ -17,7 +17,7 @@ sealed interface LoginResult {
     /**
      * Represent a successful authentication.
      */
-    data object Success : LoginResult
+    data class Success(val userId: String) : LoginResult
 
     /**
      * Auth failed due to wrong credentials (e.g., password).

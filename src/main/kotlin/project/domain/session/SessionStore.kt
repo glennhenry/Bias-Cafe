@@ -16,10 +16,10 @@ interface SessionStore {
     suspend fun load(): Result<List<SessionStoreModel>>
 
     /**
-     * Put the session identified with [token] that expires at [expiresAt].
+     * Put the session identified with [token] owned by [userId] that expires at [expiresAt].
      * @return `Result.failure` for internal store error, otherwise `Result.success`.
      */
-    suspend fun put(token: String, expiresAt: Long): Result<Unit>
+    suspend fun put(userId: String, token: String, expiresAt: Long): Result<Unit>
 
     /**
      * Update the session identified with [token] with a new [expiresAt].

@@ -25,11 +25,11 @@ class MongoSessionStoreTest {
         val store = MongoSessionStore(collection)
 
         val dummy = List(20) {
-            SessionStoreModel(Ids.uuid(), getTimeMillis() + 100.seconds.inWholeMilliseconds)
+            SessionStoreModel(Ids.uuid(), Ids.uuid(), getTimeMillis() + 100.seconds.inWholeMilliseconds)
         }
 
         collection.insertMany(dummy)
-        collection.insertOne(SessionStoreModel("abcdefgh", 1))
+        collection.insertOne(SessionStoreModel(Ids.uuid(), "abcdefgh", 1))
 
         // 1. load
         val loadResult = store.load().getOrThrow()
@@ -37,7 +37,7 @@ class MongoSessionStoreTest {
         assertNotNull(loadResult.find { it.token == "abcdefgh" && it.expiresAt == 1L })
 
         // 2. put
-        val putResult = store.put("xyz123", 2)
+        val putResult = store.put(Ids.uuid(), "xyz123", 2)
         assertTrue(putResult.isSuccess)
 
         // 3. update
