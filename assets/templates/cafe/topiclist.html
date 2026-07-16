@@ -29,8 +29,13 @@
       color: gray;
     }
 
-    .create-topic {
-      color:blue;
+    .link {
+      color: blue;
+      text-decoration: underline;
+    }
+
+    .link:hover {
+      text-decoration-thickness: 2px;
     }
 
     .topic-lists {
@@ -94,7 +99,7 @@
 <body>
   <h1>Cafe.TopicList</h1>
   <div class="posted-text">
-    <a class="create-topic" th:href="${data.sectionId} + '/create'">Create topic</a>
+    <a class="link" th:href="${data.sectionId} + '/create'">Create topic</a>
     <h3>All topics:</h3>
 
     <ul class="topic-lists" th:if="${not #lists.isEmpty(data.topics)}">

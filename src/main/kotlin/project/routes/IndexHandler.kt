@@ -350,6 +350,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                     call.respondText("You are already logged in.")
                     return@handle
                 }
+
                 val data = JSON.decode<LoginPayload>(call.receiveText())
 
                 if (data.username.isBlank() || data.password.isBlank()) {
