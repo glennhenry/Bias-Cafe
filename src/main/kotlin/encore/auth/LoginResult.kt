@@ -1,6 +1,5 @@
 package encore.auth
 
-import encore.session.UserSession
 import encore.utils.types.Outcome
 
 /**
@@ -17,10 +16,8 @@ import encore.utils.types.Outcome
 sealed interface LoginResult {
     /**
      * Represent a successful authentication.
-     *
-     * @property session the session for this login.
      */
-    data class Success(val session: UserSession) : LoginResult
+    data object Success : LoginResult
 
     /**
      * Auth failed due to wrong credentials (e.g., password).

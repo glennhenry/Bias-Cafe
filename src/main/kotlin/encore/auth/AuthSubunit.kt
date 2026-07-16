@@ -12,8 +12,8 @@ import encore.session.UserSession
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.Outcome
+import encore.utils.types.Report
 import encore.utils.types.fold
-import encore.venue.Venue
 import project.Globals
 import kotlin.io.encoding.Base64
 
@@ -23,18 +23,13 @@ import kotlin.io.encoding.Base64
  * `AuthSubunit` requires other subunits:
  * - [AccountSubunit] to get account information for registration or login.
  * - [UserCreationSubunit] to create account during registration.
- * - [SessionSubunit] to create session after successful registration or login.
  */
 class AuthSubunit(
     private val accountSubunit: AccountSubunit,
     private val creationSubunit: UserCreationSubunit,
-    private val sessionSubunit: SessionSubunit
 ) : Subunit<ServerScope> {
     /**
      * Register an account with [username] and [password].
-     *
-     * A successful registration will also create and return a user session
-     * from [SessionSubunit.create].
      *
      * **Note**: The uniqueness of username and email applies. Although
      * [AccountSubunit.usernameExists] or [AccountSubunit.emailExists]
@@ -42,24 +37,23 @@ class AuthSubunit(
      * When such thing happens, account won't be registered.
      *
      * Returns:
-     * - [Outcome.Fail] if there is an internal repository error.
-     * - [Outcome.Ok] with `null` if username or email already exists.
-     * - Otherwise [Outcome.Ok] with [UserSession].
+     * - [Report.Fail] if there is an internal repository error or
+     *   if username or email already exists.
+     * - Otherwise [Report.Ok].
      */
-    suspend fun register(username: String, password: String, email: String): Outcome<UserSession?> {
+    suspend fun register(username: String, password: String, email: String): Report {
         try {
-            val playerId = creationSubunit.createUser(username, password, email)
+            creationSubunit.createUser(username, password, email)
             Fancam.trace(Tags.Auth) { "Registered '$username' successfully" }
-            val session = sessionSubunit.create(playerId)
-            return Outcome.Ok(session)
+            return Report.Ok
         } catch (e: Throwable) {
             if (e is MongoWriteException && e.code == 11000) {
                 Fancam.error(e, Tags.Auth) { "Duplicate field encountered on '$username' registration" }
-                return Outcome.Ok(null)
+                return Report.Fail
             }
 
             Fancam.error(e, Tags.Auth) { "Failed to register '$username'" }
-            return Outcome.Fail
+            return Report.Fail
         }
     }
 
@@ -69,15 +63,13 @@ class AuthSubunit(
      * On successful login, this would produce a [UserSession]
      * obtained from calling [SessionSubunit.create].
      *
-     * Login of admin should be directed to [loginAsAdmin] instead.
-     *
      * Returns:
      * - [Outcome.Fail] if there is an internal repository error.
      * - [Outcome.Ok] with [LoginResult.AccountNotFound] if the associated
      *   user account of [username] is not found.
      * - [Outcome.Ok] with [LoginResult.InvalidCredentials] if the password
      *   does not match.
-     * - Otherwise [Outcome.Ok] with [UserSession].
+     * - Otherwise [Outcome.Ok] with [LoginResult.Success].
      */
     suspend fun login(username: String, password: String): Outcome<LoginResult> {
         val outcome = accountSubunit.getCredentials(username)
@@ -90,8 +82,7 @@ class AuthSubunit(
 
                 if (verifyPassword(password, credentials.hashedPassword)) {
                     Fancam.trace(Tags.Auth) { "Login success for '$username'" }
-                    val session = sessionSubunit.create(credentials.userId)
-                    Outcome.Ok(LoginResult.Success(session))
+                    Outcome.Ok(LoginResult.Success)
                 } else {
                     Fancam.trace(Tags.Auth) { "Login failed: wrong password for '$username'" }
                     Outcome.Ok(LoginResult.InvalidCredentials("Wrong password for '$username'"))
@@ -102,19 +93,6 @@ class AuthSubunit(
                 Outcome.Fail
             }
         )
-    }
-
-    /**
-     * Login as admin, which creates a reserved admin session.
-     *
-     * When [EncoreConfig.adminEnabled] is `false`, this will fail returning a `null`.
-     *
-     * @return [UserSession] with fixed token of [Globals.ADMIN_TOKEN], or `null`
-     *                       if admin is not enabled.
-     */
-    fun loginAsAdmin(): UserSession? {
-        if (!Venue.encore.adminEnabled) return null
-        return sessionSubunit.create(Globals.ADMIN_PLAYER_ID)
     }
 
     private fun verifyPassword(password: String, hashed: String): Boolean {
@@ -214,14 +192,12 @@ class AuthSubunit(
          *
          * @param accountSubunit created via [AccountSubunit.createForTest].
          * @param creationSubunit created via [UserCreationSubunit.createForTest].
-         * @param sessionSubunit created via [SessionSubunit.createForTest].
          */
         fun createForTest(
             accountSubunit: AccountSubunit = AccountSubunit.createForTest(),
             creationSubunit: UserCreationSubunit = UserCreationSubunit.createForTest(),
-            sessionSubunit: SessionSubunit = SessionSubunit.createForTest()
         ): AuthSubunit {
-            return AuthSubunit(accountSubunit, creationSubunit, sessionSubunit)
+            return AuthSubunit(accountSubunit, creationSubunit)
         }
     }
 }

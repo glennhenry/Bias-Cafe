@@ -92,7 +92,7 @@ data class ServerContext(
                 webSocketManager = WebSocketManager(),
                 subunits = ServerSubunits(
                     account = account,
-                    auth = AuthSubunit(account, creation, session),
+                    auth = AuthSubunit(account, creation),
                     creation = creation,
                     presence = UserPresenceSubunit(),
                     session = session,
