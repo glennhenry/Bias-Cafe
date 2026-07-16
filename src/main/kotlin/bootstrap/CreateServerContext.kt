@@ -60,13 +60,17 @@ suspend fun createServerContext(
     val accountSubunit = AccountSubunit(accountRepository)
     val userPresenceSubunit = UserPresenceSubunit()
     val sessionSubunit = SessionSubunit(appScope, TimeCenter.source)
-    val userCreationSubunit = UserCreationSubunit(dataStore)
-    val authSubunit = AuthSubunit(accountSubunit, userCreationSubunit)
 
-    val sessionStore = MongoSessionStore(mongoDatabase.getCollection(MongoCollectionName.websiteSession))
     val profileRepository = MongoProfileRepository(
         profileCollection = mongoDatabase.getCollection(MongoCollectionName.profile)
     )
+    val profileSubunit = ProfileSubunit(profileRepository)
+
+    val userCreationSubunit = UserCreationSubunit(dataStore, profileSubunit)
+    val authSubunit = AuthSubunit(accountSubunit, userCreationSubunit)
+
+    val sessionStore = MongoSessionStore(mongoDatabase.getCollection(MongoCollectionName.websiteSession))
+
     val topicRepository = MongoTopicRepository(
         topicCollection = mongoDatabase.getCollection(MongoCollectionName.topic)
     ).also { it.awaitInit() }
@@ -76,7 +80,6 @@ suspend fun createServerContext(
     )
 
     val websiteSession = WebsiteSessionSubunit(appScope, TimeCenter.source, sessionStore)
-    val profileSubunit = ProfileSubunit(profileRepository)
     val topicSubunit = TopicSubunit(topicRepository)
     val collectionSubunit = CollectionSubunit(collectionRepository)
 

@@ -13,4 +13,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Profile(
     val userId: UserId,
+    val username: String,
+    val email: String,
+    val registeredAt: Long,
+    val lastActiveAt: Long,
+
+    val level: Int
 )

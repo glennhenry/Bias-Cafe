@@ -12,7 +12,8 @@ import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
 import encore.utils.hash
-import project.Globals
+import encore.utils.types.isOk
+import project.domain.profile.ProfileSubunit
 
 /**
  * Server-scoped subunit responsible for user creation.
@@ -26,7 +27,10 @@ import project.Globals
  *
  * @property dataStore [DataStore] to persist the newly created users.
  */
-class UserCreationSubunit(private val dataStore: DataStore) : Subunit<ServerScope> {
+class UserCreationSubunit(
+    private val dataStore: DataStore,
+    private val profileSubunit: ProfileSubunit
+) : Subunit<ServerScope> {
     /**
      * Create a user account with the specified [username], [password], and [email].
      *
@@ -52,10 +56,18 @@ class UserCreationSubunit(private val dataStore: DataStore) : Subunit<ServerScop
             lastActiveAt = now,
             metadata = UserMetadata(),
         )
-        val profile = Profile(userId)
+        val profile = Profile(
+            userId = userId,
+            username = username,
+            email = email,
+            registeredAt = now,
+            lastActiveAt = now,
+            level = 1
+        )
 
-        val result = dataStore.create(account, profile)
-        if (result.isSuccess) {
+        val result = dataStore.create(account)
+        val profileResult = profileSubunit.createProfile(userId, profile)
+        if (result.isSuccess && profileResult.isOk()) {
             return userId
         }
 
@@ -63,51 +75,6 @@ class UserCreationSubunit(private val dataStore: DataStore) : Subunit<ServerScop
 
         throw result.exceptionOrNull()
             ?: IllegalStateException("Account creation failed with unknown scandal (exception was null)")
-    }
-
-    /**
-     * Create a reserved admin account if it doesn't exist.
-     *
-     * @param alwaysRecreate Whether to always recreate the account.
-     * @throws [Throwable] an exception type from the underlying datastore or
-     *         [IllegalStateException] when the account creation failed without any exception passed.
-     */
-    suspend fun createAdmin(adminData: Globals, alwaysRecreate: Boolean = false) {
-        if (alwaysRecreate) {
-            dataStore.delete(adminData.ADMIN_PLAYER_ID)
-        } else if (dataStore.userExists(adminData.ADMIN_PLAYER_ID)) {
-            Fancam.info(Tags.Creation) { "Ignoring admin account creation (already exists)" }
-            return
-        }
-
-        val now = TimeCenter.now()
-        val account = UserAccount(
-            userId = Globals.ADMIN_PLAYER_ID,
-            username = Globals.ADMIN_USERNAME,
-            email = Globals.ADMIN_EMAIL,
-            hashedPassword = Globals.ADMIN_HASHED_PASSWORD,
-            registeredAt = now,
-            lastActiveAt = now,
-            metadata = UserMetadata(),
-        )
-        val profile = Profile(Globals.ADMIN_PLAYER_ID)
-
-        val result = dataStore.create(account, profile)
-
-        if (result.isSuccess) {
-            Fancam.info(Tags.Creation) { "New admin account created with username=${Globals.ADMIN_USERNAME}, userId=${Globals.ADMIN_PLAYER_ID}" }
-        } else {
-            Fancam.error(tag = Tags.Creation) { "Admin account creation failed" }
-
-            throw result.exceptionOrNull()
-                ?: IllegalStateException("Admin account creation failed with unknown scandal (exception was null)")
-        }
-    }
-
-    private fun defaultProfile(userId: UserId): Profile {
-        return Profile(
-            userId = userId
-        )
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> = Result.success(Unit)
@@ -119,9 +86,13 @@ class UserCreationSubunit(private val dataStore: DataStore) : Subunit<ServerScop
          *
          * @param dataStore dependency for persistence.
          * Use [BlankDataStore] when the behavior is not relevant to the test.
+         * @param profileSubunit dependency for profile creation.
          */
-        fun createForTest(dataStore: DataStore = BlankDataStore()): UserCreationSubunit {
-            return UserCreationSubunit(dataStore)
+        fun createForTest(
+            dataStore: DataStore = BlankDataStore(),
+            profileSubunit: ProfileSubunit = ProfileSubunit.createForTest()
+        ): UserCreationSubunit {
+            return UserCreationSubunit(dataStore, profileSubunit)
         }
     }
 }

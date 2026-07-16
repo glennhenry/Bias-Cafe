@@ -19,7 +19,3 @@ fun createAccount(userId: UserId, username: String, password: String): UserAccou
         metadata = UserMetadata(),
     )
 }
-
-fun createProfile(userId: UserId): Profile {
-    return Profile(userId)
-}

@@ -110,10 +110,9 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
             ?: throw NoSuchElementException("ServerObjects not found, please ensure ServerObjects creation.")
     }
 
-    override suspend fun create(account: UserAccount, profile: Profile): Result<Unit> {
+    override suspend fun create(account: UserAccount): Result<Unit> {
         return runMongoCatching {
             ensureAck(accounts.insertOne(account))
-                .and(profiles.insertOne(profile))
                 .asUnit()
         }
     }

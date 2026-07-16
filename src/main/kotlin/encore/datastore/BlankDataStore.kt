@@ -13,7 +13,7 @@ class BlankDataStore : DataStore {
     override suspend fun userExists(userId: UserId): Boolean = TODO("NO OPERATION")
     override suspend fun getUserAccount(userId: UserId): UserAccount = TODO("NO OPERATION")
     override suspend fun getServerObjects(): ServerObjects = TODO("NO OPERATION")
-    override suspend fun create(account: UserAccount, profile: Profile): Result<Unit> = TODO("NO OPERATION")
+    override suspend fun create(account: UserAccount): Result<Unit> = TODO("NO OPERATION")
     override suspend fun delete(userId: UserId): Result<Unit> = TODO("NO OPERATION")
     override suspend fun shutdown() = TODO("NO OPERATION")
 }

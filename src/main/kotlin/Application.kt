@@ -12,7 +12,6 @@ import encore.time.source.SystemTimeSource
 import encore.venue.Venue
 import encore.websocket.handler.WsCommandHandler
 import project.ProjectIdentity
-import project.Globals
 import project.routes.fileRoutes
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -85,11 +84,6 @@ suspend fun Application.configureApplication() {
         mongoClient = mongoc,
         mongoDatabase = db
     )
-
-    // create admin account
-    if (Venue.encore.adminEnabled) {
-        serverContext.subunits.creation.createAdmin(Globals, alwaysRecreate = false)
-    }
 
     // register handlers for WebSocket
     websocketHandlers(serverContext)

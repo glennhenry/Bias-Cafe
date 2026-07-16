@@ -42,14 +42,11 @@ interface DataStore {
     suspend fun getServerObjects(): ServerObjects?
 
     /**
-     * Creates a new user with the given account and profile.
+     * Creates a new user with the given account.
      *
      * @return [Result] type denoting success or failure.
      */
-    suspend fun create(
-        account: UserAccount,
-        profile: Profile
-    ): Result<Unit>
+    suspend fun create(account: UserAccount): Result<Unit>
 
     /**
      * Deletes a user associated with the [userId].
