@@ -21,6 +21,17 @@ import encore.datastore.collection.Profile
  */
 interface AccountRepository {
     /**
+     * Returns [UserAccount] associated with the given [userId], if it exists.
+     *
+     * Returns [Result.success] with:
+     * - the [UserAccount] if found
+     * - `null` if no account exists for the given [userId]
+     *
+     * Returns [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getAccountByUserId(userId: String): Result<UserAccount?>
+
+    /**
      * Returns [UserAccount] associated with the given [username], if it exists.
      *
      * Returns [Result.success] with:

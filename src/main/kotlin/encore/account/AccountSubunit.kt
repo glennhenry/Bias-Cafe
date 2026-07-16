@@ -25,6 +25,22 @@ import encore.utils.types.toReport
  */
 class AccountSubunit(private val accountRepository: AccountRepository) : Subunit<ServerScope> {
     /**
+     * Returns an [Outcome] containing [UserAccount] associated with [userId].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with `null` if account does not exist.
+     * - [Outcome.Ok] with the account otherwise.
+     */
+    suspend fun getAccountByUserId(userId: String): Outcome<UserAccount?> {
+        return accountRepository.getAccountByUserId(userId)
+            .onFailure {
+                Fancam.error(it, Tags.Account) {
+                    "getAccountByUserId failed: repository scandal for '$userId'"
+                }
+            }
+            .toOutcome { account -> return Outcome.Ok(account) }
+    }
+
+    /**
      * Returns an [Outcome] containing [UserAccount] associated with [username].
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with `null` if account does not exist.

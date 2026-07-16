@@ -8,6 +8,7 @@ import encore.account.model.Credentials
  * No-operation implementation of [AccountRepository] used for testing purposes.
  */
 class BlankAccountRepository : AccountRepository {
+    override suspend fun getAccountByUserId(userId: String): Result<UserAccount?> = TODO("NO OPERATION")
     override suspend fun getAccountByUsername(username: String): Result<UserAccount?> = TODO("NO OPERATION")
     override suspend fun getUserIdByUsername(username: String): Result<UserId?> = TODO("NO OPERATION")
     override suspend fun getCredentials(username: String): Result<Credentials?> = TODO("NO OPERATION")

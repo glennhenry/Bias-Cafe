@@ -15,7 +15,15 @@ import org.bson.codecs.pojo.annotations.BsonId
  * [AccountRepository] implementation using MongoDB.
  */
 class MongoAccountRepository(val accountCollection: MongoCollection<UserAccount>) : AccountRepository {
-    override suspend fun getAccountByUsername(username: String): Result<UserAccount> {
+    override suspend fun getAccountByUserId(userId: String): Result<UserAccount?> {
+        return runMongoCatching {
+            accountCollection
+                .find(Filters.eq(FieldUserId, userId))
+                .firstOrNull()
+        }
+    }
+
+    override suspend fun getAccountByUsername(username: String): Result<UserAccount?> {
         return runMongoCatching {
             accountCollection
                 .find(Filters.eq(FieldUsername, username))

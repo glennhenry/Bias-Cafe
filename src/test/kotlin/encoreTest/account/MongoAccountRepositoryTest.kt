@@ -43,7 +43,8 @@ class MongoAccountRepositoryTest {
 
         collection.insertMany(List(20) { account() } + account)
 
-        assertEquals(account.userId, repo.getAccountByUsername(name).getOrThrow().userId)
+        assertEquals(account.username, repo.getAccountByUserId(id).getOrThrow()?.username)
+        assertEquals(account.userId, repo.getAccountByUsername(name).getOrThrow()?.userId)
         assertEquals(id, repo.getUserIdByUsername(name).getOrThrow())
         assertEquals(Credentials(id, account.hashedPassword), repo.getCredentials(name).getOrThrow())
 
@@ -51,10 +52,10 @@ class MongoAccountRepositoryTest {
 
         repo.updateUserAccount(id, account.copy(userId = newId))
         val a = repo.getAccountByUsername(name).getOrThrow()
-        assertEquals(newId, a.userId)
+        assertEquals(newId, a?.userId)
 
         repo.updateLastActivity(newId, 1000)
-        assertEquals(1000, repo.getAccountByUsername(name).getOrThrow().lastActiveAt)
+        assertEquals(1000, repo.getAccountByUsername(name).getOrThrow()?.lastActiveAt)
 
         assertTrue(repo.usernameExists(name).getOrThrow())
         assertTrue(repo.emailExists(email).getOrThrow())
