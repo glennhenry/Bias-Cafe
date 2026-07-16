@@ -4,6 +4,7 @@ import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.fancam.Fancam
 import encore.fancam.Tags
+import encore.fancam.formatter.colorizeSegmentFg
 import encore.fancam.impl.OfficialFancam
 import encore.route.colorizeHttpMethod
 import encore.route.guard.GuardResult
@@ -11,6 +12,7 @@ import encore.route.guard.SecurityGuard
 import encore.route.interceptResponse
 import encore.route.stringifyHttpRequest
 import encore.serialization.JSON
+import encore.utils.support.className
 import encore.venue.Venue
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -219,7 +221,14 @@ fun Application.configureSecurity(security: SecurityGuard) {
                 )
 
                 val remote = call.request.origin.remoteHost
-                Fancam.info(Tags.Api) { "Security refused $remote due to: ${result.reason ?: "<unspecified>"}" }
+                Fancam.trace(Tags.Api) {
+                    "'${call.request.uri}' -> ${
+                        colorizeSegmentFg(
+                            161,
+                            "SecurityGuard.GetOut"
+                        )
+                    } by ${security.className()} for $remote with reason: ${result.reason ?: "<unspecified>"}"
+                }
                 finish()
             }
 
@@ -228,7 +237,14 @@ fun Application.configureSecurity(security: SecurityGuard) {
                 Fancam.debug(Tags.Api) { req }
 
                 val remote = call.request.origin.remoteHost
-                Fancam.info(Tags.Api) { "Security refused $remote due to: ${result.reason ?: "<unspecified>"}" }
+                Fancam.trace(Tags.Api) {
+                    "'${call.request.uri}' -> ${
+                        colorizeSegmentFg(
+                            161,
+                            "SecurityGuard.Reject"
+                        )
+                    } by ${security.className()} for $remote with reason: ${result.reason ?: "<unspecified>"}"
+                }
                 finish()
             }
         }

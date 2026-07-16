@@ -3,6 +3,7 @@ package encore.route
 import bootstrap.errorHtml
 import encore.fancam.Fancam
 import encore.fancam.Tags
+import encore.fancam.formatter.colorizeSegmentFg
 import encore.route.guard.AuthGuard
 import encore.route.guard.GuardResult
 import encore.route.guard.NoAuthGuard
@@ -91,12 +92,26 @@ suspend fun RoutingContext.handle(call: ApplicationCall, auth: AuthGuard = NoAut
                     status = result.status
                 )
 
-                Fancam.trace(Tags.Api) { "Request refused by AuthGuard.GetOut due to: ${result.reason}" }
+                Fancam.trace(Tags.Api) {
+                    "'${call.request.uri}' -> ${
+                        colorizeSegmentFg(
+                            124,
+                            "AuthGuard.GetOut"
+                        )
+                    } by ${auth.className()} with reason: ${result.reason ?: "<unspecified>"}"
+                }
                 return
             }
 
             is GuardResult.Reject -> {
-                Fancam.trace(Tags.Api) { "Request refused by AuthGuard.Reject due to: ${result.reason}" }
+                Fancam.trace(Tags.Api) {
+                    "'${call.request.uri}' -> ${
+                        colorizeSegmentFg(
+                            124,
+                            "AuthGuard.Reject"
+                        )
+                    } by ${auth.className()} with reason: ${result.reason ?: "<unspecified>"}"
+                }
                 return
             }
         }
@@ -133,12 +148,26 @@ suspend fun RoutingContext.guard(call: ApplicationCall, auth: AuthGuard, block: 
                     status = result.status
                 )
 
-                Fancam.trace(Tags.Api) { "Request refused by AuthGuard.GetOut due to: ${result.reason}" }
+                Fancam.trace(Tags.Api) {
+                    "'${call.request.uri}' -> ${
+                        colorizeSegmentFg(
+                            161,
+                            "AuthGuard.GetOut"
+                        )
+                    } by ${auth.className()} with reason: ${result.reason ?: "<unspecified>"}"
+                }
                 return
             }
 
             is GuardResult.Reject -> {
-                Fancam.trace(Tags.Api) { "Request refused by AuthGuard.Reject due to: ${result.reason}" }
+                Fancam.trace(Tags.Api) {
+                    "'${call.request.uri}' -> ${
+                        colorizeSegmentFg(
+                            161,
+                            "AuthGuard.Reject"
+                        )
+                    } by ${auth.className()} with reason: ${result.reason ?: "<unspecified>"}"
+                }
                 return
             }
         }
