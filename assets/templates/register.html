@@ -150,7 +150,6 @@
                 }, 500);
             })
 
-
             // validate on password change
             $("#password").on("input", function () {
                 const value = $("#password").val()
@@ -185,6 +184,47 @@
                 return true;
             }
 
+            async function checkUsernameToServer(username) {
+                try {
+                    const response = await fetch("/api/namecheck", {
+                        method: "POST",
+                        body: username
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.reason || "User check failed");
+                    }
+
+                    const result = await response.text();
+                    if (result === "yes") {
+                        $("#username-info")
+                            .text("Username is available.")
+                            .css("color", "green")
+
+                        isUsernameValid = true;
+                    } else {
+                        $("#username-info")
+                            .text("Username already exists.")
+                            .css("color", "#b86b5f")
+
+                        isUsernameValid = false;
+                    }
+
+                    updateSubmitButton();
+                    return isUsernameValid;
+                } catch (e) {
+                    $("#username-info")
+                        .text(`Error checking username: ${e}`)
+                        .css("color", "red")
+
+                    isUsernameValid = false;
+                    updateSubmitButton();
+                    console.error(e);
+                    return false;
+                }
+            }
+
             async function checkUsername() {
                 const value = $("#username").val();
 
@@ -208,9 +248,50 @@
                     isEmailValid = false;
                     updateSubmitButton();
                     return false;
-                } else
-
+                } else {
                     return true;
+                }
+            }
+
+            async function checkEmailToServer(email) {
+                try {
+                    const response = await fetch("/api/emailcheck", {
+                        method: "POST",
+                        body: email
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.reason || "Email check failed");
+                    }
+
+                    const result = await response.text();
+                    if (result === "yes") {
+                        $("#email-info")
+                            .text("Email is available.")
+                            .css("color", "green")
+
+                        isEmailValid = true;
+                    } else {
+                        $("#email-info")
+                            .text("Email already exists.")
+                            .css("color", "#b86b5f")
+
+                        isEmailValid = false;
+                    }
+
+                    updateSubmitButton();
+                    return isEmailValid;
+                } catch (e) {
+                    $("#email-info")
+                        .text(`Error checking email: ${e}`)
+                        .css("color", "red")
+
+                    isEmailValid = false;
+                    updateSubmitButton();
+                    console.error(e);
+                    return false;
+                }
             }
 
             async function checkEmail() {
@@ -249,88 +330,6 @@
             function checkPassword() {
                 const value = $("#password").val()
                 return validatePassword(value)
-            }
-
-            async function checkUsernameToServer(username) {
-                try {
-                    const response = await fetch("/api/namecheck", {
-                        method: "POST",
-                        body: username
-                    });
-
-                    if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.reason || "User check failed");
-                    }
-
-                    const result = await response.text();
-                    if (result === "yes") {
-                        $("#username-info")
-                            .text("Username is available.")
-                            .css("color", "green")
-
-                        isUsernameValid = true;
-                    } else {
-                        $("#username-info")
-                            .text("Username already exists.")
-                            .css("color", "#b86b5f")
-
-                        isUsernameValid = false;
-                    }
-
-                    updateSubmitButton();
-                    return isUsernameValid;
-                } catch (e) {
-                    $("#username-info")
-                        .text(`Error checking username: ${error.reason}`)
-                        .css("color", "red")
-
-                    isUsernameValid = false;
-                    updateSubmitButton();
-                    console.error(e);
-                    return false;
-                }
-            }
-
-            async function checkEmailToServer(email) {
-                try {
-                    const response = await fetch("/api/emailcheck", {
-                        method: "POST",
-                        body: email
-                    });
-
-                    if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.reason || "Email check failed");
-                    }
-
-                    const result = await response.text();
-                    if (result === "yes") {
-                        $("#email-info")
-                            .text("Email is available.")
-                            .css("color", "green")
-
-                        isEmailValid = true;
-                    } else {
-                        $("#email-info")
-                            .text("Email already exists.")
-                            .css("color", "#b86b5f")
-
-                        isEmailValid = false;
-                    }
-
-                    updateSubmitButton();
-                    return isEmailValid;
-                } catch (e) {
-                    $("#email-info")
-                        .text(`Error checking email: ${error.reason}`)
-                        .css("color", "red")
-
-                    isEmailValid = false;
-                    updateSubmitButton();
-                    console.error(e);
-                    return false;
-                }
             }
 
             $("#register-form").on("submit", function (event) {
@@ -375,26 +374,26 @@
                 })
                     .then(async (response) => {
                         if (!response.ok) {
+                            const error = await response.json();
+
                             $("#register-info")
                                 .text(`Register failed: ${error.reason}`)
                                 .css("color", "red")
 
-                            const error = await response.json();
                             throw new Error(error.reason || "Registration failed");
                         }
 
                         return response.json()
                     })
                     .then((data) => {
-                        console.log(data.url)
                         window.location.href = data.url;
                     })
-                    .catch((error) => {
+                    .catch((e) => {
                         $("#register-info")
-                            .text(`Unexpected error during register: ${error.reason}`)
+                            .text(`Unexpected error during register: ${e}`)
                             .css("color", "red")
 
-                        console.error("register error:", error.reason);
+                        console.error("register error:", e);
                     });
             }
         })
