@@ -91,6 +91,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         "media", "games"
     )
     private val requireAccountGuard = RequireAccountGuard(serverContext.subunits.websiteSession)
+    private val mustNotHaveAccountGuard = MustNotHaveAccountGuard(serverContext.subunits.websiteSession)
 
     override fun Route.install() {
         get("/") {
@@ -204,16 +205,43 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         }
 
         get("/login") {
-            call.respond(ThymeleafContent("login", emptyMap()))
+            handle(call, mustNotHaveAccountGuard) {
+                call.respond(ThymeleafContent("login", emptyMap()))
+            }
         }
 
         get("/register") {
-            call.respond(ThymeleafContent("register", emptyMap()))
+            handle(call, mustNotHaveAccountGuard) {
+                call.respond(ThymeleafContent("register", emptyMap()))
+            }
         }
     }
 }
 
 val SessionCookieKey = AttributeKey<String>("session")
+
+/**
+ * This guard will reject the request and return an error page
+ * if session cookie is found and valid.
+ */
+class MustNotHaveAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubunit) : AuthGuard {
+    override suspend fun verify(call: ApplicationCall): GuardResult {
+        val token = call.request.cookies["session"]
+        if (token != null && websiteSessionSubunit.verify(token)) {
+            val data = ErrorModel(
+                title = "Already logged in",
+                heading = "Logged in",
+                message = "You are already logged in.",
+                action = Action("/", "Back to lobby")
+            )
+
+            call.respond(HttpStatusCode.Forbidden, ThymeleafContent("error", mapOf("data" to data)))
+            return GuardResult.Reject("cookie found and valid")
+        }
+
+        return GuardResult.Welcome
+    }
+}
 
 /**
  * This guard tolerate the absence of session cookie and will always
@@ -233,8 +261,8 @@ class OptionalAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubu
 }
 
 /**
- * This guard obligates session cookie and will return [GuardResult.GetOut]
- * if it's not found or invalid.
+ * This guard obligates session cookie and will return [GuardResult.Reject]
+ * and respond with an error page if it's not found or invalid.
  *
  * It guarantees that [SessionCookieKey] is set on [ApplicationCall.attributes]
  * with the session's token.
@@ -276,6 +304,8 @@ suspend fun ApplicationCall.serverError() {
     this.respond(HttpStatusCode.InternalServerError, mapOf("reason" to "Internal server error"))
 }
 
+const val yearInSeconds = 31_536_000L
+
 class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
     private val optionalAccountGuard = OptionalAccountGuard(serverContext.subunits.websiteSession)
 
@@ -283,7 +313,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
         post("/api/register") {
             handle(call, optionalAccountGuard) {
                 if (call.attributes.getOrNull(SessionCookieKey) != null) {
-                    call.respondText("You are already logged in.")
+                    call.respond(HttpStatusCode.Forbidden, mapOf("reason" to "You are already logged in."))
                     return@handle
                 }
 
@@ -301,6 +331,13 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                     call.serverError()
                     return@handle
                 }
+
+                call.response.cookies.append(
+                    name = "session",
+                    value = serverContext.subunits.websiteSession.create(),
+                    maxAge = yearInSeconds,
+                    path = "/"
+                )
 
                 val returnTo = call.queryParameters["return"] ?: "/"
                 call.respond(HttpStatusCode.OK, mapOf("url" to returnTo))
@@ -342,6 +379,13 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                     }
 
                     is LoginResult.Success -> {
+                        call.response.cookies.append(
+                            name = "session",
+                            value = serverContext.subunits.websiteSession.create(),
+                            maxAge = yearInSeconds,
+                            path = "/"
+                        )
+
                         val returnTo = call.queryParameters["return"] ?: "/"
                         call.respond(HttpStatusCode.OK, mapOf("url" to returnTo))
                     }
@@ -352,7 +396,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
         post("/api/namecheck") {
             handle(call, NoAuthGuard) {
                 if (!call.request.header(HttpHeaders.Referrer).orEmpty().endsWith("/register")) {
-                    call.respond(HttpStatusCode.Forbidden)
+                    call.respond(HttpStatusCode.Forbidden, mapOf("reason" to "access denied"))
                     return@handle
                 }
 
@@ -378,7 +422,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
         post("/api/emailcheck") {
             handle(call, NoAuthGuard) {
                 if (!call.request.header(HttpHeaders.Referrer).orEmpty().endsWith("/register")) {
-                    call.respond(HttpStatusCode.Forbidden)
+                    call.respond(HttpStatusCode.Forbidden, mapOf("reason" to "access denied"))
                     return@handle
                 }
 
