@@ -2,8 +2,10 @@ package project.routes
 
 import encore.auth.LoginResult
 import encore.context.ServerContext
+import encore.datastore.collection.Profile
 import encore.fancam.Fancam
 import encore.route.RouteHandler
+import encore.route.guard
 import encore.route.guard.AuthGuard
 import encore.route.guard.GuardResult
 import encore.route.guard.NoAuthGuard
@@ -27,18 +29,25 @@ import project.domain.cafe.topic.TopicFactory
 import project.domain.session.WebsiteSessionSubunit
 import java.text.SimpleDateFormat
 
+data class Account(
+    val username: String,
+    val level: Int
+)
+
 data class LobbyModel(
+    val account: Account?,
     val time: String = "",
     val bias: String = ""
 )
 
 data class CafeInsideModel(
+    val account: Account?,
     val sectionId: String,
     val topics: List<TopicModel> = emptyList()
 )
 
 data class CafeLandingModel(
-    val username: String,
+    val account: Account?,
     val spaces: List<SpaceItem>,
     val counts: Map<String, Int>
 )
@@ -90,29 +99,34 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         "bahiyyih", "youngeun", "yeseo",
         "media", "games"
     )
-    private val requireAccountGuard = RequireAccountGuard(serverContext.subunits.websiteSession)
+    private val optionalAccountGuard = OptionalAccountGuard(serverContext)
+    private val requireAccountGuard = RequireAccountGuard(serverContext)
     private val mustNotHaveAccountGuard = MustNotHaveAccountGuard(serverContext.subunits.websiteSession)
 
     override fun Route.install() {
         get("/") {
-            val systemTime = TimeCenter.now()
-            val bias = Members.all.random()
+            guard(call, optionalAccountGuard) {
+                val systemTime = TimeCenter.now()
+                val bias = Members.all.random()
 
-            val data = LobbyModel(
-                time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
-                bias = bias,
-            )
+                call.attributes
 
-            call.respond(ThymeleafContent("lobby", mapOf("data" to data)))
+                val data = LobbyModel(
+                    account = null,
+                    time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
+                    bias = bias,
+                )
+
+                call.respond(ThymeleafContent("lobby", mapOf("data" to data)))
+            }
         }
 
         get("/cafe") {
-            val username = TopicFactory.dummyAuthor()
             val spaces = serverContext.subunits.collection.getSpacesForLandingModel()
             val counts = serverContext.subunits.topic.getTopicsCountForEachSection().okOrThrow()
 
             val data = CafeLandingModel(
-                username = username,
+                account = null,
                 spaces = spaces,
                 counts = counts
             )
@@ -134,6 +148,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             }
 
             val data = CafeInsideModel(
+                account = null,
                 sectionId = path,
                 topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedDate) }
             )
@@ -218,7 +233,8 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
     }
 }
 
-val SessionCookieKey = AttributeKey<String>("session")
+// represent profile that is produced from session cookie
+val SessionProfileKey = AttributeKey<Profile>("profile")
 
 /**
  * This guard will reject the request and return an error page
@@ -226,20 +242,19 @@ val SessionCookieKey = AttributeKey<String>("session")
  */
 class MustNotHaveAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubunit) : AuthGuard {
     override suspend fun verify(call: ApplicationCall): GuardResult {
-        val token = call.request.cookies["session"]
-        if (token != null && websiteSessionSubunit.verify(token)) {
-            val data = ErrorModel(
-                title = "Already logged in",
-                heading = "Logged in",
-                message = "You are already logged in.",
-                action = Action("/", "Back to lobby")
-            )
+        // no account -> no token is found; verify fails by returning null;
+        val token = call.request.cookies["session"] ?: return GuardResult.Welcome
+        websiteSessionSubunit.verify(token) ?: return GuardResult.Welcome
 
-            call.respond(HttpStatusCode.Forbidden, ThymeleafContent("error", mapOf("data" to data)))
-            return GuardResult.Reject("cookie found and valid")
-        }
+        val data = ErrorModel(
+            title = "Already logged in",
+            heading = "Logged in",
+            message = "You are already logged in.",
+            action = Action("/", "Back to lobby")
+        )
 
-        return GuardResult.Welcome
+        call.respond(HttpStatusCode.Forbidden, ThymeleafContent("error", mapOf("data" to data)))
+        return GuardResult.Reject("cookie found and valid")
     }
 }
 
@@ -247,15 +262,17 @@ class MustNotHaveAccountGuard(private val websiteSessionSubunit: WebsiteSessionS
  * This guard tolerate the absence of session cookie and will always
  * returns a [GuardResult.Welcome].
  *
- * If session cookie is found and valid, it will set the [SessionCookieKey]
- * with the session's token on [ApplicationCall.attributes].
+ * If session cookie is found and valid, it will set the [SessionProfileKey]
+ * with the [Profile] of user.
  */
-class OptionalAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubunit) : AuthGuard {
+class OptionalAccountGuard(private val serverContext: ServerContext) : AuthGuard {
     override suspend fun verify(call: ApplicationCall): GuardResult {
-        val token = call.request.cookies["session"]
-        if (token != null && websiteSessionSubunit.verify(token)) {
-            call.attributes[SessionCookieKey] = token
-        }
+        // no account -> no token is found; verify fails by returning null; db failure; or profile not found;
+        val token = call.request.cookies["session"] ?: return GuardResult.Welcome
+        val userId = serverContext.subunits.websiteSession.verify(token) ?: return GuardResult.Welcome
+        val profile = serverContext.subunits.profile.getProfile(userId).okOrNull() ?: return GuardResult.Welcome
+
+        call.attributes[SessionProfileKey] = profile
         return GuardResult.Welcome
     }
 }
@@ -264,14 +281,18 @@ class OptionalAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubu
  * This guard obligates session cookie and will return [GuardResult.Reject]
  * and respond with an error page if it's not found or invalid.
  *
- * It guarantees that [SessionCookieKey] is set on [ApplicationCall.attributes]
- * with the session's token.
+ * It guarantees that [SessionProfileKey] is set on [ApplicationCall.attributes]
+ * with the [Profile] of user.
  */
-class RequireAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubunit) : AuthGuard {
+class RequireAccountGuard(private val serverContext: ServerContext) : AuthGuard {
     override suspend fun verify(call: ApplicationCall): GuardResult {
-        val token = call.request.cookies["session"]
-        if (token != null && websiteSessionSubunit.verify(token)) {
-            call.attributes[SessionCookieKey] = token
+        // wrap in runCatching and ignore the result for simpler handling
+        runCatching {
+            // no account -> no token is found; verify fails by returning null; db failure; or profile not found;
+            val token = call.request.cookies["session"]
+            val userId = serverContext.subunits.websiteSession.verify(token!!)
+            val profile = serverContext.subunits.profile.getProfile(userId!!).okOrNull()!!
+            call.attributes[SessionProfileKey] = profile
             return GuardResult.Welcome
         }
 
@@ -307,12 +328,12 @@ suspend fun ApplicationCall.serverError() {
 const val yearInSeconds = 31_536_000L
 
 class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
-    private val optionalAccountGuard = OptionalAccountGuard(serverContext.subunits.websiteSession)
+    private val optionalAccountGuard = OptionalAccountGuard(serverContext)
 
     override fun Route.install() {
         post("/api/register") {
             handle(call, optionalAccountGuard) {
-                if (call.attributes.getOrNull(SessionCookieKey) != null) {
+                if (call.attributes.getOrNull(SessionProfileKey) != null) {
                     call.respond(HttpStatusCode.Forbidden, mapOf("reason" to "You are already logged in."))
                     return@handle
                 }
@@ -334,7 +355,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 call.response.cookies.append(
                     name = "session",
-                    value = serverContext.subunits.websiteSession.create(),
+                    value = serverContext.subunits.websiteSession.create(outcome.okOrThrow()),
                     maxAge = yearInSeconds,
                     path = "/"
                 )
@@ -346,7 +367,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
 
         post("/api/login") {
             handle(call, optionalAccountGuard) {
-                if (call.attributes.getOrNull(SessionCookieKey) != null) {
+                if (call.attributes.getOrNull(SessionProfileKey) != null) {
                     call.respondText("You are already logged in.")
                     return@handle
                 }
@@ -382,7 +403,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                     is LoginResult.Success -> {
                         call.response.cookies.append(
                             name = "session",
-                            value = serverContext.subunits.websiteSession.create(),
+                            value = serverContext.subunits.websiteSession.create(result.userId),
                             maxAge = yearInSeconds,
                             path = "/"
                         )

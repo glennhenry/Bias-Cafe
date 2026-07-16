@@ -80,7 +80,7 @@
 
 <body>
   <h1>Cafe.Home</h1>
-  <p th:text="'Hello, ' + ${data.username} + '. Welcome back.'"></p>
+  <p th:text="'Hello. Welcome back.'"></p>
 
   <ul class="space-lists" th:if="${not #lists.isEmpty(data.spaces)}">
     <li class="space-item" th:each="space : ${data.spaces}">
