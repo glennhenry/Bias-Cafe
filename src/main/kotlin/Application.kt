@@ -22,6 +22,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.modules.SerializersModule
+import project.routes.AuthRoutes
 import project.routes.IndexHandler
 import java.time.LocalDate
 import java.time.ZoneId
@@ -105,6 +106,7 @@ suspend fun Application.configureApplication() {
         fileRoutes()
         with(BackstageRoutes(serverContext, backstageToken)) { install() }
         with(IndexHandler(serverContext)) { install() }
+        with(AuthRoutes(serverContext)) { install() }
     }
 
     // log startup

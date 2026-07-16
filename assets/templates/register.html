@@ -1,0 +1,404 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
+    <link rel="stylesheet" href="/site/reset.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <title>Register</title>
+    <style>
+        body {
+            margin-left: 8px;
+        }
+
+        .navbar {
+            display: flex;
+            gap: 8px;
+            width: fit-content;
+            margin-top: 24px;
+        }
+
+        .nav-link {
+            border: 1px solid black;
+            padding: 4px;
+            background-color: #dddddd;
+        }
+
+        .nav-link:hover {
+            color: gray;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            width: max-content;
+            gap: 8px;
+        }
+
+        .text-input {
+            width: 200px;
+        }
+
+        #username-info,
+        #email-info,
+        #password-info,
+        #register-info {
+            text-align: start;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        #register-button {
+            padding: 4px;
+        }
+
+        #register-button:disabled {
+            background-color: rgb(165, 157, 157);
+            cursor: not-allowed;
+            opacity: 0.6;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Register</h1>
+    <form id="register-form">
+        <div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input id="username" class="text-input" type="text" autoComplete="new-password" required />
+            </div>
+            <div id="username-info"></div>
+        </div>
+        <div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input id="email" class="text-input" type="email" autoComplete="new-password" required />
+            </div>
+            <div id="email-info"></div>
+        </div>
+        <div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input id="password" class="text-input" type="password" autoComplete="new-password" required />
+            </div>
+            <div id="password-info"></div>
+        </div>
+        <div>
+            <button id="register-button" type="submit">Register</button>
+            <div id="register-info"></div>
+        </div>
+    </form>
+    <div class="navbar">
+        <a class="nav-link" href="/">Lobby</a>
+        <a class="nav-link" href="/cafe">Cafe</a>
+        <a class="nav-link" href="/profile">Profile</a>
+    </div>
+
+    <script>
+        let isUsernameValid = false;
+        let isEmailValid = false;
+        let isPasswordValid = false;
+
+        // to add slight delay everytime the input change before checking it
+        let usernameInputTimer;
+        let emailInputTimer;
+        let passwordInputTimer;
+
+        $(document).ready(function () {
+            updateSubmitButton();
+
+            const initialUsername = $("#username").val();
+            if (initialUsername) {
+                if (validateUsername(initialUsername)) {
+                    checkUsernameToServer(initialUsername);
+                }
+            }
+
+            const initialEmail = $("#email").val();
+            if (initialEmail) {
+                if (validateEmail(initialEmail)) {
+                    checkEmailToServer(initialEmail);
+                }
+            }
+
+            // validate and check server on username change
+            $("#username").on("input", function () {
+                const value = $("#username").val()
+                $("#username-info").text("")
+
+                clearTimeout(usernameInputTimer);
+                usernameInputTimer = setTimeout(() => {
+                    if (validateUsername(value)) {
+                        checkUsernameToServer(value);
+                    }
+                }, 500);
+            })
+
+            // validate and check server on email change
+            $("#email").on("input", function () {
+                const value = $("#email").val()
+                $("#email-info").text("")
+
+                clearTimeout(emailInputTimer);
+                emailInputTimer = setTimeout(() => {
+                    if (validateEmail(value)) {
+                        checkEmailToServer(value);
+                    }
+                }, 500);
+            })
+
+
+            // validate on password change
+            $("#password").on("input", function () {
+                const value = $("#password").val()
+                $("#password-info").text("")
+
+                clearTimeout(passwordInputTimer);
+                passwordInputTimer = setTimeout(() => {
+                    validatePassword(value);
+                }, 500);
+            })
+
+            // submit button is only enabled when credentials are valid
+            function updateSubmitButton() {
+                if (!isUsernameValid || !isEmailValid || !isPasswordValid) {
+                    $("#register-button").prop("disabled", true)
+                } else {
+                    $("#register-button").prop("disabled", false)
+                    $("#register-info").text("")
+                }
+            }
+
+            function validateUsername(username) {
+                if (username.length < 2) {
+                    $("#username-info")
+                        .text("Username must be at least 2 characters.")
+                        .css("color", "red")
+
+                    isUsernameValid = false;
+                    updateSubmitButton();
+                    return false;
+                }
+                return true;
+            }
+
+            async function checkUsername() {
+                const value = $("#username").val();
+
+                if (!validateUsername(value)) {
+                    return false;
+                }
+
+                $("#username-info")
+                    .text("Checking to server...")
+                    .css("color", "orange");
+
+                return await checkUsernameToServer(value);
+            }
+
+            function validateEmail(email) {
+                if (!email.includes("@")) {
+                    $("#email-info")
+                        .text("Please enter a valid email")
+                        .css("color", "red")
+
+                    isEmailValid = false;
+                    updateSubmitButton();
+                    return false;
+                } else
+
+                    return true;
+            }
+
+            async function checkEmail() {
+                const value = $("#email").val();
+
+                if (!validateEmail(value)) {
+                    return false;
+                }
+
+                $("#email-info")
+                    .text("Checking to server...")
+                    .css("color", "orange")
+
+                return await checkEmailToServer(value);
+            }
+
+            function validatePassword(password) {
+                if (password.length >= 2) {
+                    $("#password-info")
+                        .text("Password is fine.")
+                        .css("color", "green")
+
+                    isPasswordValid = true;
+                } else {
+                    $("#password-info")
+                        .text("Password must be at least 2 characters.")
+                        .css("color", "red")
+
+                    isPasswordValid = false;
+                }
+
+                updateSubmitButton();
+                return isPasswordValid
+            }
+
+            function checkPassword() {
+                const value = $("#password").val()
+                return validatePassword(value)
+            }
+
+            async function checkUsernameToServer(username) {
+                try {
+                    const response = await fetch("/api/namecheck", {
+                        method: "POST",
+                        body: username
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.reason || "User check failed");
+                    }
+
+                    const result = await response.text();
+                    if (result === "yes") {
+                        $("#username-info")
+                            .text("Username is available.")
+                            .css("color", "green")
+
+                        isUsernameValid = true;
+                    } else {
+                        $("#username-info")
+                            .text("Username already exists.")
+                            .css("color", "#b86b5f")
+
+                        isUsernameValid = false;
+                    }
+
+                    updateSubmitButton();
+                    return isUsernameValid;
+                } catch (e) {
+                    $("#username-info")
+                        .text(`Error checking username: ${error.reason}`)
+                        .css("color", "red")
+
+                    isUsernameValid = false;
+                    updateSubmitButton();
+                    console.error(e);
+                    return false;
+                }
+            }
+
+            async function checkEmailToServer(email) {
+                try {
+                    const response = await fetch("/api/emailcheck", {
+                        method: "POST",
+                        body: email
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.json();
+                        throw new Error(error.reason || "Email check failed");
+                    }
+
+                    const result = await response.text();
+                    if (result === "yes") {
+                        $("#email-info")
+                            .text("Email is available.")
+                            .css("color", "green")
+
+                        isEmailValid = true;
+                    } else {
+                        $("#email-info")
+                            .text("Email already exists.")
+                            .css("color", "#b86b5f")
+
+                        isEmailValid = false;
+                    }
+
+                    updateSubmitButton();
+                    return isEmailValid;
+                } catch (e) {
+                    $("#email-info")
+                        .text(`Error checking email: ${error.reason}`)
+                        .css("color", "red")
+
+                    isEmailValid = false;
+                    updateSubmitButton();
+                    console.error(e);
+                    return false;
+                }
+            }
+
+            $("#register-form").on("submit", function (event) {
+                event.preventDefault();
+                register()
+            })
+
+            async function register() {
+                const usernameOk = await checkUsername()
+                const emailOk = await checkEmail()
+                const passwordOk = checkPassword()
+
+                if (!usernameOk || !emailOk || !passwordOk) {
+                    $("#register-info")
+                        .text("Credentials invalid, try again.")
+                        .css("color", "orange")
+                    return;
+                }
+
+                $("#register-info")
+                    .text("Registering...")
+                    .css("color", "orange")
+
+                const username = $("#username").val();
+                const email = $("#email").val();
+                const password = $("#password").val();
+
+                const payload = JSON.stringify({ username: username, email: email, password: password })
+
+                const params = new URLSearchParams(window.location.search);
+                const returnTo = params.get("return");
+
+                const url = new URL("/api/register", window.location.origin);
+
+                if (returnTo !== null) {
+                    url.searchParams.set("return", returnTo);
+                }
+
+                fetch(url, {
+                    method: "POST",
+                    body: payload,
+                })
+                    .then(async (response) => {
+                        if (!response.ok) {
+                            $("#register-info")
+                                .text(`Register failed: ${error.reason}`)
+                                .css("color", "red")
+
+                            const error = await response.json();
+                            throw new Error(error.reason || "Registration failed");
+                        }
+
+                        return response.json()
+                    })
+                    .then((data) => {
+                        console.log(data.url)
+                        window.location.href = data.url;
+                    })
+                    .catch((error) => {
+                        $("#register-info")
+                            .text(`Unexpected error during register: ${error.reason}`)
+                            .css("color", "red")
+
+                        console.error("register error:", error.reason);
+                    });
+            }
+        })
+    </script>
+</body>
+
+</html>

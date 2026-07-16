@@ -1,5 +1,6 @@
 package project.routes
 
+import encore.auth.LoginResult
 import encore.context.ServerContext
 import encore.fancam.Fancam
 import encore.route.RouteHandler
@@ -10,10 +11,7 @@ import encore.route.handle
 import encore.serialization.JSON
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
-import encore.utils.types.Outcome
-import encore.utils.types.okOrNull
-import encore.utils.types.okOrThrow
-import encore.utils.types.onFail
+import encore.utils.types.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -208,6 +206,10 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         get("/login") {
             call.respond(ThymeleafContent("login", emptyMap()))
         }
+
+        get("/register") {
+            call.respond(ThymeleafContent("register", emptyMap()))
+        }
     }
 }
 
@@ -254,5 +256,149 @@ class RequireAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubun
 
         call.respond(HttpStatusCode.Forbidden, ThymeleafContent("error", mapOf("data" to data)))
         return GuardResult.Reject("User is not logged in")
+    }
+}
+
+@Serializable
+data class RegisterPayload(
+    val username: String,
+    val email: String,
+    val password: String
+)
+
+@Serializable
+data class LoginPayload(
+    val username: String,
+    val password: String
+)
+
+suspend fun ApplicationCall.serverError() {
+    this.respond(HttpStatusCode.InternalServerError, mapOf("reason" to "Internal server error"))
+}
+
+class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
+    private val optionalAccountGuard = OptionalAccountGuard(serverContext.subunits.websiteSession)
+
+    override fun Route.install() {
+        post("/api/register") {
+            handle(call, optionalAccountGuard) {
+                if (call.attributes.getOrNull(SessionCookieKey) != null) {
+                    call.respondText("You are already logged in.")
+                    return@handle
+                }
+
+                val data = JSON.decode<RegisterPayload>(call.receiveText())
+
+                if (data.username.isBlank() || data.password.isBlank() || data.email.isBlank()) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("reason" to "blank credentials"))
+                    return@handle
+                }
+
+                val outcome = serverContext.subunits.auth
+                    .register(data.username, data.password, data.email)
+
+                if (outcome.isFail()) {
+                    call.serverError()
+                    return@handle
+                }
+
+                val returnTo = call.queryParameters["return"] ?: "/"
+                call.respond(HttpStatusCode.OK, mapOf("url" to returnTo))
+            }
+        }
+
+        post("/api/login") {
+            handle(call, optionalAccountGuard) {
+                if (call.attributes.getOrNull(SessionCookieKey) != null) {
+                    call.respondText("You are already logged in.")
+                    return@handle
+                }
+                val data = JSON.decode<LoginPayload>(call.receiveText())
+
+                if (data.username.isBlank() || data.password.isBlank()) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("reason" to "blank credentials"))
+                    return@handle
+                }
+
+                val result = serverContext.subunits.auth
+                    .login(data.username, data.password).okOrNull() ?: run {
+                    call.serverError()
+                    return@handle
+                }
+
+                when (result) {
+                    is LoginResult.AccountNotFound -> {
+                        call.respond(
+                            HttpStatusCode.Unauthorized,
+                            mapOf("reason" to "account not found")
+                        )
+                    }
+
+                    is LoginResult.InvalidCredentials -> {
+                        call.respond(
+                            HttpStatusCode.Unauthorized,
+                            mapOf("reason" to "wrong password")
+                        )
+                    }
+
+                    is LoginResult.Success -> {
+                        val returnTo = call.queryParameters["return"] ?: "/"
+                        call.respond(HttpStatusCode.OK, mapOf("url" to returnTo))
+                    }
+                }
+            }
+        }
+
+        post("/api/namecheck") {
+            handle(call, NoAuthGuard) {
+                if (!call.request.header(HttpHeaders.Referrer).orEmpty().endsWith("/register")) {
+                    call.respond(HttpStatusCode.Forbidden)
+                    return@handle
+                }
+
+                val username = call.receiveText()
+                if (username.isBlank()) {
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        mapOf("reason" to "username is blank")
+                    )
+                    return@handle
+                }
+
+                val available = serverContext.subunits.auth
+                    .isUsernameAvailable(username).okOrNull() ?: run {
+                    call.serverError()
+                    return@handle
+                }
+
+                call.respondText(if (available) "yes" else "no")
+            }
+        }
+
+        post("/api/emailcheck") {
+            handle(call, NoAuthGuard) {
+                if (!call.request.header(HttpHeaders.Referrer).orEmpty().endsWith("/register")) {
+                    call.respond(HttpStatusCode.Forbidden)
+                    return@handle
+                }
+
+                val email = call.receiveText()
+                if (email.isBlank()) {
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        mapOf("reason" to "email is blank")
+                    )
+                    return@handle
+                }
+
+                val available = serverContext.subunits.auth
+                    .isEmailAvailable(email).okOrNull() ?: run {
+                    call.serverError()
+                    return@handle
+                }
+
+                call.respondText(if (available) "yes" else "no")
+            }
+        }
     }
 }
