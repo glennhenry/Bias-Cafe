@@ -29,6 +29,11 @@
       color: gray;
     }
 
+    .content-container {
+      display: flex;
+      flex-direction: row;
+    }
+
     .space-lists {
       display: flex;
       flex-direction: column;
@@ -79,30 +84,37 @@
 </head>
 
 <body>
-  <h1>Cafe.Home</h1>
-  <p th:text="'Hello. Welcome back.'"></p>
+  <div class="content-container">
+    <div>
+      <h1>Cafe.Home</h1>
+      <p th:text="'Hello. Welcome back.'"></p>
 
-  <ul class="space-lists" th:if="${not #lists.isEmpty(data.spaces)}">
-    <li class="space-item" th:each="space : ${data.spaces}">
-      <div>
-        <p class="space-name-row" th:text="${space.name}"></p>
-        <ul class="section-lists">
-          <li class="section-item" th:each="section : ${space.sections}">
-            <div>
-              <span th:inline="text">
-                <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}">
-                </a>
-                ([[${data.counts.getOrDefault(section.id, 0)}]] posts)
-              </span>
-              <p class="section-description" th:text="${section.description}"></p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </li>
-  </ul>
+      <ul class="space-lists" th:if="${not #lists.isEmpty(data.spaces)}">
+        <li class="space-item" th:each="space : ${data.spaces}">
+          <div>
+            <p class="space-name-row" th:text="${space.name}"></p>
+            <ul class="section-lists">
+              <li class="section-item" th:each="section : ${space.sections}">
+                <div>
+                  <span th:inline="text">
+                    <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}">
+                    </a>
+                    ([[${data.counts.getOrDefault(section.id, 0)}]] posts)
+                  </span>
+                  <p class="section-description" th:text="${section.description}"></p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
 
-  <p th:if="${#lists.isEmpty(data.spaces)}">No spaces have been made yet ㅠㅠ</p>
+      <p th:if="${#lists.isEmpty(data.spaces)}">No spaces have been made yet ㅠㅠ</p>
+    </div>
+    <div>
+      <p>Hello</p>
+    </div>
+  </div>
 
   <div class="navbar">
     <a class="nav-link" href="/">Lobby</a>

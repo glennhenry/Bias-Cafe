@@ -29,6 +29,11 @@
       color: gray;
     }
 
+    .content-container {
+      display: flex;
+      flex-direction: row;
+    }
+
     .link {
       color: blue;
       text-decoration: underline;
@@ -97,43 +102,50 @@
 </head>
 
 <body>
-  <h1>Cafe.TopicList</h1>
-  <div class="posted-text">
-    <a class="link" th:href="${data.sectionId} + '/create'">Create topic</a>
-    <h3>All topics:</h3>
+  <div class="content-container">
+    <div>
+      <h1>Cafe.TopicList</h1>
+      <div class="posted-text">
+        <a class="link" th:href="${data.sectionId} + '/create'">Create topic</a>
+        <h3>All topics:</h3>
 
-    <ul class="topic-lists" th:if="${not #lists.isEmpty(data.topics)}">
-      <li class="post-list-item" th:each="topic : ${data.topics}">
-        <div>
-          <div class="topic-title-row">
-            <p class="topic-title" th:text="${topic.title}"></p>
-            <a class="delete-post" href="/" title="Delete post" th:data-topic-id="${topic.topicId}">
-              <img src="/icons/delete.png" alt="delete" width="16">
-            </a>
-          </div>
-          <div class="topic-author-row">
-            <span class="topic-author-left">
-              Posted by <span class="topic-author-name" th:text="${topic.author}"></span>
-            </span>
-            <span class="topic-posted-date" th:data-raw-date="${topic.postedDate}">
-              <span>at</span>
-              <span class="js-format-date" th:data-raw-date="${topic.postedDate}" th:text="${topic.postedDate}">
-              </span>
-            </span>
-          </div>
+        <ul class="topic-lists" th:if="${not #lists.isEmpty(data.topics)}">
+          <li class="post-list-item" th:each="topic : ${data.topics}">
+            <div>
+              <div class="topic-title-row">
+                <p class="topic-title" th:text="${topic.title}"></p>
+                <a class="delete-post" href="/" title="Delete post" th:data-topic-id="${topic.topicId}">
+                  <img src="/icons/delete.png" alt="delete" width="16">
+                </a>
+              </div>
+              <div class="topic-author-row">
+                <span class="topic-author-left">
+                  Posted by <span class="topic-author-name" th:text="${topic.author}"></span>
+                </span>
+                <span class="topic-posted-date" th:data-raw-date="${topic.postedDate}">
+                  <span>at</span>
+                  <span class="js-format-date" th:data-raw-date="${topic.postedDate}" th:text="${topic.postedDate}">
+                  </span>
+                </span>
+              </div>
 
-          <p class="topic-content" th:text="${topic.content}"></p>
-        </div>
-      </li>
-    </ul>
+              <p class="topic-content" th:text="${topic.content}"></p>
+            </div>
+          </li>
+        </ul>
 
-    <p th:if="${#lists.isEmpty(data.topics)}">No posted texts available.</p>
-  </div>
+        <p th:if="${#lists.isEmpty(data.topics)}">No posted texts available.</p>
+      </div>
 
-  <div class="navbar">
-    <a class="nav-link" href="/">Lobby</a>
-    <a class="nav-link" href="/cafe">Cafe</a>
-    <a class="nav-link" href="/profile">Profile</a>
+      <div class="navbar">
+        <a class="nav-link" href="/">Lobby</a>
+        <a class="nav-link" href="/cafe">Cafe</a>
+        <a class="nav-link" href="/profile">Profile</a>
+      </div>
+    </div>
+    <div>
+      <p>Hello</p>
+    </div>
   </div>
 
   <script>

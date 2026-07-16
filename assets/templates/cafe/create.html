@@ -29,6 +29,11 @@
       color: gray;
     }
 
+    .content-container {
+      display: flex;
+      flex-direction: row;
+    }
+
     .post-container {
       width: fit-content;
       display: flex;
@@ -71,24 +76,31 @@
 </head>
 
 <body>
-  <h1>Cafe.CreateTopic</h1>
+  <div class="content-container">
+    <div>
+      <h1>Cafe.CreateTopic</h1>
 
-  <form id="post-form" class="post-container">
-    <p>Create a topic</p>
-    <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title" maxlength="80"></textarea>
-    <input id="topic-author-input" class="topic-author-input" type="text" placeholder="Author" maxlength="30" />
-    <div class="post-section">
-      <label for="post-textarea">Content</label>
-      <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
+      <form id="post-form" class="post-container">
+        <p>Create a topic</p>
+        <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title" maxlength="80"></textarea>
+        <input id="topic-author-input" class="topic-author-input" type="text" placeholder="Author" maxlength="30" />
+        <div class="post-section">
+          <label for="post-textarea">Content</label>
+          <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
+        </div>
+        <button type="submit" class="post-submit">Post</button>
+      </form>
+      <p id="post-status" class="post-status">Status: </p>
+
+      <div class="navbar">
+        <a class="nav-link" href="/">Lobby</a>
+        <a class="nav-link" href="/cafe">Cafe</a>
+        <a class="nav-link" href="/profile">Profile</a>
+      </div>
     </div>
-    <button type="submit" class="post-submit">Post</button>
-  </form>
-  <p id="post-status" class="post-status">Status: </p>
-
-  <div class="navbar">
-    <a class="nav-link" href="/">Lobby</a>
-    <a class="nav-link" href="/cafe">Cafe</a>
-    <a class="nav-link" href="/profile">Profile</a>
+    <div>
+      <p>Hello</p>
+    </div>
   </div>
 
   <script>

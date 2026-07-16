@@ -28,18 +28,30 @@
     .nav-link:hover {
       color: gray;
     }
+
+    .content-container {
+      display: flex;
+      flex-direction: row;
+    }
   </style>
 </head>
 
 <body>
-  <h1>Lobby</h1>
-  <p th:text="'System time: ' + ${data.time}"></p>
-  <p th:text="'Bias: ' + ${data.bias}"></p>
+  <div class="content-container">
+    <div>
+      <h1>Lobby</h1>
+      <p th:text="'System time: ' + ${data.time}"></p>
+      <p th:text="'Bias: ' + ${data.bias}"></p>
 
-  <div class="navbar">
-    <a class="nav-link" href="/">Lobby</a>
-    <a class="nav-link" href="/cafe">Cafe</a>
-    <a class="nav-link" href="/profile">Profile</a>
+      <div class="navbar">
+        <a class="nav-link" href="/">Lobby</a>
+        <a class="nav-link" href="/cafe">Cafe</a>
+        <a class="nav-link" href="/profile">Profile</a>
+      </div>
+    </div>
+    <div>
+      <p>Hello</p>
+    </div>
   </div>
 </body>
 

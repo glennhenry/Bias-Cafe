@@ -28,15 +28,27 @@
     .nav-link:hover {
       color: gray;
     }
+
+    .content-container {
+      display: flex;
+      flex-direction: row;
+    }
   </style>
 </head>
 
 <body>
-  <h1>Profile</h1>
-  <div class="navbar">
-    <a class="nav-link" href="/">Lobby</a>
-    <a class="nav-link" href="/cafe">Cafe</a>
-    <a class="nav-link" href="/profile">Profile</a>
+  <div class="content-container">
+    <div>
+      <h1>Profile</h1>
+      <div class="navbar">
+        <a class="nav-link" href="/">Lobby</a>
+        <a class="nav-link" href="/cafe">Cafe</a>
+        <a class="nav-link" href="/profile">Profile</a>
+      </div>
+    </div>
+    <div>
+      <p>Hello</p>
+    </div>
   </div>
 </body>
 
