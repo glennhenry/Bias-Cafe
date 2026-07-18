@@ -11,7 +11,6 @@ val TestMongoCollectionName = MongoCollectionName(
 
     websiteSession = "test_website_session",
 
-    profile = "test_profile",
     topic = "test_topic",
     spaces = "test_spaces",
     sections = "test_sections"

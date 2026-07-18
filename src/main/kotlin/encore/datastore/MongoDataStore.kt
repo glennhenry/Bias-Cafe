@@ -4,7 +4,6 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import encore.datastore.collection.Profile
 import encore.datastore.collection.UserAccount
 import encore.datastore.collection.UserId
 import encore.datastore.collection.ServerObjects
@@ -26,7 +25,6 @@ data class MongoCollectionName(
 
     val websiteSession: String,
 
-    val profile: String,
     val topic: String,
     val spaces: String,
     val sections: String
@@ -42,7 +40,6 @@ data class MongoCollectionName(
  */
 class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : DataStore {
     private val accounts = db.getCollection<UserAccount>(collectionName.userAccount)
-    private val profiles = db.getCollection<Profile>(collectionName.profile)
     private val serverObjects = db.getCollection<ServerObjects>(collectionName.serverObjects)
 
     private val initJob = CoroutineScope(Dispatchers.IO).async { setupCollections() }
@@ -120,7 +117,6 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
     override suspend fun delete(userId: UserId): Result<Unit> {
         return runMongoCatching {
             ensureAck(accounts.deleteOne(Filters.eq(FieldUserId, userId)))
-                .and(profiles.deleteOne(Filters.eq(FieldUserId, userId)))
                 .asUnit()
         }
     }

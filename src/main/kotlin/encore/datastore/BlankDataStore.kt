@@ -1,6 +1,5 @@
 package encore.datastore
 
-import encore.datastore.collection.Profile
 import encore.datastore.collection.UserAccount
 import encore.datastore.collection.UserId
 import encore.datastore.collection.ServerObjects

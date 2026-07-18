@@ -1,19 +1,19 @@
 package encore.account
 
 import encore.account.model.UserMetadata
-import encore.datastore.collection.Profile
 import encore.datastore.BlankDataStore
 import encore.datastore.DataStore
-import encore.datastore.collection.*
+import encore.datastore.collection.ServerObjects
+import encore.datastore.collection.UserAccount
+import encore.datastore.collection.UserId
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
-import encore.utils.identifier.Ids
 import encore.utils.hash
-import encore.utils.types.isOk
-import project.domain.profile.ProfileSubunit
+import encore.utils.identifier.Ids
+import project.domain.profile.Profile
 
 /**
  * Server-scoped subunit responsible for user creation.
@@ -28,8 +28,7 @@ import project.domain.profile.ProfileSubunit
  * @property dataStore [DataStore] to persist the newly created users.
  */
 class UserCreationSubunit(
-    private val dataStore: DataStore,
-    private val profileSubunit: ProfileSubunit
+    private val dataStore: DataStore
 ) : Subunit<ServerScope> {
     /**
      * Create a user account with the specified [username], [password], and [email].
@@ -55,19 +54,15 @@ class UserCreationSubunit(
             registeredAt = now,
             lastActiveAt = now,
             metadata = UserMetadata(),
-        )
-        val profile = Profile(
-            userId = userId,
-            username = username,
-            email = email,
-            registeredAt = now,
-            lastActiveAt = now,
-            level = 1
+            profile = Profile(
+                displayName = username,
+                avatarUrl = "",
+                level = 1
+            )
         )
 
         val result = dataStore.create(account)
-        val profileResult = profileSubunit.createProfile(userId, profile)
-        if (result.isSuccess && profileResult.isOk()) {
+        if (result.isSuccess) {
             return userId
         }
 
@@ -86,13 +81,11 @@ class UserCreationSubunit(
          *
          * @param dataStore dependency for persistence.
          * Use [BlankDataStore] when the behavior is not relevant to the test.
-         * @param profileSubunit dependency for profile creation.
          */
         fun createForTest(
-            dataStore: DataStore = BlankDataStore(),
-            profileSubunit: ProfileSubunit = ProfileSubunit.createForTest()
+            dataStore: DataStore = BlankDataStore()
         ): UserCreationSubunit {
-            return UserCreationSubunit(dataStore, profileSubunit)
+            return UserCreationSubunit(dataStore)
         }
     }
 }

@@ -3,7 +3,6 @@ package encore.account
 import encore.datastore.collection.UserAccount
 import encore.datastore.collection.UserId
 import encore.account.model.Credentials
-import encore.datastore.collection.Profile
 
 /**
  * Repository for [UserAccount] core collection.

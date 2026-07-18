@@ -10,7 +10,7 @@ import encore.account.model.UserMetadata
 import encore.auth.AuthSubunit
 import encore.auth.LoginResult
 import encore.datastore.MongoDataStore
-import encore.datastore.collection.Profile
+import project.domain.profile.Profile
 import encore.datastore.collection.UserAccount
 import encore.datastore.collection.UserId
 import encore.utils.types.Outcome
@@ -23,6 +23,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import project.domain.profile.MongoProfileRepository
 import project.domain.profile.ProfileSubunit
+import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -47,16 +48,10 @@ class TestAuthSubunit {
         collection.drop()
         mongoDb.createCollection(TestMongoCollectionName.userAccount)
 
-        val profileCollection = mongoDb.getCollection<Profile>(TestMongoCollectionName.profile)
-        profileCollection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.profile)
-
         val db = MongoDataStore(mongoDb, TestMongoCollectionName)
         val repo = MongoAccountRepository(collection)
-        val profileRepo = MongoProfileRepository(profileCollection)
         val accountSubunit = AccountSubunit(repo)
-        val profileSubunit = ProfileSubunit(profileRepo)
-        val pcs = UserCreationSubunit(db, profileSubunit)
+        val pcs = UserCreationSubunit(db)
         val auth = AuthSubunit(accountSubunit, pcs)
 
         val account = UserAccount(
@@ -67,6 +62,7 @@ class TestAuthSubunit {
             registeredAt = 0,
             lastActiveAt = 0,
             metadata = UserMetadata(),
+            profile = createProfile()
         )
         collection.insertOne(account)
 
@@ -81,16 +77,10 @@ class TestAuthSubunit {
         collection.drop()
         mongoDb.createCollection(TestMongoCollectionName.userAccount)
 
-        val profileCollection = mongoDb.getCollection<Profile>(TestMongoCollectionName.profile)
-        profileCollection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.profile)
-
         val db = MongoDataStore(mongoDb, TestMongoCollectionName)
         val repo = MongoAccountRepository(collection)
-        val profileRepo = MongoProfileRepository(profileCollection)
         val accountSubunit = AccountSubunit(repo)
-        val profileSubunit = ProfileSubunit(profileRepo)
-        val pcs = UserCreationSubunit(db, profileSubunit)
+        val pcs = UserCreationSubunit(db)
         val auth = AuthSubunit(accountSubunit, pcs)
 
         assertTrue(auth.isUsernameAvailable("xyz").okOrThrow())
@@ -104,16 +94,10 @@ class TestAuthSubunit {
         collection.drop()
         mongoDb.createCollection(TestMongoCollectionName.userAccount)
 
-        val profileCollection = mongoDb.getCollection<Profile>(TestMongoCollectionName.profile)
-        profileCollection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.profile)
-
         val db = MongoDataStore(mongoDb, TestMongoCollectionName)
         val repo = MongoAccountRepository(collection)
-        val profileRepo = MongoProfileRepository(profileCollection)
         val accountSubunit = AccountSubunit(repo)
-        val profileSubunit = ProfileSubunit(profileRepo)
-        val pcs = UserCreationSubunit(db, profileSubunit)
+        val pcs = UserCreationSubunit(db)
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")
@@ -128,16 +112,10 @@ class TestAuthSubunit {
         collection.drop()
         mongoDb.createCollection(TestMongoCollectionName.userAccount)
 
-        val profileCollection = mongoDb.getCollection<Profile>(TestMongoCollectionName.profile)
-        profileCollection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.profile)
-
         val db = MongoDataStore(mongoDb, TestMongoCollectionName)
         val repo = MongoAccountRepository(collection)
-        val profileRepo = MongoProfileRepository(profileCollection)
         val accountSubunit = AccountSubunit(repo)
-        val profileSubunit = ProfileSubunit(profileRepo)
-        val pcs = UserCreationSubunit(db, profileSubunit)
+        val pcs = UserCreationSubunit(db)
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld1", "kotlinktor", "helloworld1@email.com")
@@ -158,16 +136,10 @@ class TestAuthSubunit {
         collection.drop()
         mongoDb.createCollection(TestMongoCollectionName.userAccount)
 
-        val profileCollection = mongoDb.getCollection<Profile>(TestMongoCollectionName.profile)
-        profileCollection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.profile)
-
         val db = MongoDataStore(mongoDb, TestMongoCollectionName)
         val repo = MongoAccountRepository(collection)
-        val profileRepo = MongoProfileRepository(profileCollection)
         val accountSubunit = AccountSubunit(repo)
-        val profileSubunit = ProfileSubunit(profileRepo)
-        val pcs = UserCreationSubunit(db, profileSubunit)
+        val pcs = UserCreationSubunit(db)
         val auth = AuthSubunit(accountSubunit, pcs)
 
         val session = auth.login("asdf", "fdsa")
@@ -182,16 +154,10 @@ class TestAuthSubunit {
         collection.drop()
         mongoDb.createCollection(TestMongoCollectionName.userAccount)
 
-        val profileCollection = mongoDb.getCollection<Profile>(TestMongoCollectionName.profile)
-        profileCollection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.profile)
-
         val db = MongoDataStore(mongoDb, TestMongoCollectionName)
         val repo = MongoAccountRepository(collection)
-        val profileRepo = MongoProfileRepository(profileCollection)
         val accountSubunit = AccountSubunit(repo)
-        val profileSubunit = ProfileSubunit(profileRepo)
-        val pcs = UserCreationSubunit(db, profileSubunit)
+        val pcs = UserCreationSubunit(db)
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")
@@ -206,10 +172,6 @@ class TestAuthSubunit {
         collection.drop()
         mongoDb.createCollection(TestMongoCollectionName.userAccount)
 
-        val profileCollection = mongoDb.getCollection<Profile>(TestMongoCollectionName.profile)
-        profileCollection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.profile)
-
         val db = MongoDataStore(mongoDb, TestMongoCollectionName)
         val repo = object : AccountRepository {
             override suspend fun getAccountByUserId(userId: String): Result<UserAccount?> = TODO()
@@ -222,10 +184,8 @@ class TestAuthSubunit {
             override suspend fun usernameExists(username: String): Result<Boolean> = TODO()
             override suspend fun emailExists(email: String): Result<Boolean> = TODO()
         }
-        val profileRepo = MongoProfileRepository(profileCollection)
         val accountSubunit = AccountSubunit(repo)
-        val profileSubunit = ProfileSubunit(profileRepo)
-        val pcs = UserCreationSubunit(db, profileSubunit)
+        val pcs = UserCreationSubunit(db)
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")
@@ -241,16 +201,10 @@ class TestAuthSubunit {
         collection.drop()
         mongoDb.createCollection(TestMongoCollectionName.userAccount)
 
-        val profileCollection = mongoDb.getCollection<Profile>(TestMongoCollectionName.profile)
-        profileCollection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.profile)
-
         val db = MongoDataStore(mongoDb, TestMongoCollectionName)
         val repo = MongoAccountRepository(collection)
-        val profileRepo = MongoProfileRepository(profileCollection)
         val accountSubunit = AccountSubunit(repo)
-        val profileSubunit = ProfileSubunit(profileRepo)
-        val pcs = UserCreationSubunit(db, profileSubunit)
+        val pcs = UserCreationSubunit(db)
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")

@@ -1,18 +1,12 @@
 package project.domain.profile
 
-import encore.datastore.collection.Profile
 import encore.datastore.collection.UserId
 
 interface ProfileRepository {
     /**
-     * Create a profile for [userId].
-     * @return [Result.failure] if an error occurs while retrieving the data.
-     *         Otherwise, [Result.success].
-     */
-    suspend fun createProfile(userId: String, profile: Profile): Result<Unit>
-
-    /**
      * Returns [Profile] associated with the given [userId], if it exists.
+     *
+     * This basically only query the profile field of the user's account.
      *
      * Returns [Result.success] with:
      * - the [Profile] if found

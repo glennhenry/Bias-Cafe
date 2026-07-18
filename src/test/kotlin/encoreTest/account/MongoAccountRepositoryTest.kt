@@ -4,12 +4,12 @@ import TestMongoCollectionName
 import encore.account.MongoAccountRepository
 import encore.account.model.Credentials
 import encore.account.model.UserMetadata
-import encore.datastore.collection.Profile
 import encore.datastore.collection.UserAccount
 import encore.utils.identifier.Ids
 import encore.utils.hash
 import initMongo
 import kotlinx.coroutines.test.runTest
+import project.domain.profile.Profile
 import testUtils.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -39,6 +39,7 @@ class MongoAccountRepositoryTest {
             registeredAt = 1,
             lastActiveAt = 1,
             metadata = UserMetadata(),
+            profile = createProfile()
         )
 
         collection.insertMany(List(20) { account() } + account)

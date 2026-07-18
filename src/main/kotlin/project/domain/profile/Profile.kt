@@ -1,4 +1,4 @@
-package encore.datastore.collection
+package project.domain.profile
 
 import kotlinx.serialization.Serializable
 
@@ -8,15 +8,12 @@ import kotlinx.serialization.Serializable
  * `Profile` contains the user's personal information and not including
  * system information, such as avatar, description, title, mood, etc.
  *
- * @property userId Unique identifier of the user.
+ * @property displayName Display name of the user.
+ * @property level example field
  */
 @Serializable
 data class Profile(
-    val userId: UserId,
-    val username: String,
-    val email: String,
-    val registeredAt: Long,
-    val lastActiveAt: Long,
-
+    val displayName: String,
+    val avatarUrl: String,
     val level: Int
 )

@@ -62,11 +62,11 @@ suspend fun createServerContext(
     val sessionSubunit = SessionSubunit(appScope, TimeCenter.source)
 
     val profileRepository = MongoProfileRepository(
-        profileCollection = mongoDatabase.getCollection(MongoCollectionName.profile)
+        accountCollection = mongoDatabase.getCollection(MongoCollectionName.userAccount)
     )
     val profileSubunit = ProfileSubunit(profileRepository)
 
-    val userCreationSubunit = UserCreationSubunit(dataStore, profileSubunit)
+    val userCreationSubunit = UserCreationSubunit(dataStore)
     val authSubunit = AuthSubunit(accountSubunit, userCreationSubunit)
 
     val sessionStore = MongoSessionStore(mongoDatabase.getCollection(MongoCollectionName.websiteSession))

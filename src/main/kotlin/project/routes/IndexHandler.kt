@@ -2,7 +2,7 @@ package project.routes
 
 import encore.auth.LoginResult
 import encore.context.ServerContext
-import encore.datastore.collection.Profile
+import project.domain.profile.Profile
 import encore.fancam.Fancam
 import encore.route.RouteHandler
 import encore.route.guard
@@ -25,7 +25,6 @@ import kotlinx.serialization.Serializable
 import project.Members
 import project.domain.cafe.topic.Topic
 import project.domain.cafe.topic.TopicDeletionOutcome
-import project.domain.cafe.topic.TopicFactory
 import project.domain.session.WebsiteSessionSubunit
 import java.text.SimpleDateFormat
 
