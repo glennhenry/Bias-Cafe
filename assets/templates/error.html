@@ -5,30 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
   <link rel="stylesheet" href="/site/reset.css">
+  <link rel="stylesheet" href="/site/base.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <title th:text="${data.title}"></title>
   <style>
-    body {
-      margin-left: 8px;
-    }
-
-    .navbar {
-      display: flex;
-      gap: 8px;
-      width: fit-content;
-      margin-top: 24px;
-    }
-
-    .nav-link {
-      border: 1px solid black;
-      padding: 4px;
-      background-color: #dddddd;
-    }
-
-    .nav-link:hover {
-      color: gray;
-    }
-
     .link {
       color: blue;
       text-decoration: underline;
@@ -41,13 +21,41 @@
 </head>
 
 <body>
-  <h1 th:text="${data.heading}"></h1>
-  <p th:text="${data.message}"></p>
-  <a class="link" th:if="${data.action != null}" th:href="${data.action.href}" th:text="${data.action.text}"></a>
-  <div class="navbar">
-    <a class="nav-link" href="/">Lobby</a>
-    <a class="nav-link" href="/cafe">Cafe</a>
-    <a class="nav-link" href="/profile">Profile</a>
+  <div class="root">
+    <div class="page">
+      <div class="frame">
+        <header class="topbar">
+          <div class="logo">
+            <p>Website</p>
+          </div>
+          <div class="menu"></div>
+        </header>
+        <div class="content-container">
+          <div class="left-sidebar">
+            <nav class="navigation">
+              <a class="nav-link" href="/">Lobby</a>
+              <a class="nav-link" href="/cafe">Cafe</a>
+              <a class="nav-link" href="/profile">Profile</a>
+            </nav>
+          </div>
+          <main class="content">
+            <h1 th:text="${data.heading}"></h1>
+            <p th:text="${data.message}"></p>
+            <a class="link" th:if="${data.action != null}" th:href="${data.action.href}"
+              th:text="${data.action.text}"></a>
+          </main>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">
+      <p>Bias Cafe @ 2026</p>
+      <p>Kep1er fan social portal</p>
+      <p>
+        <a href="#">GitHub</a> |
+        <a href="#">Credits</a> |
+        <a href="#">About</a>
+      </p>
+    </footer>
   </div>
 </body>
 

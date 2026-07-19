@@ -1,216 +1,223 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
-    <link rel="stylesheet" href="/site/reset.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <title>Login</title>
-    <style>
-        body {
-            margin-left: 8px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
+  <link rel="stylesheet" href="/site/reset.css">
+  <link rel="stylesheet" href="/site/base.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <title>Login</title>
+  <style>
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      width: max-content;
+      gap: 8px;
+    }
 
-        .navbar {
-            display: flex;
-            gap: 8px;
-            width: fit-content;
-            margin-top: 24px;
-        }
+    .text-input {
+      width: 200px;
+    }
 
-        .nav-link {
-            border: 1px solid black;
-            padding: 4px;
-            background-color: #dddddd;
-        }
+    #username-info,
+    #email-info,
+    #password-info,
+    #login-info {
+      text-align: start;
+      margin-bottom: 20px;
+      font-size: 0.9em;
+    }
 
-        .nav-link:hover {
-            color: gray;
-        }
+    #login-button {
+      padding: 4px;
+    }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            width: max-content;
-            gap: 8px;
-        }
+    #login-button:disabled {
+      background-color: rgb(165, 157, 157);
+      cursor: not-allowed;
+      opacity: 0.6;
+      border: none;
+    }
 
-        .text-input {
-            width: 200px;
-        }
+    .link {
+      color: blue;
+      text-decoration: underline;
+    }
 
-        #username-info,
-        #email-info,
-        #password-info,
-        #login-info {
-            text-align: start;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-        }
-
-        #login-button {
-            padding: 4px;
-        }
-
-        #login-button:disabled {
-            background-color: rgb(165, 157, 157);
-            cursor: not-allowed;
-            opacity: 0.6;
-            border: none;
-        }
-
-        .link {
-            color: blue;
-            text-decoration: underline;
-        }
-
-        .link:hover {
-            text-decoration-thickness: 2px;
-        }
-    </style>
+    .link:hover {
+      text-decoration-thickness: 2px;
+    }
+  </style>
 </head>
 
 <body>
-    <h1>Login</h1>
-    <form id="login-form">
-        <div>
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input id="username" class="text-input" type="text" required />
-            </div>
-            <div id="username-info"></div>
+  <div class="root">
+    <div class="page">
+      <div class="frame">
+        <header class="topbar">
+          <div class="logo">
+            <p>Website</p>
+          </div>
+          <div class="menu"></div>
+        </header>
+        <div class="content-container">
+          <div class="left-sidebar">
+            <nav class="navigation">
+              <a class="nav-link" href="/">Lobby</a>
+              <a class="nav-link" href="/cafe">Cafe</a>
+              <a class="nav-link" href="/profile">Profile</a>
+            </nav>
+          </div>
+          <main class="content">
+            <h1>Login</h1>
+            <form id="login-form">
+              <div>
+                <div class="form-group">
+                  <label for="username">Username:</label>
+                  <input id="username" class="text-input" type="text" required />
+                </div>
+                <div id="username-info"></div>
+              </div>
+              <div>
+                <div class="form-group">
+                  <label for="password">Password:</label>
+                  <input id="password" class="text-input" type="password" required />
+                </div>
+                <div id="password-info"></div>
+              </div>
+              <div>
+                <button id="login-button" type="submit">Login</button>
+                <p id="login-info"></p>
+              </div>
+              <a class="link" href="/register">Register</a>
+            </form>
+          </main>
         </div>
-        <div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input id="password" class="text-input" type="password" required />
-            </div>
-            <div id="password-info"></div>
-        </div>
-        <div>
-            <button id="login-button" type="submit">Login</button>
-            <p id="login-info"></p>
-        </div>
-        <a class="link" href="/register">Register</a>
-    </form>
-    <div class="navbar">
-        <a class="nav-link" href="/">Lobby</a>
-        <a class="nav-link" href="/cafe">Cafe</a>
-        <a class="nav-link" href="/profile">Profile</a>
+      </div>
     </div>
+    <footer class="footer">
+      <p>Bias Cafe @ 2026</p>
+      <p>Kep1er fan social portal</p>
+      <p>
+        <a href="#">GitHub</a> |
+        <a href="#">Credits</a> |
+        <a href="#">About</a>
+      </p>
+    </footer>
+  </div>
 
-    <script>
-        let isUsernameValid = false;
-        let isPasswordValid = false;
+  <script>
+    let isUsernameValid = false;
+    let isPasswordValid = false;
 
-        // to add slight delay everytime the input change before checking it
-        let usernameInputTimer;
-        let passwordInputTimer;
+    // to add slight delay everytime the input change before checking it
+    let usernameInputTimer;
+    let passwordInputTimer;
 
-        $(document).ready(function () {
-            checkUsername()
-            checkPassword()
+    $(document).ready(function () {
+      checkUsername()
+      checkPassword()
+    })
+
+    $("#username").on("input", function () {
+      clearTimeout(usernameInputTimer);
+      usernameInputTimer = setTimeout(() => {
+        checkUsername()
+      }, 500);
+    })
+
+    $("#password").on("input", function () {
+      clearTimeout(passwordInputTimer);
+      passwordInputTimer = setTimeout(() => {
+        checkPassword()
+      }, 500);
+    })
+
+    function checkUsername() {
+      if ($("#username").val()) {
+        isUsernameValid = true
+      } else {
+        isUsernameValid = false
+      }
+      updateSubmitButton()
+      return isUsernameValid
+    }
+
+    function checkPassword() {
+      if ($("#password").val()) {
+        isPasswordValid = true
+      } else {
+        isPasswordValid = false
+      }
+      updateSubmitButton()
+      return isPasswordValid
+    }
+
+    // submit button is only enabled when credentials are valid
+    function updateSubmitButton() {
+      if (!isUsernameValid || !isPasswordValid) {
+        $("#login-button").prop("disabled", true)
+      } else {
+        $("#login-button").prop("disabled", false)
+        $("#login-info").text("")
+      }
+    }
+
+    $("#login-form").on("submit", function (event) {
+      event.preventDefault();
+      login()
+    })
+
+    async function login() {
+      const usernameOk = checkUsername()
+      const passwordOk = checkPassword()
+
+      if (!usernameOk || !passwordOk) {
+        $("#login-info")
+          .text("Credentials are blank.")
+          .css("color", "orange")
+        return;
+      }
+
+      $("#login-info")
+        .text("Logging in...")
+        .css("color", "orange")
+
+      const payload = JSON.stringify({ username: $("#username").val(), password: $("#password").val() })
+
+      const params = new URLSearchParams(window.location.search);
+      const returnTo = params.get("return");
+
+      const url = new URL("/api/login", window.location.origin);
+
+      if (returnTo !== null) {
+        url.searchParams.set("return", returnTo);
+      }
+
+      fetch(url, {
+        method: "POST",
+        body: payload,
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.reason || "Registration failed");
+          }
+          return response.json()
         })
-
-        $("#username").on("input", function () {
-            clearTimeout(usernameInputTimer);
-            usernameInputTimer = setTimeout(() => {
-                checkUsername()
-            }, 500);
+        .then((data) => {
+          window.location.href = data.url;
         })
+        .catch((e) => {
+          $("#login-info")
+            .text(`Login failed: ${e.message}`)
+            .css("color", "red")
 
-        $("#password").on("input", function () {
-            clearTimeout(passwordInputTimer);
-            passwordInputTimer = setTimeout(() => {
-                checkPassword()
-            }, 500);
-        })
-
-        function checkUsername() {
-            if ($("#username").val()) {
-                isUsernameValid = true
-            } else {
-                isUsernameValid = false
-            }
-            updateSubmitButton()
-            return isUsernameValid
-        }
-
-        function checkPassword() {
-            if ($("#password").val()) {
-                isPasswordValid = true
-            } else {
-                isPasswordValid = false
-            }
-            updateSubmitButton()
-            return isPasswordValid
-        }
-
-        // submit button is only enabled when credentials are valid
-        function updateSubmitButton() {
-            if (!isUsernameValid || !isPasswordValid) {
-                $("#login-button").prop("disabled", true)
-            } else {
-                $("#login-button").prop("disabled", false)
-                $("#login-info").text("")
-            }
-        }
-
-        $("#login-form").on("submit", function (event) {
-            event.preventDefault();
-            login()
-        })
-
-        async function login() {
-            const usernameOk = checkUsername()
-            const passwordOk = checkPassword()
-
-            if (!usernameOk || !passwordOk) {
-                $("#login-info")
-                    .text("Credentials are blank.")
-                    .css("color", "orange")
-                return;
-            }
-
-            $("#login-info")
-                .text("Logging in...")
-                .css("color", "orange")
-
-            const payload = JSON.stringify({ username: $("#username").val(), password: $("#password").val() })
-
-            const params = new URLSearchParams(window.location.search);
-            const returnTo = params.get("return");
-
-            const url = new URL("/api/login", window.location.origin);
-
-            if (returnTo !== null) {
-                url.searchParams.set("return", returnTo);
-            }
-
-            fetch(url, {
-                method: "POST",
-                body: payload,
-            })
-                .then(async (response) => {
-                    if (!response.ok) {
-                        const error = await response.json();
-                        throw new Error(error.reason || "Registration failed");
-                    }
-                    return response.json()
-                })
-                .then((data) => {
-                    window.location.href = data.url;
-                })
-                .catch((e) => {
-                    $("#login-info")
-                        .text(`Login failed: ${e.message}`)
-                        .css("color", "red")
-
-                    console.error("login error:", e);
-                });
-        }
-    </script>
+          console.error("login error:", e);
+        });
+    }
+  </script>
 </body>
 
 </html>

@@ -1,0 +1,138 @@
+:root {
+  /* Size */
+  --site-width: 1000px;
+  --topbar-height: 50px;
+  --sidebar-width: 180px;
+  --content-min-height: 500px;
+
+  /* Font size */
+  --body-font-size: 0.8rem;
+  --nav-link-font-size: 0.7rem;
+  --footer-font-size: 0.75rem;
+
+  /* UI colors */
+  --border-color: #ccc;
+  --site-bg-color: #fbf4ff;
+  --logo-color: #ad7ec5;
+  --menu-start-bg-color: #f7f7f7;
+  --menu-end-bg-color: #e7e7e7;
+  --sidebar-bg-color: #f7f7f7;
+  --nav-link-hover-color: #ddd3e3;
+  --content-bg-color: #ffffff;
+
+  /* Text colors */
+  --footer-text-color: #999;
+
+  /* Other */
+  --topbar-zindex: 1;
+}
+
+body {
+  font-family: Arial;
+  background-color: var(--site-bg-color);
+  padding-bottom: 100px;
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.page {
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.frame {
+  width: var(--site-width);
+}
+
+.topbar {
+  width: inherit;
+  height: var(--topbar-height);
+  position: fixed;
+  top: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid var(--border-color);
+  z-index: var(--topbar-zindex);
+}
+
+.logo {
+  width: var(--sidebar-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background-color: var(--logo-color);
+  color: #1e1e1e;
+  font-size: 20px;
+  font-weight: bold;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.menu {
+  display: flex;
+  flex: 1;
+  justify-content: end;
+  background: linear-gradient(
+    to bottom,
+    var(--menu-start-bg-color),
+    var(--menu-end-bg-color)
+  );
+}
+
+.content-container {
+  height: max-content;
+  display: flex;
+  flex-direction: row;
+  margin-top: var(--topbar-height);
+}
+
+.left-sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg-color);
+  border-right: 1px solid var(--border-color);
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-link {
+  border-bottom: 1px solid var(--border-color);
+  padding: 4px;
+  font-size: var(--nav-link-font-size);
+  font-weight: bold;
+}
+
+.nav-link:hover {
+  background-color: var(--nav-link-hover-color);
+}
+
+.content {
+  min-height: var(--content-min-height);
+  flex: 1;
+  background-color: var(--content-bg-color);
+  padding-left: 8px;
+  padding-bottom: 8px;
+  font-size: var(--body-font-size);
+}
+
+.footer {
+  width: var(--site-width);
+  font-size: var(--footer-font-size);
+  line-height: 1.6;
+  text-align: end;
+  margin-top: 8px;
+  color: var(--footer-text-color);
+}
+
+.footer a {
+  text-decoration: underline;
+}
