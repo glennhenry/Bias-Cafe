@@ -99,7 +99,7 @@
                 <button id="register-button" type="submit">Register</button>
                 <div id="register-info"></div>
               </div>
-              <a class="link" href="/login">Login</a>
+              <a id="login-link" class="link" href="/login">Login</a>
             </form>
           </div>
           <div class="content-sidebar"></div>
@@ -131,7 +131,17 @@
       updateSubmitButton();
       checkUsername()
       checkEmail()
+      passReturnLink()
     })
+
+    function passReturnLink() {
+      const params = new URLSearchParams(window.location.search);
+      const returnTo = params.get("return");
+
+      if (returnTo) {
+        $("#login-link").attr("href", `/login?return=${returnTo}`)
+      }
+    }
 
     // validate and check server on username change
     $("#username").on("input", function () {

@@ -92,7 +92,7 @@
                 <button id="login-button" type="submit">Login</button>
                 <p id="login-info"></p>
               </div>
-              <a class="link" href="/register">Register</a>
+              <a id="register-link" class="link" href="/register">Register</a>
             </form>
           </div>
           <div class="content-sidebar"></div>
@@ -121,7 +121,17 @@
     $(document).ready(function () {
       checkUsername()
       checkPassword()
+      passReturnLink()
     })
+
+    function passReturnLink() {
+      const params = new URLSearchParams(window.location.search);
+      const returnTo = params.get("return");
+
+      if (returnTo) {
+        $("#register-link").attr("href", `/register?return=${returnTo}`)
+      }
+    }
 
     $("#username").on("input", function () {
       clearTimeout(usernameInputTimer);
