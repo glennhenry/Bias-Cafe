@@ -416,11 +416,6 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
 
         post("/api/namecheck") {
             handle(call, NoAuthGuard) {
-                if (!call.request.header(HttpHeaders.Referrer).orEmpty().endsWith("/register")) {
-                    call.respond(HttpStatusCode.Forbidden, mapOf("reason" to "access denied"))
-                    return@handle
-                }
-
                 val username = call.receiveText()
                 if (username.isBlank()) {
                     call.respond(
@@ -442,11 +437,6 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
 
         post("/api/emailcheck") {
             handle(call, NoAuthGuard) {
-                if (!call.request.header(HttpHeaders.Referrer).orEmpty().endsWith("/register")) {
-                    call.respond(HttpStatusCode.Forbidden, mapOf("reason" to "access denied"))
-                    return@handle
-                }
-
                 val email = call.receiveText()
                 if (email.isBlank()) {
                     call.respond(
