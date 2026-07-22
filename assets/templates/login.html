@@ -52,24 +52,26 @@
 </head>
 
 <body>
-  <div class="root">
-    <div class="page">
-      <div class="frame">
-        <header class="topbar">
+  <div class="app">
+    <div class="layout">
+      <div class="sidebar">
+        <div class="sidebar-inner">
           <div class="logo">
             <p>Website</p>
           </div>
+          <nav class="navigation">
+            <a class="nav-link" href="/">Lobby</a>
+            <a class="nav-link" href="/cafe">Cafe</a>
+            <a class="nav-link" href="/profile">Profile</a>
+          </nav>
+        </div>
+      </div>
+      <div class="core">
+        <header class="topbar">
           <div class="menu"></div>
         </header>
-        <div class="content-container">
-          <div class="left-sidebar">
-            <nav class="navigation">
-              <a class="nav-link" href="/">Lobby</a>
-              <a class="nav-link" href="/cafe">Cafe</a>
-              <a class="nav-link" href="/profile">Profile</a>
-            </nav>
-          </div>
-          <main class="content">
+        <main class="content-container">
+          <div class="content">
             <h1>Login</h1>
             <form id="login-form">
               <div>
@@ -92,8 +94,9 @@
               </div>
               <a class="link" href="/register">Register</a>
             </form>
-          </main>
-        </div>
+          </div>
+          <div class="content-sidebar"></div>
+        </main>
       </div>
     </div>
     <footer class="footer">
