@@ -63,7 +63,7 @@
     <div class="layout">
       <div th:replace="~{fragments/sidebar :: sidebar}"></div>
       <div class="core">
-        <header th:replace="~{fragments/topbar :: topbar}"></header>
+        <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
             <h1>Cafe.Home</h1>

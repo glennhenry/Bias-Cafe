@@ -2,8 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <body>
-  <header class="topbar" th:fragment="topbar">
-    <div class="menu"></div>
+  <header class="topbar" th:fragment="topbar (account)">
+    <div class="menu">
+      <div th:if="${account != null}">
+        <p th:text="'Hello, ' + ${account.username}"></p>
+        <a class="link" href="/logout">Logout</a>
+      </div>
+      <div th:if="${account == null}">
+        <a class="link" href="/register">Register</a>
+        <a class="link" href="/login">Login</a>
+      </div>
+    </div>
   </header>
 </body>
 
