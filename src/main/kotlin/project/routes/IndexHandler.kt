@@ -81,6 +81,7 @@ data class TopicModel(
 )
 
 data class ErrorModel(
+    val account: Account?,
     val title: String,
     val heading: String,
     val message: String,
@@ -93,6 +94,7 @@ data class Action(
 )
 
 data class LogoutModel(
+    val account: Account?,
     val success: Boolean
 )
 
@@ -241,6 +243,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val token = call.request.cookies["session"]
                 if (token == null) {
                     val data = ErrorModel(
+                        account = null,
                         title = "Not logged in",
                         heading = "You are not logged in",
                         message = "",
@@ -250,7 +253,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     return@handle
                 }
 
-                call.respond(ThymeleafContent("logout", mapOf("data" to LogoutModel(false))))
+                call.respond(ThymeleafContent("logout", mapOf("data" to LogoutModel(null, false))))
             }
         }
     }
@@ -276,6 +279,7 @@ class MustNotHaveAccountGuard(private val websiteSessionSubunit: WebsiteSessionS
         websiteSessionSubunit.verify(token) ?: return GuardResult.Welcome
 
         val data = ErrorModel(
+            account = null,
             title = "Already logged in",
             heading = "Logged in",
             message = "You are already logged in.",
@@ -326,6 +330,7 @@ class RequireAccountGuard(private val serverContext: ServerContext) : AuthGuard 
         }
 
         val data = ErrorModel(
+            account = null,
             title = "Login required",
             heading = "You need to log in",
             message = "This action requires an account",
@@ -491,6 +496,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                 val token = call.request.cookies["session"]
                 if (token == null) {
                     val data = ErrorModel(
+                        account = null,
                         title = "Not logged in",
                         heading = "You are not logged in",
                         message = "",
@@ -502,7 +508,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 serverContext.subunits.websiteSession.delete(token)
                 call.response.cookies.delete("session")
-                call.respond(ThymeleafContent("logout", mapOf("data" to LogoutModel(true))))
+                call.respond(ThymeleafContent("logout", mapOf("data" to LogoutModel(null, true))))
             }
         }
     }

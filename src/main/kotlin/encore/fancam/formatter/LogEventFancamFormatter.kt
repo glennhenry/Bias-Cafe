@@ -160,7 +160,7 @@ class LogEventFancamFormatter(
 fun Throwable.toLimitedString(
     colorEnabled: Boolean,
     maxFrames: Int = 8,
-    maxCauses: Int = 3
+    maxCauses: Int = 5
 ): String {
     fun redColor(text: String): String {
         return if (colorEnabled) {
