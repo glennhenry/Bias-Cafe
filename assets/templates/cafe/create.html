@@ -53,52 +53,33 @@
 <body>
   <div class="app">
     <div class="layout">
-      <div class="sidebar">
-        <div class="sidebar-inner">
-          <div class="logo">
-            <p>Website</p>
-          </div>
-          <nav class="navigation">
-            <a class="nav-link" href="/">Lobby</a>
-            <a class="nav-link" href="/cafe">Cafe</a>
-            <a class="nav-link" href="/profile">Profile</a>
-          </nav>
-        </div>
-      </div>
+      <div th:replace="~{fragments/sidebar :: sidebar}"></div>
       <div class="core">
-        <header class="topbar">
-          <div class="menu"></div>
-        </header>
+        <header th:replace="~{fragments/topbar :: topbar}"></header>
         <main class="content-container">
           <div class="content">
-            <h1>Cafe.CreateTopic</h1>
-            <form id="post-form" class="post-container">
-              <p>Create a topic</p>
-              <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title"
-                maxlength="80"></textarea>
-              <input id="topic-author-input" class="topic-author-input" type="text" placeholder="Author"
-                maxlength="30" />
-              <div class="post-section">
-                <label for="post-textarea">Content</label>
-                <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
-              </div>
-              <button type="submit" class="post-submit">Post</button>
-            </form>
-            <p id="post-status" class="post-status">Status: </p>
+            <div class="content">
+              <h1>Cafe.CreateTopic</h1>
+              <form id="post-form" class="post-container">
+                <p>Create a topic</p>
+                <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title"
+                  maxlength="80"></textarea>
+                <input id="topic-author-input" class="topic-author-input" type="text" placeholder="Author"
+                  maxlength="30" />
+                <div class="post-section">
+                  <label for="post-textarea">Content</label>
+                  <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
+                </div>
+                <button type="submit" class="post-submit">Post</button>
+              </form>
+              <p id="post-status" class="post-status">Status: </p>
+            </div>
           </div>
-          <div class="content-sidebar"></div>
+          <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
       </div>
     </div>
-    <footer class="footer">
-      <p>Bias Cafe @ 2026</p>
-      <p>Kep1er fan social portal</p>
-      <p>
-        <a href="#">GitHub</a> |
-        <a href="#">Credits</a> |
-        <a href="#">About</a>
-      </p>
-    </footer>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
   </div>
 
   <script>

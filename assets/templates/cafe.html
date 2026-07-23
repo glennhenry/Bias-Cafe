@@ -61,22 +61,9 @@
 <body>
   <div class="app">
     <div class="layout">
-      <div class="sidebar">
-        <div class="sidebar-inner">
-          <div class="logo">
-            <p>Website</p>
-          </div>
-          <nav class="navigation">
-            <a class="nav-link" href="/">Lobby</a>
-            <a class="nav-link" href="/cafe">Cafe</a>
-            <a class="nav-link" href="/profile">Profile</a>
-          </nav>
-        </div>
-      </div>
+      <div th:replace="~{fragments/sidebar :: sidebar}"></div>
       <div class="core">
-        <header class="topbar">
-          <div class="menu"></div>
-        </header>
+        <header th:replace="~{fragments/topbar :: topbar}"></header>
         <main class="content-container">
           <div class="content">
             <h1>Cafe.Home</h1>
@@ -102,19 +89,11 @@
             </ul>
             <p th:if="${#lists.isEmpty(data.spaces)}">No spaces have been made yet ㅠㅠ</p>
           </div>
-          <div class="content-sidebar"></div>
+          <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
       </div>
     </div>
-    <footer class="footer">
-      <p>Bias Cafe @ 2026</p>
-      <p>Kep1er fan social portal</p>
-      <p>
-        <a href="#">GitHub</a> |
-        <a href="#">Credits</a> |
-        <a href="#">About</a>
-      </p>
-    </footer>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
   </div>
 </body>
 
