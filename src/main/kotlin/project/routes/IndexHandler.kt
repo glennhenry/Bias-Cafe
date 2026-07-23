@@ -98,8 +98,7 @@ data class Action(
 )
 
 data class LogoutModel(
-    val account: Account?,
-    val success: Boolean
+    val account: Account?
 )
 
 data class ProfileModel(
@@ -282,25 +281,11 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 
         get("/logout") {
             handle(call, optionalAccountGuard) {
-                val token = call.request.cookies["session"]
-                if (token == null) {
-                    val data = ErrorModel(
-                        account = call.attributes.getProfileAndMapToAccountModel(),
-                        title = "Not logged in",
-                        heading = "You are not logged in",
-                        message = "",
-                        action = Action("/", "Back to lobby")
-                    )
-                    call.respond(HttpStatusCode.Forbidden, ThymeleafContent("error", mapOf("data" to data)))
-                    return@handle
-                }
-
                 call.respond(
                     ThymeleafContent(
                         "logout", mapOf(
                             "data" to LogoutModel(
                                 account = call.attributes.getProfileAndMapToAccountModel(),
-                                success = false
                             )
                         )
                     )
@@ -560,18 +545,11 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
             }
         }
 
-        get("/api/logout") {
+        post("/api/logout") {
             handle(call, NoAuthGuard) {
                 val token = call.request.cookies["session"]
                 if (token == null) {
-                    val data = ErrorModel(
-                        account = call.attributes.getProfileAndMapToAccountModel(),
-                        title = "Not logged in",
-                        heading = "You are not logged in",
-                        message = "",
-                        action = Action("/", "Back to lobby")
-                    )
-                    call.respond(HttpStatusCode.Forbidden, ThymeleafContent("error", mapOf("data" to data)))
+                    call.respond(HttpStatusCode.Forbidden, "Not logged in")
                     return@handle
                 }
 
