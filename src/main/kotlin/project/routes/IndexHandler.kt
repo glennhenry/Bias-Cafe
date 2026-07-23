@@ -186,7 +186,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     return@handle
                 }
 
-                call.respond(ThymeleafContent("cafe/create", emptyMap()))
+                call.respond(ThymeleafContent("cafe/create", mapOf("data" to EmptyData)))
             }
         }
 
@@ -221,18 +221,18 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         }
 
         get("/profile") {
-            call.respond(ThymeleafContent("profile", emptyMap()))
+            call.respond(ThymeleafContent("profile", mapOf("data" to EmptyData)))
         }
 
         get("/login") {
             handle(call, mustNotHaveAccountGuard) {
-                call.respond(ThymeleafContent("login", emptyMap()))
+                call.respond(ThymeleafContent("login", mapOf("data" to EmptyData)))
             }
         }
 
         get("/register") {
             handle(call, mustNotHaveAccountGuard) {
-                call.respond(ThymeleafContent("register", emptyMap()))
+                call.respond(ThymeleafContent("register", mapOf("data" to EmptyData)))
             }
         }
 
@@ -255,6 +255,8 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         }
     }
 }
+
+val EmptyData = emptyMap<String, String>()
 
 fun ResponseCookies.delete(name: String) {
     append(name, "", CookieEncoding.URI_ENCODING, 0, GMTDate(), null, null)
