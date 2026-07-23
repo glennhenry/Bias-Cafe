@@ -263,7 +263,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 call.respond(
                     ThymeleafContent(
                         "login",
-                        mapOf("data" to LoginModel(call.attributes.getProfileAndMapToAccountModel()))
+                        mapOf("data" to LoginModel(null))
                     )
                 )
             }
@@ -274,7 +274,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 call.respond(
                     ThymeleafContent(
                         "register",
-                        mapOf("data" to RegisterModel(call.attributes.getProfileAndMapToAccountModel()))
+                        mapOf("data" to RegisterModel(null))
                     )
                 )
             }
@@ -348,7 +348,7 @@ class MustNotHaveAccountGuard(private val websiteSessionSubunit: WebsiteSessionS
         websiteSessionSubunit.verify(token) ?: return GuardResult.Welcome
 
         val data = ErrorModel(
-            account = call.attributes.getProfileAndMapToAccountModel(),
+            account = null,
             title = "Already logged in",
             heading = "Logged in",
             message = "You are already logged in.",
@@ -399,7 +399,7 @@ class RequireAccountGuard(private val serverContext: ServerContext) : AuthGuard 
         }
 
         val data = ErrorModel(
-            account = call.attributes.getProfileAndMapToAccountModel(),
+            account = null,
             title = "Login required",
             heading = "You need to log in",
             message = "This action requires an account",
