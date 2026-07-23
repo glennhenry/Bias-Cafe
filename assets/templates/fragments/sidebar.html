@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+  <div class="sidebar" th:fragment="sidebar">
+    <div class="sidebar-inner">
+      <div th:replace="~{fragments/logo :: logo}"></div>
+      <nav class="navigation">
+        <a class="nav-link" href="/">Lobby</a>
+        <a class="nav-link" href="/cafe">Cafe</a>
+        <a class="nav-link" href="/profile">Profile</a>
+      </nav>
+    </div>
+  </div>
+</body>
+
+</html>
