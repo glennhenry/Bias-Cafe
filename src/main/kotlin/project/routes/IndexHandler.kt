@@ -65,6 +65,10 @@ data class SectionItem(
     val description: String
 )
 
+data class CreateTopicModel(
+    val account: Account?
+)
+
 @Serializable
 data class PostPayload(
     val title: String,
@@ -98,6 +102,18 @@ data class LogoutModel(
     val success: Boolean
 )
 
+data class ProfileModel(
+    val account: Account?
+)
+
+data class RegisterModel(
+    val account: Account?
+)
+
+data class LoginModel(
+    val account: Account?
+)
+
 class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
     private val availableSections = listOf(
         "kep1er", "kpop",
@@ -116,10 +132,8 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val systemTime = TimeCenter.now()
                 val bias = Members.all.random()
 
-                call.attributes
-
                 val data = LobbyModel(
-                    account = null,
+                    account = call.attributes.getProfileAndMapToAccountModel(),
                     time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(systemTime),
                     bias = bias,
                 )
@@ -129,53 +143,59 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         }
 
         get("/cafe") {
-            val spaces = serverContext.subunits.collection.getSpacesForLandingModel()
-            val counts = serverContext.subunits.topic.getTopicsCountForEachSection().okOrThrow()
+            guard(call, optionalAccountGuard) {
+                val spaces = serverContext.subunits.collection.getSpacesForLandingModel()
+                val counts = serverContext.subunits.topic.getTopicsCountForEachSection().okOrThrow()
 
-            val data = CafeLandingModel(
-                account = null,
-                spaces = spaces,
-                counts = counts
-            )
+                val data = CafeLandingModel(
+                    account = call.attributes.getProfileAndMapToAccountModel(),
+                    spaces = spaces,
+                    counts = counts
+                )
 
-            call.respond(ThymeleafContent("cafe", mapOf("data" to data)))
+                call.respond(ThymeleafContent("cafe", mapOf("data" to data)))
+            }
         }
 
         get("/cafe/{section}") {
-            val path = requireNotNull(call.request.pathVariables["section"])
-            if (!availableSections.contains(path)) {
-                call.respond(HttpStatusCode.NotFound, "Section not found")
-                return@get
+            guard(call, optionalAccountGuard) {
+                val path = requireNotNull(call.request.pathVariables["section"])
+                if (!availableSections.contains(path)) {
+                    call.respond(HttpStatusCode.NotFound, "Section not found")
+                    return@guard
+                }
+
+                val topics = serverContext.subunits.topic.getTopicsOfSection(path).okOrNull()
+                if (topics == null) {
+                    call.respond(HttpStatusCode.InternalServerError, "internal server error")
+                    return@guard
+                }
+
+                val data = CafeInsideModel(
+                    account = call.attributes.getProfileAndMapToAccountModel(),
+                    sectionId = path,
+                    topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedDate) }
+                )
+
+                call.respond(ThymeleafContent("cafe/topiclist", mapOf("data" to data)))
             }
-
-            val topics = serverContext.subunits.topic.getTopicsOfSection(path).okOrNull()
-            if (topics == null) {
-                call.respond(HttpStatusCode.InternalServerError, "internal server error")
-                return@get
-            }
-
-            val data = CafeInsideModel(
-                account = null,
-                sectionId = path,
-                topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedDate) }
-            )
-
-            call.respond(ThymeleafContent("cafe/topiclist", mapOf("data" to data)))
         }
 
         post("/cafe/delete") {
-            val topicId = call.receiveText()
+            guard(call, requireAccountGuard) {
+                val topicId = call.receiveText()
 
-            when (val outcome = serverContext.subunits.topic.deleteTopic(topicId)) {
-                is Outcome.Fail ->
-                    call.respond(HttpStatusCode.InternalServerError)
+                when (val outcome = serverContext.subunits.topic.deleteTopic(topicId)) {
+                    is Outcome.Fail ->
+                        call.respond(HttpStatusCode.InternalServerError)
 
-                is Outcome.Ok -> when (outcome.value) {
-                    TopicDeletionOutcome.Success ->
-                        call.respond(HttpStatusCode.NoContent)
+                    is Outcome.Ok -> when (outcome.value) {
+                        TopicDeletionOutcome.Success ->
+                            call.respond(HttpStatusCode.NoContent)
 
-                    TopicDeletionOutcome.TopicNotFound ->
-                        call.respond(HttpStatusCode.NotFound, "Topic not found")
+                        TopicDeletionOutcome.TopicNotFound ->
+                            call.respond(HttpStatusCode.NotFound, "Topic not found")
+                    }
                 }
             }
         }
@@ -188,12 +208,17 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     return@handle
                 }
 
-                call.respond(ThymeleafContent("cafe/create", mapOf("data" to EmptyData)))
+                call.respond(
+                    ThymeleafContent(
+                        "cafe/create",
+                        mapOf("data" to CreateTopicModel(call.attributes.getProfileAndMapToAccountModel()))
+                    )
+                )
             }
         }
 
         post("/cafe/{section}/create") {
-            handle(call, NoAuthGuard) {
+            handle(call, requireAccountGuard) {
                 val section = requireNotNull(call.request.pathVariables["section"])
                 if (!availableSections.contains(section)) {
                     call.respond(HttpStatusCode.NotFound, "Section not found")
@@ -223,27 +248,44 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         }
 
         get("/profile") {
-            call.respond(ThymeleafContent("profile", mapOf("data" to EmptyData)))
+            handle(call, optionalAccountGuard) {
+                call.respond(
+                    ThymeleafContent(
+                        "profile",
+                        mapOf("data" to ProfileModel(call.attributes.getProfileAndMapToAccountModel()))
+                    )
+                )
+            }
         }
 
         get("/login") {
             handle(call, mustNotHaveAccountGuard) {
-                call.respond(ThymeleafContent("login", mapOf("data" to EmptyData)))
+                call.respond(
+                    ThymeleafContent(
+                        "login",
+                        mapOf("data" to LoginModel(call.attributes.getProfileAndMapToAccountModel()))
+                    )
+                )
             }
         }
 
         get("/register") {
             handle(call, mustNotHaveAccountGuard) {
-                call.respond(ThymeleafContent("register", mapOf("data" to EmptyData)))
+                call.respond(
+                    ThymeleafContent(
+                        "register",
+                        mapOf("data" to RegisterModel(call.attributes.getProfileAndMapToAccountModel()))
+                    )
+                )
             }
         }
 
         get("/logout") {
-            handle(call, NoAuthGuard) {
+            handle(call, optionalAccountGuard) {
                 val token = call.request.cookies["session"]
                 if (token == null) {
                     val data = ErrorModel(
-                        account = null,
+                        account = call.attributes.getProfileAndMapToAccountModel(),
                         title = "Not logged in",
                         heading = "You are not logged in",
                         message = "",
@@ -253,13 +295,32 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     return@handle
                 }
 
-                call.respond(ThymeleafContent("logout", mapOf("data" to LogoutModel(null, false))))
+                call.respond(
+                    ThymeleafContent(
+                        "logout", mapOf(
+                            "data" to LogoutModel(
+                                account = call.attributes.getProfileAndMapToAccountModel(),
+                                success = false
+                            )
+                        )
+                    )
+                )
             }
         }
     }
 }
 
 val EmptyData = emptyMap<String, String>()
+
+fun Attributes.getProfileAndMapToAccountModel(): Account? {
+    getOrNull(SessionProfileKey)?.let {
+        return Account(
+            username = it.displayName,
+            level = it.level
+        )
+    }
+    return null
+}
 
 fun ResponseCookies.delete(name: String) {
     append(name, "", CookieEncoding.URI_ENCODING, 0, GMTDate(), null, null)
@@ -279,7 +340,7 @@ class MustNotHaveAccountGuard(private val websiteSessionSubunit: WebsiteSessionS
         websiteSessionSubunit.verify(token) ?: return GuardResult.Welcome
 
         val data = ErrorModel(
-            account = null,
+            account = call.attributes.getProfileAndMapToAccountModel(),
             title = "Already logged in",
             heading = "Logged in",
             message = "You are already logged in.",
@@ -330,7 +391,7 @@ class RequireAccountGuard(private val serverContext: ServerContext) : AuthGuard 
         }
 
         val data = ErrorModel(
-            account = null,
+            account = call.attributes.getProfileAndMapToAccountModel(),
             title = "Login required",
             heading = "You need to log in",
             message = "This action requires an account",
@@ -496,7 +557,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                 val token = call.request.cookies["session"]
                 if (token == null) {
                     val data = ErrorModel(
-                        account = null,
+                        account = call.attributes.getProfileAndMapToAccountModel(),
                         title = "Not logged in",
                         heading = "You are not logged in",
                         message = "",
@@ -508,7 +569,16 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 serverContext.subunits.websiteSession.delete(token)
                 call.response.cookies.delete("session")
-                call.respond(ThymeleafContent("logout", mapOf("data" to LogoutModel(null, true))))
+                call.respond(
+                    ThymeleafContent(
+                        "logout", mapOf(
+                            "data" to LogoutModel(
+                                account = call.attributes.getProfileAndMapToAccountModel(),
+                                success = true
+                            )
+                        )
+                    )
+                )
             }
         }
     }
