@@ -322,8 +322,16 @@ fun Attributes.getProfileAndMapToAccountModel(): Account? {
     return null
 }
 
-fun ResponseCookies.delete(name: String) {
-    append(name, "", CookieEncoding.URI_ENCODING, 0, GMTDate(), null, null)
+fun ResponseCookies.delete(name: String, path: String) {
+    append(
+        name = name,
+        value = "",
+        encoding = CookieEncoding.URI_ENCODING,
+        maxAge = 0,
+        expires = GMTDate(),
+        domain = null,
+        path = path
+    )
 }
 
 // represent profile that is produced from session cookie
@@ -568,17 +576,8 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 serverContext.subunits.websiteSession.delete(token)
-                call.response.cookies.delete("session")
-                call.respond(
-                    ThymeleafContent(
-                        "logout", mapOf(
-                            "data" to LogoutModel(
-                                account = call.attributes.getProfileAndMapToAccountModel(),
-                                success = true
-                            )
-                        )
-                    )
-                )
+                call.response.cookies.delete("session", "/")
+                call.respond(HttpStatusCode.OK)
             }
         }
     }
