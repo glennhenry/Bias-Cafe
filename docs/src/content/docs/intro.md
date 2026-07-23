@@ -94,21 +94,22 @@ Cafe
       topic1:
           title: "Oh, Yujin is so pretty..."
           author: "UtokkiForever"
-          reply1:
-            author: "UtokkiForever"
-            content: "I think I have fallen for her..."
-          reply2
+		  content: "I think I have fallen for her..."
+          reply1
             author: "ThinkingInXiao"
             content: "Yeah she is!"
+			directReplies: []
       topic2:
           title: "Yujin's Fancam Collection Help"
           author: "UtokkiForever"
-          reply1:
-            author: "UtokkiForever"
-            content: "I need help finding more fancam of her"
-          reply2
+		  content: "I need help finding more fancam of her"
+          reply1
             author: "Yujiniee"
             content: "I have a tons! Send me a letter."
+			directReplies: [
+				author: "ThinkingInXiao"
+				content: "Give me too please"
+			]
     Xiaoting's Space
 
   [Terrace]
@@ -122,7 +123,7 @@ Cafe
             └─ Reply
 ```
 
-The atomic unit of the cafe system is _topic_. It represents a single forum post. User create a topic with a title and content. Each post within the topic is considered a reply. The author of the topic is considered as the first reply. Other users can make reply too.
+The atomic unit of the cafe system is _topic_. It represents a single forum post. User create a topic with a title and content. Each post within the topic is considered a reply. The author's post itself is not considered as a reply. Each reply may have a direct reply, which is a direct respond to a single reply within a topic.
 
 The forum will be divided into _spaces_, then _sections_, and finally individual topics.
 
@@ -136,7 +137,9 @@ The forum will be divided into _spaces_, then _sections_, and finally individual
 - Topic: a single forum post. They are exclusively within a section.
   - e.g., the topic1 with title "Oh, Yujin is so pretty..."
 - Reply: unit of content within a topic.
-  - e.g., reply1 in topic1 with content "I think I have fallen for her..."
+  - e.g., reply1 in topic1 with content "Yeah she is!"
+- Direct Reply: a direct response to a reply in a post.
+  - e.g., the content "Give me too please" in reply2
 
 The internal name does not need to reflect the cosmetic name used in the application. e.g., "Yujin's Space" when technically it's a section.
 
@@ -216,22 +219,24 @@ Unlike space, section's `id` will be displayed to users. It will be used as the 
 For example, clicking "Yujin's Space" in the cafe homepage will redirect user to `/cafe/yujin`.
 
 We can model topic like:
-
 ```json
 topics: [
   {
     topicId: "123e4567-e89b-12d3-a456-426614174000",
     spaceId: "yujin",
-    title: "Oh, Yujin is so pretty...",
+    title: "Yujin's Fancam Collection Help",
     author: "UtokkiForever",
+	content: "I need help finding more fancam of her"
     replies: [
       {
-        author: "UtokkiForever"
-        content: "I think I have fallen for her..."
-      },
-      {
-        author: "ThinkingInXiao"
-        content: "Yeah she is!"
+        author: "Yujiniee"
+        content: "I have a tons! Send me a letter.",
+		directReplies: [
+		  { 
+		    author: "ThinkingInXiao", 
+			content: "Give me too please"
+		  }
+		]
       }
     ]
   }
