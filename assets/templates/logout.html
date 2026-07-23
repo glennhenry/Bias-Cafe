@@ -1,0 +1,67 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
+  <link rel="stylesheet" href="/site/reset.css">
+  <link rel="stylesheet" href="/site/base.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <title>Logout</title>
+  <style>
+    .link {
+      color: blue;
+      text-decoration: underline;
+    }
+
+    .link:hover {
+      text-decoration-thickness: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="layout">
+      <div class="sidebar">
+        <div class="sidebar-inner">
+          <div class="logo">
+            <p>Website</p>
+          </div>
+          <nav class="navigation">
+            <a class="nav-link" href="/">Lobby</a>
+            <a class="nav-link" href="/cafe">Cafe</a>
+            <a class="nav-link" href="/profile">Profile</a>
+          </nav>
+        </div>
+      </div>
+      <div class="core">
+        <header class="topbar">
+          <div class="menu"></div>
+        </header>
+        <main class="content-container">
+          <div class="content">
+            <h1>Logout</h1>
+            <p th:if="${data.success}">You are logged out.</p>
+            <p th:if="${not data.success}">You are going to log out, are you sure?</p>
+            <a class="link" href="/api/logout" th:if="${not data.success}">Log me out</a>
+            <div style="margin-top:10px;"></div>
+            <a class="link" href="/">Back to lobby</a>
+          </div>
+          <div class="content-sidebar"></div>
+        </main>
+      </div>
+    </div>
+    <footer class="footer">
+      <p>Bias Cafe @ 2026</p>
+      <p>Kep1er fan social portal</p>
+      <p>
+        <a href="#">GitHub</a> |
+        <a href="#">Credits</a> |
+        <a href="#">About</a>
+      </p>
+    </footer>
+  </div>
+</body>
+
+</html>

@@ -15,12 +15,14 @@ import encore.time.TimeCenter
 import encore.utils.identifier.Ids
 import encore.utils.types.*
 import io.ktor.http.*
+import io.ktor.http.CookieEncoding
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
 import io.ktor.util.*
+import io.ktor.util.date.GMTDate
 import kotlinx.serialization.Serializable
 import project.Members
 import project.domain.cafe.topic.Topic
@@ -88,6 +90,10 @@ data class ErrorModel(
 data class Action(
     val href: String,
     val text: String
+)
+
+data class LogoutModel(
+    val success: Boolean
 )
 
 class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
@@ -229,7 +235,29 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 call.respond(ThymeleafContent("register", emptyMap()))
             }
         }
+
+        get("/logout") {
+            handle(call, NoAuthGuard) {
+                val token = call.request.cookies["session"]
+                if (token == null) {
+                    val data = ErrorModel(
+                        title = "Not logged in",
+                        heading = "You are not logged in",
+                        message = "",
+                        action = Action("/", "Back to lobby")
+                    )
+                    call.respond(HttpStatusCode.Forbidden, ThymeleafContent("error", mapOf("data" to data)))
+                    return@handle
+                }
+
+                call.respond(ThymeleafContent("logout", mapOf("data" to LogoutModel(false))))
+            }
+        }
     }
+}
+
+fun ResponseCookies.delete(name: String) {
+    append(name, "", CookieEncoding.URI_ENCODING, 0, GMTDate(), null, null)
 }
 
 // represent profile that is produced from session cookie
@@ -453,6 +481,26 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 call.respondText(if (available) "yes" else "no")
+            }
+        }
+
+        get("/api/logout") {
+            handle(call, NoAuthGuard) {
+                val token = call.request.cookies["session"]
+                if (token == null) {
+                    val data = ErrorModel(
+                        title = "Not logged in",
+                        heading = "You are not logged in",
+                        message = "",
+                        action = Action("/", "Back to lobby")
+                    )
+                    call.respond(HttpStatusCode.Forbidden, ThymeleafContent("error", mapOf("data" to data)))
+                    return@handle
+                }
+
+                serverContext.subunits.websiteSession.delete(token)
+                call.response.cookies.delete("session")
+                call.respond(ThymeleafContent("logout", mapOf("data" to LogoutModel(true))))
             }
         }
     }
