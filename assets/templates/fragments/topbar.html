@@ -4,11 +4,13 @@
 <body>
   <header class="topbar" th:fragment="topbar (account)">
     <div class="menu">
-      <div th:if="${account != null}">
-        <p th:text="'Hello, ' + ${account.username}"></p>
+      <div class="account-info" th:if="${account != null}">
+        <span>
+          Hello, <span class="account-username" th:text="${account.username}"></span>
+        </span>
         <a class="link" href="/logout">Logout</a>
       </div>
-      <div th:if="${account == null}">
+      <div class="account-info" th:if="${account == null}">
         <a class="link" href="/register">Register</a>
         <a class="link" href="/login">Login</a>
       </div>

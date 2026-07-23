@@ -122,6 +122,18 @@ body {
   );
 }
 
+.account-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: end;
+  margin-right: 8px;
+}
+
+.account-username {
+  text-decoration: underline;
+}
+
 .content-container {
   flex: 1;
   display: flex;
