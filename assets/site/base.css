@@ -153,3 +153,13 @@ body {
 .footer a {
   text-decoration: underline;
 }
+
+/* Common styles */
+.link {
+  color: blue;
+  text-decoration: underline;
+}
+
+.link:hover {
+  text-decoration-thickness: 2px;
+}
