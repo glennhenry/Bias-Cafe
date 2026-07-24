@@ -3,9 +3,9 @@ package project.domain.session
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import encore.datastore.ensureAck
 import encore.datastore.runMongoCatching
-import encore.datastore.throwIfNotModified
+import encore.datastore.throwIfNothingDeleted
+import encore.datastore.throwIfNothingMatched
 import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.Serializable
@@ -22,7 +22,7 @@ class MongoSessionStore(private val sessionCollection: MongoCollection<SessionSt
 
     override suspend fun put(userId: String, token: String, expiresAt: Long): Result<Unit> {
         return runMongoCatching {
-            ensureAck(sessionCollection.insertOne(SessionStoreModel(userId, token, expiresAt)))
+            sessionCollection.insertOne(SessionStoreModel(userId, token, expiresAt))
                 .asUnit()
         }
     }
@@ -32,22 +32,23 @@ class MongoSessionStore(private val sessionCollection: MongoCollection<SessionSt
         val update = Updates.set(FieldExpiresAt, expiresAt)
         return runMongoCatching {
             sessionCollection.updateOne(filter, update)
-                .throwIfNotModified("MongoSessionStore update", { filter }, { update })
+                .throwIfNothingMatched("MongoSessionStore update", { filter })
         }
     }
 
     override suspend fun delete(token: String): Result<Unit> {
         return runMongoCatching {
-            if (ensureAck(sessionCollection.deleteOne(Filters.eq(FieldToken, token))).deletedCount <= 0) {
-                error("$token wasn't deleted (deletedCount <= 0)")
-            }
+            val filter = Filters.eq(FieldToken, token)
+            sessionCollection.deleteOne(filter)
+                .throwIfNothingDeleted("MongoSessionStore delete", { filter })
         }
     }
 
     override suspend fun batchDeleteExpiredSessions(currentTime: Long): Result<Unit> {
         val filter = Filters.lte(FieldExpiresAt, currentTime)
         return runMongoCatching {
-            ensureAck(sessionCollection.deleteMany(filter)).asUnit()
+            sessionCollection.deleteMany(filter)
+                .throwIfNothingDeleted("MongoSessionStore batchDeleteExpiredSessions", { filter })
         }
     }
 }

@@ -2,9 +2,8 @@ package project.domain.cafe.topic
 
 import com.mongodb.client.model.*
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import encore.datastore.DocumentNotFoundException
-import encore.datastore.ensureAck
 import encore.datastore.runMongoCatching
+import encore.datastore.throwIfNothingDeleted
 import encore.fancam.Fancam
 import encore.utils.support.asUnit
 import encore.venue.Venue
@@ -81,16 +80,15 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
 
     override suspend fun addTopic(topic: Topic): Result<Unit> {
         return runMongoCatching {
-            ensureAck(topicCollection.insertOne(topic))
-                .asUnit()
+            topicCollection.insertOne(topic).asUnit()
         }
     }
 
     override suspend fun deleteTopic(topicId: String): Result<Unit> {
         return runMongoCatching {
-            if (ensureAck(topicCollection.deleteOne(Filters.eq(FieldTopicId, topicId))).deletedCount <= 0) {
-                error("Topic $topicId wasn't deleted (deletedCount <= 0)")
-            }
+            val filter = Filters.eq(FieldTopicId, topicId)
+            topicCollection.deleteOne(filter)
+                .throwIfNothingDeleted("deleteTopic", { filter })
         }
     }
 
