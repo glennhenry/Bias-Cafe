@@ -109,15 +109,14 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
 
     override suspend fun create(account: UserAccount): Result<Unit> {
         return runMongoCatching {
-            ensureAck(accounts.insertOne(account))
-                .asUnit()
+            accounts.insertOne(account).asUnit()
         }
     }
 
     override suspend fun delete(userId: UserId): Result<Unit> {
         return runMongoCatching {
-            ensureAck(accounts.deleteOne(Filters.eq(FieldUserId, userId)))
-                .asUnit()
+            accounts.deleteOne(Filters.eq(FieldUserId, userId))
+                .throwIfNothingDeleted("accounts")
         }
     }
 

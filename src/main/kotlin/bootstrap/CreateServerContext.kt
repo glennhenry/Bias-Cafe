@@ -1,7 +1,5 @@
 package bootstrap
 
-import MongoCollectionName
-import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.account.AccountSubunit
 import encore.account.MongoAccountRepository
@@ -18,7 +16,6 @@ import encore.presence.UserPresenceSubunit
 import encore.session.SessionSubunit
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
-import encore.venue.Venue
 import encore.websocket.WebSocketManager
 import kotlinx.coroutines.CoroutineScope
 import project.domain.cafe.collection.CollectionSubunit
@@ -37,16 +34,15 @@ suspend fun createServerContext(
     appScope: CoroutineScope,
     serverSubunitScope: ServerScope,
     collectionName: MongoCollectionName,
-    mongoClient: MongoClient,
     mongoDatabase: MongoDatabase
 ): ServerContext {
     // setup ServerContext
     val dataStore = MongoDataStore(
-        db = mongoClient.getDatabase(Venue.encore.database.dbName),
-        collectionName = MongoCollectionName
+        db = mongoDatabase,
+        collectionName = collectionName
     ).also { it.awaitInit() }
     val accountRepository = MongoAccountRepository(
-        accountCollection = mongoDatabase.getCollection(MongoCollectionName.userAccount)
+        accountCollection = mongoDatabase.getCollection(collectionName.userAccount)
     )
 
     val stageActDirector = StageActDirector(
@@ -62,21 +58,21 @@ suspend fun createServerContext(
     val sessionSubunit = SessionSubunit(appScope, TimeCenter.source)
 
     val profileRepository = MongoProfileRepository(
-        accountCollection = mongoDatabase.getCollection(MongoCollectionName.userAccount)
+        accountCollection = mongoDatabase.getCollection(collectionName.userAccount)
     )
     val profileSubunit = ProfileSubunit(profileRepository)
 
     val userCreationSubunit = UserCreationSubunit(dataStore)
     val authSubunit = AuthSubunit(accountSubunit, userCreationSubunit)
 
-    val sessionStore = MongoSessionStore(mongoDatabase.getCollection(MongoCollectionName.websiteSession))
+    val sessionStore = MongoSessionStore(mongoDatabase.getCollection(collectionName.websiteSession))
 
     val topicRepository = MongoTopicRepository(
-        topicCollection = mongoDatabase.getCollection(MongoCollectionName.topic)
+        topicCollection = mongoDatabase.getCollection(collectionName.topic)
     ).also { it.awaitInit() }
     val collectionRepository = MongoCollectionRepository(
-        spaceCollection = mongoDatabase.getCollection(MongoCollectionName.spaces),
-        sectionCollection = mongoDatabase.getCollection(MongoCollectionName.sections)
+        spaceCollection = mongoDatabase.getCollection(collectionName.spaces),
+        sectionCollection = mongoDatabase.getCollection(collectionName.sections)
     )
 
     val websiteSession = WebsiteSessionSubunit(appScope, TimeCenter.source, sessionStore)
@@ -97,7 +93,7 @@ suspend fun createServerContext(
     )
 
     // debut all subunits
-    subunits.debut(ServerScope)
+    subunits.debut(serverSubunitScope)
 
     val serverContext = ServerContext(
         dataStore = dataStore,

@@ -7,22 +7,17 @@ import encore.datastore.DocumentNotFoundException
 import encore.datastore.FieldUserId
 import encore.datastore.collection.UserId
 import encore.datastore.runMongoCatching
-import encore.datastore.throwIfNotModified
+import encore.datastore.throwIfNothingMatched
 import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.helper.failHandleGet
 import encore.subunit.helper.failHandleUpdate
 import encore.subunit.scope.UserScope
-import encore.utils.types.Outcome
-import encore.utils.types.Report
-import encore.utils.types.isOk
-import encore.utils.types.okOrNull
-import encore.utils.types.toOutcome
-import encore.utils.types.toReport
+import encore.utils.types.*
+import initMongo
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.test.runTest
-import initMongo
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -202,7 +197,7 @@ class MongoUserRepository(val data: MongoCollection<UserModel>) : UserRepository
             val update = Updates.set("health", newHealth)
 
             data.updateOne(filter, update)
-                .throwIfNotModified(userId)
+                .throwIfNothingMatched(userId, { filter })
         }
     }
 
@@ -212,7 +207,7 @@ class MongoUserRepository(val data: MongoCollection<UserModel>) : UserRepository
             val update = Updates.set("items", newItems)
 
             data.updateOne(filter, update)
-                .throwIfNotModified(userId)
+                .throwIfNothingMatched(userId, { filter })
         }
     }
 }
