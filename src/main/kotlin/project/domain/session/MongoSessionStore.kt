@@ -47,8 +47,7 @@ class MongoSessionStore(private val sessionCollection: MongoCollection<SessionSt
     override suspend fun batchDeleteExpiredSessions(currentTime: Long): Result<Unit> {
         val filter = Filters.lte(FieldExpiresAt, currentTime)
         return runMongoCatching {
-            sessionCollection.deleteMany(filter)
-                .throwIfNothingDeleted("MongoSessionStore batchDeleteExpiredSessions", { filter })
+            sessionCollection.deleteMany(filter).asUnit()
         }
     }
 }
