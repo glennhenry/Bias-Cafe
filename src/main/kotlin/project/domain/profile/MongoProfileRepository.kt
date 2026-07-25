@@ -3,13 +3,14 @@ package project.domain.profile
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Projections
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import encore.datastore.FieldUserId
-import encore.datastore.collection.UserAccount
-import encore.datastore.collection.UserId
+import encore.account.FieldUserId
+import project.mongo.collection.UserAccount
+import project.mongo.collection.UserId
 import encore.datastore.runMongoCatching
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.codecs.pojo.annotations.BsonId
 
+/** `profile`*/
 val FieldProfile = UserAccount::profile.name
 
 class MongoProfileRepository(

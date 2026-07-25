@@ -1,7 +1,7 @@
 package project.routes
 
 import encore.auth.LoginResult
-import encore.context.ServerContext
+import project.context.ServerContext
 import project.domain.profile.Profile
 import encore.fancam.Fancam
 import encore.route.RouteHandler

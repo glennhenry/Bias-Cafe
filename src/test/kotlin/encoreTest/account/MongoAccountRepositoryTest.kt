@@ -1,15 +1,13 @@
 package encoreTest.account
 
-import TestMongoCollectionName
+import TestCollections
 import encore.account.MongoAccountRepository
-import encore.account.model.Credentials
-import encore.account.model.UserMetadata
-import encore.datastore.collection.UserAccount
+import encore.account.Credentials
+import project.mongo.collection.UserAccount
 import encore.utils.identifier.Ids
 import encore.utils.hash
 import initMongo
 import kotlinx.coroutines.test.runTest
-import project.domain.profile.Profile
 import testUtils.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,9 +20,9 @@ class MongoAccountRepositoryTest {
     @Test
     fun `test all`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.userAccount)
+        mongoDb.createCollection(TestCollections.userAccount)
 
         val repo = MongoAccountRepository(collection)
 
@@ -38,7 +36,7 @@ class MongoAccountRepositoryTest {
             hash("pw123"),
             registeredAt = 1,
             lastActiveAt = 1,
-            metadata = UserMetadata(),
+            extra = emptyMap(),
             profile = createProfile()
         )
 

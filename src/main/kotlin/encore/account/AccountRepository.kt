@@ -1,8 +1,7 @@
 package encore.account
 
-import encore.datastore.collection.UserAccount
-import encore.datastore.collection.UserId
-import encore.account.model.Credentials
+import project.mongo.collection.UserAccount
+import project.mongo.collection.UserId
 
 /**
  * Repository for [UserAccount] core collection.

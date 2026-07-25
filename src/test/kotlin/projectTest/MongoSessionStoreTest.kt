@@ -1,6 +1,6 @@
 package projectTest
 
-import TestMongoCollectionName
+import TestCollections
 import encore.utils.identifier.Ids
 import initMongo
 import io.ktor.util.date.getTimeMillis
@@ -18,9 +18,9 @@ class MongoSessionStoreTest {
     @Test
     fun `test all`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<SessionStoreModel>(TestMongoCollectionName.websiteSession)
+        val collection = mongoDb.getCollection<SessionStoreModel>(TestCollections.websiteSession)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.websiteSession)
+        mongoDb.createCollection(TestCollections.websiteSession)
 
         val store = MongoSessionStore(collection)
 

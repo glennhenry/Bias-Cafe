@@ -4,9 +4,12 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import encore.datastore.collection.UserAccount
-import encore.datastore.collection.UserId
-import encore.datastore.collection.ServerObjects
+import encore.account.FieldEmail
+import encore.account.FieldUserId
+import encore.account.FieldUsername
+import project.mongo.collection.UserAccount
+import project.mongo.collection.UserId
+import project.mongo.collection.ServerObjects
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.utils.support.asUnit
@@ -14,33 +17,23 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.firstOrNull
+import org.bson.conversions.Bson
+import project.mongo.MongoCollections
+import project.mongo.collection.ServerObjectsId
 import kotlin.time.measureTime
 
-/**
- * Encompasses the name of mongo database collection for the 4 base collections.
- */
-data class MongoCollectionName(
-    val userAccount: String,
-    val serverObjects: String,
+/** `dbId`*/
+val ServerObjectsDbId = ServerObjects::dbId.name
 
-    val websiteSession: String,
-
-    val topic: String,
-    val spaces: String,
-    val sections: String
-)
+/** Mongo filters for `dbId` equals [ServerObjectsId]*/
+val ServerObjectsFilter: Bson = Filters.eq(ServerObjectsDbId, ServerObjectsId)
 
 /**
  * Implementation of [DataStore] with Kotlin MongoDB coroutine driver.
- *
- * The four core collections are implemented as one collection each.
- * Separating data per-domain to different collections may result better for
- * scalability and performance. However, for simplicity, data is unified
- * to reduce domain modelling decision and to keep implementation faster to write.
  */
-class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : DataStore {
-    private val accounts = db.getCollection<UserAccount>(collectionName.userAccount)
-    private val serverObjects = db.getCollection<ServerObjects>(collectionName.serverObjects)
+class MongoDataStore(db: MongoDatabase, collections: MongoCollections) : DataStore {
+    private val accounts = db.getCollection<UserAccount>(collections.userAccount)
+    private val serverObjects = db.getCollection<ServerObjects>(collections.serverObjects)
 
     private val initJob = CoroutineScope(Dispatchers.IO).async { setupCollections() }
 
@@ -94,20 +87,11 @@ class MongoDataStore(db: MongoDatabase, collectionName: MongoCollectionName) : D
         }
     }
 
-    override suspend fun userExists(userId: UserId): Boolean {
+    override suspend fun accountExists(userId: UserId): Boolean {
         return accounts.find(Filters.eq(FieldUserId, userId)).firstOrNull() != null
     }
 
-    override suspend fun getUserAccount(userId: UserId): UserAccount? {
-        return accounts.find(Filters.eq(FieldUserId, userId)).firstOrNull()
-    }
-
-    override suspend fun getServerObjects(): ServerObjects {
-        return serverObjects.find(ServerObjectsFilter).firstOrNull()
-            ?: throw NoSuchElementException("ServerObjects not found, please ensure ServerObjects creation.")
-    }
-
-    override suspend fun create(account: UserAccount): Result<Unit> {
+    override suspend fun insert(account: UserAccount): Result<Unit> {
         return runMongoCatching {
             accounts.insertOne(account).asUnit()
         }

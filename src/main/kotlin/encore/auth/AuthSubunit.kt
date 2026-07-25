@@ -3,7 +3,7 @@ package encore.auth
 import com.mongodb.MongoWriteException
 import com.toxicbakery.bcrypt.Bcrypt
 import encore.account.AccountSubunit
-import encore.account.UserCreationSubunit
+import encore.creation.UserCreationSubunit
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.session.SessionSubunit

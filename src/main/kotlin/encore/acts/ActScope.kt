@@ -1,7 +1,7 @@
 package encore.acts
 
-import encore.datastore.collection.UserId
-import encore.datastore.collection.ServerId
+import project.mongo.collection.UserId
+import project.mongo.collection.ServerId
 import kotlinx.coroutines.CoroutineScope
 
 /**

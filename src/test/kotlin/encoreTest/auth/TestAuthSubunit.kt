@@ -1,18 +1,16 @@
 package encoreTest.auth
 
-import TestMongoCollectionName
+import TestCollections
 import encore.account.AccountRepository
 import encore.account.AccountSubunit
+import encore.creation.UserCreationSubunit
+import encore.account.Credentials
 import encore.account.MongoAccountRepository
-import encore.account.UserCreationSubunit
-import encore.account.model.Credentials
-import encore.account.model.UserMetadata
 import encore.auth.AuthSubunit
 import encore.auth.LoginResult
 import encore.datastore.MongoDataStore
-import project.domain.profile.Profile
-import encore.datastore.collection.UserAccount
-import encore.datastore.collection.UserId
+import project.mongo.collection.UserAccount
+import project.mongo.collection.UserId
 import encore.utils.types.Outcome
 import encore.utils.types.isFail
 import encore.utils.types.okOrThrow
@@ -21,8 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import project.domain.profile.MongoProfileRepository
-import project.domain.profile.ProfileSubunit
+import project.RealUserCreationFactory
 import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -44,14 +41,14 @@ class TestAuthSubunit {
     @Test
     fun `username shouldn't be available after user is registered`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.userAccount)
+        mongoDb.createCollection(TestCollections.userAccount)
 
-        val db = MongoDataStore(mongoDb, TestMongoCollectionName)
+        val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db)
+        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         val account = UserAccount(
@@ -61,7 +58,7 @@ class TestAuthSubunit {
             hashedPassword = "anypassword",
             registeredAt = 0,
             lastActiveAt = 0,
-            metadata = UserMetadata(),
+            extra = emptyMap(),
             profile = createProfile()
         )
         collection.insertOne(account)
@@ -73,14 +70,14 @@ class TestAuthSubunit {
     @Test
     fun `username should be available if user is not registered`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.userAccount)
+        mongoDb.createCollection(TestCollections.userAccount)
 
-        val db = MongoDataStore(mongoDb, TestMongoCollectionName)
+        val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db)
+        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         assertTrue(auth.isUsernameAvailable("xyz").okOrThrow())
@@ -90,14 +87,14 @@ class TestAuthSubunit {
     @Test
     fun `register should create user`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.userAccount)
+        mongoDb.createCollection(TestCollections.userAccount)
 
-        val db = MongoDataStore(mongoDb, TestMongoCollectionName)
+        val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db)
+        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")
@@ -108,14 +105,14 @@ class TestAuthSubunit {
     @Test
     fun `register failed because username or email is duplicate`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.userAccount)
+        mongoDb.createCollection(TestCollections.userAccount)
 
-        val db = MongoDataStore(mongoDb, TestMongoCollectionName)
+        val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db)
+        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld1", "kotlinktor", "helloworld1@email.com")
@@ -132,14 +129,14 @@ class TestAuthSubunit {
     @Test
     fun `login failures when account don't exist`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.userAccount)
+        mongoDb.createCollection(TestCollections.userAccount)
 
-        val db = MongoDataStore(mongoDb, TestMongoCollectionName)
+        val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db)
+        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         val session = auth.login("asdf", "fdsa")
@@ -150,14 +147,14 @@ class TestAuthSubunit {
     @Test
     fun `login failures when credentials are wrong`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.userAccount)
+        mongoDb.createCollection(TestCollections.userAccount)
 
-        val db = MongoDataStore(mongoDb, TestMongoCollectionName)
+        val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db)
+        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")
@@ -168,11 +165,11 @@ class TestAuthSubunit {
     @Test
     fun `login failures when repository has internal error`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.userAccount)
+        mongoDb.createCollection(TestCollections.userAccount)
 
-        val db = MongoDataStore(mongoDb, TestMongoCollectionName)
+        val db = MongoDataStore(mongoDb, TestCollections)
         val repo = object : AccountRepository {
             override suspend fun getAccountByUserId(userId: String): Result<UserAccount?> = TODO()
             override suspend fun getAccountByUsername(username: String): Result<UserAccount?> = TODO()
@@ -185,7 +182,7 @@ class TestAuthSubunit {
             override suspend fun emailExists(email: String): Result<Boolean> = TODO()
         }
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db)
+        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")
@@ -197,14 +194,14 @@ class TestAuthSubunit {
     @Test
     fun `login success when user is registered and credentials are correct`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestMongoCollectionName.userAccount)
+        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.userAccount)
+        mongoDb.createCollection(TestCollections.userAccount)
 
-        val db = MongoDataStore(mongoDb, TestMongoCollectionName)
+        val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db)
+        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")

@@ -1,9 +1,8 @@
 package encore.account
 
-import encore.account.model.Credentials
 import encore.auth.AuthSubunit
-import encore.datastore.collection.UserAccount
-import encore.datastore.collection.UserId
+import project.mongo.collection.UserAccount
+import project.mongo.collection.UserId
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.subunit.Subunit

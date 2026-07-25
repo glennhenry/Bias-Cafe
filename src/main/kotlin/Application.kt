@@ -3,8 +3,7 @@ import encore.EncoreIdentity
 import encore.EncoreIdentity.celebrate
 import encore.backstage.BackstageRoutes
 import encore.backstage.command.ExampleCommand
-import encore.context.ServerContext
-import encore.datastore.MongoCollectionName
+import project.context.ServerContext
 import encore.route.guard.DefaultSecurity
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
@@ -21,6 +20,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.modules.SerializersModule
+import project.context.RealContextFactory
+import project.mongo.RuntimeMongoCollections
 import project.routes.AuthRoutes
 import project.routes.IndexHandler
 import java.time.LocalDate
@@ -40,17 +41,6 @@ fun main() {
         watchPaths = listOf("classes")
     ) { configureApplication() }.start(wait = true)
 }
-
-val MongoCollectionName = MongoCollectionName(
-    userAccount = "user_account",
-    serverObjects = "server_objects",
-
-    websiteSession = "website_session",
-
-    topic = "topic",
-    spaces = "spaces",
-    sections = "sections"
-)
 
 val SystemTimezone: ZoneId = ZoneId.systemDefault()
 
@@ -76,12 +66,8 @@ suspend fun Application.configureApplication() {
     val serverSubunitScope = ServerScope
 
     // create server context
-    val serverContext = createServerContext(
-        appScope = appScope,
-        serverSubunitScope = serverSubunitScope,
-        collectionName = MongoCollectionName,
-        mongoDatabase = db
-    )
+    val serverContext = RealContextFactory(RuntimeMongoCollections, db)
+        .serverContext(appScope, serverSubunitScope)
 
     // register handlers for WebSocket
     websocketHandlers(serverContext)

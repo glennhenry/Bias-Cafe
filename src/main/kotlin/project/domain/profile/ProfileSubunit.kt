@@ -1,6 +1,6 @@
 package project.domain.profile
 
-import encore.datastore.collection.UserId
+import project.mongo.collection.UserId
 import encore.fancam.Fancam
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope

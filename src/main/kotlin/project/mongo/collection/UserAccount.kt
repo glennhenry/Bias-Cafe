@@ -1,6 +1,5 @@
-package encore.datastore.collection
+package project.mongo.collection
 
-import encore.account.model.UserMetadata
 import kotlinx.serialization.Serializable
 import project.domain.profile.Profile
 
@@ -17,7 +16,7 @@ import project.domain.profile.Profile
  * @property lastActiveAt Epoch millis of the account's last activity.
  *                        This denotes the last time the user send a network
  *                        message to the server.
- * @property metadata Any extra or uncategorized information about the user.
+ * @property extra Any extra or uncategorized information about the user.
  * @property profile Profile information of user.
  */
 @Serializable
@@ -28,7 +27,7 @@ data class UserAccount(
     val hashedPassword: String,
     val registeredAt: Long,
     val lastActiveAt: Long,
-    val metadata: UserMetadata,
+    val extra: Map<String, String> = emptyMap(),
     val profile: Profile
 )
 

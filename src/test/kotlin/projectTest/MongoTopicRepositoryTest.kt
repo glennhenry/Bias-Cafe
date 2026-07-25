@@ -1,6 +1,6 @@
 package projectTest
 
-import TestMongoCollectionName
+import TestCollections
 import initMongo
 import io.ktor.util.date.*
 import kotlinx.coroutines.test.runTest
@@ -19,9 +19,9 @@ class MongoTopicRepositoryTest {
     @Test
     fun `test all`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<Topic>(TestMongoCollectionName.topic)
+        val collection = mongoDb.getCollection<Topic>(TestCollections.topic)
         collection.drop()
-        mongoDb.createCollection(TestMongoCollectionName.topic)
+        mongoDb.createCollection(TestCollections.topic)
 
         val repo = MongoTopicRepository(collection)
 

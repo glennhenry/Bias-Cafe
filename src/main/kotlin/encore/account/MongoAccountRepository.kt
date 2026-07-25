@@ -4,12 +4,26 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Projections
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import encore.account.model.Credentials
 import encore.datastore.*
-import encore.datastore.collection.UserAccount
-import encore.datastore.collection.UserId
+import project.mongo.collection.UserAccount
+import project.mongo.collection.UserId
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.codecs.pojo.annotations.BsonId
+
+/** `userId`*/
+val FieldUserId = UserAccount::userId.name
+
+/** `username`*/
+val FieldUsername = UserAccount::username.name
+
+/** `email`*/
+val FieldEmail = UserAccount::email.name
+
+/** `hashedPassword`*/
+val FieldPassword = UserAccount::hashedPassword.name
+
+/** `profile.lastActiveAt`*/
+val FieldLastActive = UserAccount::lastActiveAt.name
 
 /**
  * [AccountRepository] implementation using MongoDB.

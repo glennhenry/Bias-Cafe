@@ -1,11 +1,11 @@
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import encore.datastore.MongoCollectionName
 import org.bson.Document
+import project.mongo.MongoCollections
 
 const val BIAS_CAFE_TEST_DB_NAME = "BIAS_CAFE-test-DB"
 const val MONGO_TEST_URL = "mongodb://localhost:27017"
-val TestMongoCollectionName = MongoCollectionName(
+val TestCollections = MongoCollections(
     userAccount = "test_user_account",
     serverObjects = "test_server_objects",
 

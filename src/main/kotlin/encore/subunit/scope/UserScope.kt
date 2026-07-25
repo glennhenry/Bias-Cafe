@@ -1,6 +1,6 @@
 package encore.subunit.scope
 
-import encore.datastore.collection.UserId
+import project.mongo.collection.UserId
 
 /**
  * A user-scoped context.

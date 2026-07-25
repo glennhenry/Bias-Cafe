@@ -1,8 +1,7 @@
 package testUtils
 
-import encore.account.model.UserMetadata
-import encore.datastore.collection.UserAccount
-import encore.datastore.collection.UserId
+import project.mongo.collection.UserAccount
+import project.mongo.collection.UserId
 import encore.time.TimeCenter
 import encore.utils.hash
 import project.domain.profile.Profile
@@ -16,7 +15,7 @@ fun createAccount(userId: UserId, username: String, password: String): UserAccou
         hashedPassword = hash(password),
         registeredAt = now,
         lastActiveAt = now,
-        metadata = UserMetadata(),
+        extra = emptyMap(),
         profile = createProfile()
     )
 }

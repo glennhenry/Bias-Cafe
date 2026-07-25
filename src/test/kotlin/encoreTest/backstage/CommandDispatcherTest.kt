@@ -7,7 +7,7 @@ import encore.backstage.command.CommandDispatcher
 import encore.backstage.command.types.CommandRequest
 import encore.backstage.command.types.CommandResult
 import encore.backstage.command.types.CommandVariant
-import encore.context.ServerContext
+import project.context.ServerContext
 import encore.backstage.command.types.variantsAsString
 import encore.fancam.events.Level
 import testUtils.TestFancam
@@ -200,7 +200,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("playerAbc")
+                add("userAbc")
                 add("water")
             }
         )
@@ -216,7 +216,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("playerAbc")
+                add("userAbc")
                 add("water")
                 add("100")
             }
@@ -233,7 +233,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("playerABC")
+                add("userABC")
             }
         )
         val result = dispatcher.handleCommand(request, context)
@@ -248,7 +248,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("playerABC")
+                add("userABC")
                 add("water")
                 add("notNumber")
             }
@@ -265,7 +265,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("playerABC")
+                add("userABC")
                 add("water")
                 add("2")
             }
@@ -282,7 +282,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("playerABC")
+                add("userABC")
                 add("water")
                 add("3")
             }
@@ -299,7 +299,7 @@ class CommandDispatcherTest {
         val request = CommandRequest(
             "give",
             buildArgCollection {
-                add("playerABC")
+                add("userABC")
                 add("water")
                 add("4")
                 add("4")
