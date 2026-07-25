@@ -36,9 +36,9 @@ class AuthSubunit(
      * When such thing happens, account won't be registered.
      *
      * Returns:
-     * - [Report.Fail] if there is an internal repository error or
-     *   if username or email already exists.
-     * - Otherwise [Report.Ok] with newly created `userId`.
+     * - [Outcome.Fail] if there is an internal repository error.
+     * - [Outcome.Ok] with `null` if username or email already exists.
+     * - Otherwise [Outcome.Ok] with `userId`.
      */
     suspend fun register(username: String, password: String, email: String): Outcome<String> {
         try {
