@@ -159,8 +159,9 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         get("/cafe/{section}") {
             guard(call, optionalAccountGuard) {
                 val path = requireNotNull(call.request.pathVariables["section"])
+
                 if (!availableSections.contains(path)) {
-                    call.respond(HttpStatusCode.NotFound, "Section not found")
+                    call.sectionNotFound()
                     return@guard
                 }
 
@@ -317,6 +318,28 @@ fun ResponseCookies.delete(name: String, path: String) {
         domain = null,
         path = path
     )
+}
+
+suspend fun ApplicationCall.badRequest() {
+    val data = ErrorModel(
+        account = attributes.getProfileAndMapToAccountModel(),
+        title = "Bad request",
+        heading = "Bad request",
+        message = "",
+        action = Action("/", "Back to lobby")
+    )
+    respond(HttpStatusCode.BadRequest, ThymeleafContent("error", mapOf("data" to data)))
+}
+
+suspend fun ApplicationCall.sectionNotFound() {
+    val data = ErrorModel(
+        account = attributes.getProfileAndMapToAccountModel(),
+        title = "Not Found",
+        heading = "Section not found",
+        message = "",
+        action = Action("/", "Back to lobby")
+    )
+    respond(HttpStatusCode.BadRequest, ThymeleafContent("error", mapOf("data" to data)))
 }
 
 // represent profile that is produced from session cookie
