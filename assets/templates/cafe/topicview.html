@@ -20,24 +20,26 @@
     }
 
     .author-profile {
-      width: 120px;
+      width: 150px;
       display: flex;
       flex-direction: column;
-      align-items: start;
       border-right: 1px solid black;
     }
 
-    .profile-pic-container {
-      padding: 4px;
-      border-bottom: 1px solid black;
+    .avatar-container {
+      padding: 24px;
+      padding-bottom: 12px;
+      display: flex;
+      justify-content: center;
     }
 
-    .profile-pic {
+    .avatar {
       border: 1px solid #ccc;
     }
 
     .author-info-container {
-      padding: 4px;
+      font-size: 12px;
+      padding-bottom: 24px;
     }
 
     .author-name {
@@ -45,7 +47,7 @@
       font-weight: bold;
       display: -webkit-box;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 3;
+      -webkit-line-clamp: 4;
       overflow-wrap: anywhere;
       word-break: normal;
       overflow: hidden;
@@ -79,8 +81,8 @@
             <h1 th:text="${data.title}"></h1>
             <div class="post-row">
               <div class="author-profile">
-                <div class="profile-pic-container">
-                  <img class="profile-pic" src="/images/placeholder.png" alt="profile picture" width="120">
+                <div class="avatar-container">
+                  <img class="avatar" src="/images/placeholder.png" alt="profile avatar" width="120">
                 </div>
                 <div class="author-info-container">
                   <p class="author-name" th:text="${data.author}"></p>
@@ -99,8 +101,8 @@
             </div>
             <div class="post-row">
               <div class="author-profile">
-                <div class="profile-pic-container">
-                  <img class="profile-pic" src="/images/placeholder.png" alt="profile picture" width="120">
+                <div class="avatar-container">
+                  <img class="avatar" src="/images/placeholder.png" alt="profile avatar" width="120">
                 </div>
                 <div class="author-info-container">
                   <p class="author-name" th:text="${data.author}"></p>
@@ -117,6 +119,27 @@
                 </div>
               </div>
             </div>
+            <div class="post-row">
+              <div class="author-profile">
+                <div class="avatar-container">
+                  <img class="avatar" src="/images/placeholder.png" alt="profile avatar" width="120">
+                </div>
+                <div class="author-info-container">
+                  <p class="author-name" th:text="${data.author}"></p>
+                </div>
+              </div>
+              <div class="post-layout">
+                <div class="post-content-container">
+                  <p th:text="${data.content}"></p>
+                </div>
+                <div class="post-info">
+                  <span>Posted at</span>
+                  <span class="js-format-date" th:data-raw-date="${data.postedDate}">
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- here -->
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
