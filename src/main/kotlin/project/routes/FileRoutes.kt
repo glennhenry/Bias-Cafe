@@ -21,6 +21,7 @@ fun Route.fileRoutes() {
     staticFiles("site", File("assets/site"))
     staticFiles("icons", File("assets/icons"))
     staticFiles("images", File("assets/images"))
+    staticFiles("avatars", File("assets/avatars"))
     get("/favicon.ico") { call.respondFile(File("assets/site/favicon.ico")) }
 
     val docsDir = File("docs_build")

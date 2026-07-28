@@ -219,6 +219,7 @@ Unlike space, section's `id` will be displayed to users. It will be used as the 
 For example, clicking "Yujin's Space" in the cafe homepage will redirect user to `/cafe/yujin`.
 
 We can model topic like:
+
 ```json
 topics: [
   {
@@ -232,8 +233,8 @@ topics: [
         author: "Yujiniee"
         content: "I have a tons! Send me a letter.",
 		directReplies: [
-		  { 
-		    author: "ThinkingInXiao", 
+		  {
+		    author: "ThinkingInXiao",
 			content: "Give me too please"
 		  }
 		]
@@ -306,6 +307,7 @@ Some routes require cookie check and some do not. There should be three models:
 - RequireAccount: this is for routes where account is required, such as posting a cafe post, editing own's profile, messaging other users.
 
 Refresh behavior:
+
 - Session can be refreshed unlimited times.
 - Refresh is done when at least 30 days passed on expiresAt (e.g., <= 335 days)
 - Server will also periodically clean token session, maybe every 1 day, if the token is no longer valid (more than 365 days)
@@ -315,16 +317,16 @@ The behavior:
 - user register/login, a session is generated which will be valid for the next 365 days. the server also return a cookie which is saved in user local storage
 - for each request to any routes, the cookie is sent (use path '/')
 - if cookie not exist, this mean user hasn't logged in.
-     - in this case, server returns "not logged in" text in the template
+  - in this case, server returns "not logged in" text in the template
 - if cookie exist
-     - server check if that cookie is valid (i.e., exist in the store) and it hasn't expire
-     - if cookie is valid
-        - server returns "logged in" text in the template
-        - user can do any auth required action (e.g., create new post)
-        - if there is at least 30 days passed on expiresAt (e.g., <= 335 days), server will reset it back to 365 days.
-     - if cookie is invalid (expired)
-        - server returns "not logged in" text in the template
-        - the session saved in the server will also be deleted, if exists
+  - server check if that cookie is valid (i.e., exist in the store) and it hasn't expire
+  - if cookie is valid
+    - server returns "logged in" text in the template
+    - user can do any auth required action (e.g., create new post)
+    - if there is at least 30 days passed on expiresAt (e.g., <= 335 days), server will reset it back to 365 days.
+  - if cookie is invalid (expired)
+    - server returns "not logged in" text in the template
+    - the session saved in the server will also be deleted, if exists
 
 Other case:
 
@@ -349,3 +351,23 @@ for example:
 - user never open the website again until the next 10 days, still see "logged in as ..." (OptionalAccount guard, remaining session 355 days)
 - user never open the website again until the next 21 days, still see "logged in as ..." (OptionalAccount guard, remaining session 334 days, refreshed back to 365 days)
 - user never open the website again until the next 365 days, cookie may still exist in the browser, but it's now invalid. so user have to login again.
+
+### Profile
+
+The user can customize profile. A registered account gets a random avatar from the server. The server provides a set of default avatars. The avatars should be neutral, non-offensive, and memorable. It doesn't need to be detailed — a chibi graphics should do it.
+
+Since it's cafe themed, the avatars could be foods:
+
+- Coffee cup
+- Tea cup
+- Milk
+- Cake
+- Croissant
+- Toast
+- Cookie
+
+The purpose of default avatar is to give the site a memorable icon. There shouldn't be too many avatars or them being too good — otherwise users won't customize their profile themselves.
+
+Every avatar images goes to `assets/avatars/...`. When user upload avatar, it is saved in that directory. Default avatar is also saved there. On user's profile, the `avatarUrl` field will point to the link, for example `avatarUrl = avatars/smile.png`.
+
+Uploading an avatar will generate a UUID for the avatar file name. For example, `avatarUrl = avatars/123e4567-e89b-12d3-a456-426614174000`. The user's profile field will also be updated accordingly.

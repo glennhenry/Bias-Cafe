@@ -14,6 +14,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Profile(
     val displayName: String,
-    val avatarUrl: String,
+    val avatarUrl: String = "avatars/duck.jpg",
     val level: Int
 )

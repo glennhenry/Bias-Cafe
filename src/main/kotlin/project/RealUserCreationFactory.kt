@@ -36,7 +36,6 @@ class RealUserCreationFactory : UserCreationFactory {
             extra = emptyMap(),
             profile = Profile(
                 displayName = username,
-                avatarUrl = "",
                 level = 1
             )
         )
