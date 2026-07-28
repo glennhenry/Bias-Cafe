@@ -12,6 +12,10 @@ class InMemoryTopicRepository(
         return Result.success(topics.find { it.topicId == topicId })
     }
 
+    override suspend fun getTopicByShortId(shortTopicId: String): Result<Topic?> {
+        return Result.success(topics.find { it.topicId.startsWith(shortTopicId) })
+    }
+
     override suspend fun getTopics(): Result<List<Topic>> {
         return Result.success(topics)
     }

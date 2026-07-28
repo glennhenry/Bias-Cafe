@@ -32,12 +32,22 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
                 Fancam.info("mongotopic") { "Inserted 20 dummy posts successfully" }
             }
         }
+
+        topicCollection.createIndex(Indexes.text())
     }
 
     override suspend fun getTopic(topicId: String): Result<Topic?> {
         return runMongoCatching {
             topicCollection
                 .find(Filters.eq(FieldTopicId, topicId))
+                .firstOrNull()
+        }
+    }
+
+    override suspend fun getTopicByShortId(shortTopicId: String): Result<Topic?> {
+        return runMongoCatching {
+            topicCollection
+                .find(Filters.regex(FieldTopicId, "^$shortTopicId"))
                 .firstOrNull()
         }
     }

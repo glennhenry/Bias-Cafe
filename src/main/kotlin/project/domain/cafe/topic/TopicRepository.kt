@@ -18,15 +18,26 @@ interface TopicRepository {
      *
      * Returns:
      * - [Result.success] with the topic.
+     * - [Result.success] with null if not found.
      * - [Result.failure] if an error occurs while retrieving the data.
      */
     suspend fun getTopic(topicId: String): Result<Topic?>
 
     /**
+     * Get the topic identified by its first 8-characters of `topicId`.
+     *
+     * Returns:
+     * - [Result.success] with the topic.
+     * - [Result.success] with null if not found.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getTopicByShortId(shortTopicId: String): Result<Topic?>
+
+    /**
      * Get every available topics.
      *
      * Returns:
-     * - [Result.success] with the list of topic.
+     * - [Result.success] with the list of topic, or empty.
      * - [Result.failure] if an error occurs while retrieving the data.
      */
     suspend fun getTopics(): Result<List<Topic>>
@@ -35,7 +46,7 @@ interface TopicRepository {
      * Get every available topics on a specific section identified by [sectionId].
      *
      * Returns:
-     * - [Result.success] with the list of topic.
+     * - [Result.success] with the list of topic, or empty.
      * - [Result.failure] if an error occurs while retrieving the data.
      */
     suspend fun getTopicsOfSection(sectionId: String): Result<List<Topic>>

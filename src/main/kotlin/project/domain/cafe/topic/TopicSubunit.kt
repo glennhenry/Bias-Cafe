@@ -19,22 +19,31 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     /**
      * Returns an [Outcome] containing the requested topic.
      * - [Outcome.Fail] when there is internal repository error.
-     * - [Outcome.Ok] with the topic.
+     * - [Outcome.Ok] with the topic, or null if it's not found.
      */
-    suspend fun getTopic(topicId: String): Outcome<Topic> {
+    suspend fun getTopic(topicId: String): Outcome<Topic?> {
         return topicRepository.getTopic(topicId)
             .onFailure {
                 Fancam.error(it, "topic") {
                     "getTopic query failed for topicId=$topicId"
                 }
             }
-            .toOutcome { topic ->
-                return if (topic == null) {
-                    Outcome.Fail
-                } else {
-                    Outcome.Ok(topic)
+            .toOutcome { topic -> return Outcome.Ok(topic) }
+    }
+
+    /**
+     * Returns an [Outcome] containing the requested topic.
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the topic, or null if it's not found.
+     */
+    suspend fun getTopicByShortId(shortTopicId: String): Outcome<Topic?> {
+        return topicRepository.getTopicByShortId(shortTopicId)
+            .onFailure {
+                Fancam.error(it, "topic") {
+                    "getTopicByShortId query failed for shortTopicId=$shortTopicId"
                 }
             }
+            .toOutcome { topic -> return Outcome.Ok(topic) }
     }
 
     /**
