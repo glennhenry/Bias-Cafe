@@ -226,7 +226,7 @@ topics: [
     spaceId: "yujin",
     title: "Yujin's Fancam Collection Help",
     author: "UtokkiForever",
-	content: "I need help finding more fancam of her"
+	  content: "I need help finding more fancam of her"
     replies: [
       {
         author: "Yujiniee"
@@ -249,13 +249,13 @@ The `topicId` must be unique and can rely on UUID. The first 8-characters will a
 
 More specifically, the URL of a topic will be a combination of the topic's title and its unique ID.
 
-For example, `forumdomain.com/cafe/yujin/123e4567/oh-yujin-is-so-pretty`:
+For example, `forumdomain.com/cafe/yujin/123e4567/yujin-s-fancam-collection-help`:
 
 - `forumdomain.com` the domain name of the social portal website.
 - `cafe` represent the cafe section of the website.
 - `yujin` the section identifier `yujin`.
 - `123e4567` is the first 8-characters of the `topicId`.
-- `oh-yujin-is-so-pretty` is a Base62 (a-z, A-Z, 0-9) encoded string of the topic's title.
+- `yujin-s-fancam-collection-help` is a slug string of the topic's title. It only includes (a-z, A-Z, 0-9, -).
 
 Key points:
 
@@ -267,6 +267,8 @@ Key points:
   - It would retrieve the specific topic associated with this UUID, identified by the first 8-characters.
   - An actual dead link occurs when there are no matching IDs.
   - There are 4.2 billion unique combinations from the first 8-characters of UUID. Though, collision can still occur, so server should re-generate until the first 8-characters are different.
+
+Any character should be allowed in the topic title. Enforce a minimum of 10 characters.
 
 ### Mailbox (private message)
 
