@@ -261,11 +261,11 @@ Key points:
 
 - The topic title is included in the URL for UX. This will let users know the rough subject of a forum post just by seeing the URL. This is also often called as _slug_.
 - The purpose of including UUID in the URL is to prepare for potential URL change. The UUID is only the first 8-characters to avoid long URL.
-  - User can edit the topic's title. When it is edited, a new URL will be produced.
+  - User can edit the topic's title. When it is edited, a new URL with an altered slug will be produced.
   - The goal is to prevent dead links. When users open the old URL, they should be redirected to the new URL.
-  - The server can achieve this by using the UUID for identification.
+  - The server can achieve this by only using the UUID for identification. The server don't need to bother with whatever the title is.
   - It would retrieve the specific topic associated with this UUID, identified by the first 8-characters.
-  - An actual dead link occurs when there are no matching IDs.
+  - An actual dead link (not found) occurs when there are no matching IDs.
   - There are 4.2 billion unique combinations from the first 8-characters of UUID. Though, collision can still occur, so server should re-generate until the first 8-characters are different.
 
 Any character should be allowed in the topic title. Enforce a minimum of 10 characters.

@@ -86,6 +86,15 @@ data class TopicModel(
     val postedDate: Long
 )
 
+data class TopicViewModel(
+    val account: Account?,
+    val topicId: String,
+    val title: String,
+    val author: String,
+    val postedDate: Long,
+    val content: String,
+)
+
 data class ErrorModel(
     val account: Account?,
     val title: String,
@@ -196,26 +205,38 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val section = requireNotNull(call.request.pathVariables["section"])
                 val id = requireNotNull(call.request.pathVariables["id"])
                 val title = requireNotNull(call.request.pathVariables["title"])
-                Fancam.debug { "Got section=$section id=$id title=$title" }
 
-                if (!availableSections.contains(path)) {
+                if (!availableSections.contains(section)) {
                     call.sectionNotFound()
                     return@guard
                 }
 
-                val topics = serverContext.subunits.topic.getTopicsOfSection(path).okOrNull()
-                if (topics == null) {
-                    call.respond(HttpStatusCode.InternalServerError, "internal server error")
+                val topic = serverContext.subunits.topic.getTopicByShortId(id).okOrNull()
+                if (topic == null) {
+                    call.topicNotFound()
                     return@guard
                 }
 
-                val data = CafeInsideModel(
+                // title from link is different than title in DB: redirect this
+                val currentSlug = topic.title.toUrlSlug()
+                if (title != currentSlug) {
+                    call.respondRedirect(
+                        url = "/cafe/$section/$id/$currentSlug",
+                        permanent = true
+                    )
+                    return@guard
+                }
+
+                val data = TopicViewModel(
                     account = call.attributes.getProfileAndMapToAccountModel(),
-                    sectionId = path,
-                    topics = topics.map { TopicModel(it.topicId, "", it.title, it.author, it.postedDate) }
+                    topicId = topic.topicId,
+                    title = topic.title,
+                    author = topic.author,
+                    postedDate = topic.postedDate,
+                    content = topic.content,
                 )
 
-                call.respond(ThymeleafContent("cafe/topiclist", mapOf("data" to data)))
+                call.respond(ThymeleafContent("cafe/topicview", mapOf("data" to data)))
             }
         }
 
@@ -337,7 +358,6 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 val EmptyData = emptyMap<String, String>()
 
 
-
 fun Attributes.getProfileAndMapToAccountModel(): Account? {
     getOrNull(SessionProfileKey)?.let {
         return Account(
@@ -379,7 +399,18 @@ suspend fun ApplicationCall.sectionNotFound() {
         message = "",
         action = Action("/", "Back to lobby")
     )
-    respond(HttpStatusCode.BadRequest, ThymeleafContent("error", mapOf("data" to data)))
+    respond(HttpStatusCode.NotFound, ThymeleafContent("error", mapOf("data" to data)))
+}
+
+suspend fun ApplicationCall.topicNotFound() {
+    val data = ErrorModel(
+        account = attributes.getProfileAndMapToAccountModel(),
+        title = "Not Found",
+        heading = "Topic not found",
+        message = "",
+        action = Action("/", "Back to lobby")
+    )
+    respond(HttpStatusCode.NotFound, ThymeleafContent("error", mapOf("data" to data)))
 }
 
 // represent profile that is produced from session cookie

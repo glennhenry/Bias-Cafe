@@ -24,8 +24,14 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     suspend fun getTopic(topicId: String): Outcome<Topic?> {
         return topicRepository.getTopic(topicId)
             .onFailure {
-                Fancam.error(it, "topic") {
-                    "getTopic query failed for topicId=$topicId"
+                if (it !is DocumentNotFoundException) {
+                    Fancam.error(it, "topic") {
+                        "getTopic query failed for topicId=$topicId"
+                    }
+                } else {
+                    Fancam.warn("topic") {
+                        "getTopic topic not found for topicId=$topicId"
+                    }
                 }
             }
             .toOutcome { topic -> return Outcome.Ok(topic) }
@@ -39,8 +45,14 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     suspend fun getTopicByShortId(shortTopicId: String): Outcome<Topic?> {
         return topicRepository.getTopicByShortId(shortTopicId)
             .onFailure {
-                Fancam.error(it, "topic") {
-                    "getTopicByShortId query failed for shortTopicId=$shortTopicId"
+                if (it !is DocumentNotFoundException) {
+                    Fancam.error(it, "topic") {
+                        "getTopicByShortId query failed for shortTopicId=$shortTopicId"
+                    }
+                } else {
+                    Fancam.warn("topic") {
+                        "getTopicByShortId topic not found for shortTopicId=$shortTopicId"
+                    }
                 }
             }
             .toOutcome { topic -> return Outcome.Ok(topic) }
