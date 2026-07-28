@@ -9,6 +9,62 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <title>Cafe.TopicView</title>
   <style>
+    .post-row {
+      display: flex;
+      flex-direction: row;
+      border: 1px solid black;
+    }
+
+    .post-row+.post-row {
+      border-top: none;
+    }
+
+    .author-profile {
+      width: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      border-right: 1px solid black;
+    }
+
+    .profile-pic-container {
+      padding: 4px;
+      border-bottom: 1px solid black;
+    }
+
+    .profile-pic {
+      border: 1px solid #ccc;
+    }
+
+    .author-info-container {
+      padding: 4px;
+    }
+
+    .author-name {
+      text-align: center;
+      font-weight: bold;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      overflow: hidden;
+    }
+
+    .post-layout {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 8px;
+    }
+
+    .post-info {
+      text-align: end;
+    }
+
+    .post-content-container {
+      flex: 1;
+    }
   </style>
 </head>
 
@@ -20,8 +76,47 @@
         <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
-            <h1>Cafe.TopicView</h1>
-            <p th:text="${data.content}"></p>
+            <h1 th:text="${data.title}"></h1>
+            <div class="post-row">
+              <div class="author-profile">
+                <div class="profile-pic-container">
+                  <img class="profile-pic" src="/images/placeholder.png" alt="profile picture" width="120">
+                </div>
+                <div class="author-info-container">
+                  <p class="author-name" th:text="${data.author}"></p>
+                </div>
+              </div>
+              <div class="post-layout">
+                <div class="post-content-container">
+                  <p th:text="${data.content}"></p>
+                </div>
+                <div class="post-info">
+                  <span>Posted at</span>
+                  <span class="js-format-date" th:data-raw-date="${data.postedDate}">
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="post-row">
+              <div class="author-profile">
+                <div class="profile-pic-container">
+                  <img class="profile-pic" src="/images/placeholder.png" alt="profile picture" width="120">
+                </div>
+                <div class="author-info-container">
+                  <p class="author-name" th:text="${data.author}"></p>
+                </div>
+              </div>
+              <div class="post-layout">
+                <div class="post-content-container">
+                  <p th:text="${data.content}"></p>
+                </div>
+                <div class="post-info">
+                  <span>Posted at</span>
+                  <span class="js-format-date" th:data-raw-date="${data.postedDate}">
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
@@ -40,24 +135,6 @@
       $(".js-format-date").each(function () {
         const rawDate = $(this).attr('data-raw-date')
         $(this).text(formatDate(rawDate))
-      })
-
-      $(document).on("click", ".delete-post", function (event) {
-        event.preventDefault()
-        const topicId = $(this).attr('data-topic-id')
-
-        fetch("/cafe/delete", {
-          method: "POST",
-          body: topicId
-        })
-          .then(response => {
-            if (response.ok) {
-              location.reload();
-            } else {
-              console.error("Delete failed");
-            }
-          })
-          .catch(console.error);
       })
     })
   </script>
