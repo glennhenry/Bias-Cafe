@@ -13,6 +13,7 @@ import encore.route.handle
 import encore.serialization.JSON
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
+import encore.utils.identifier.shortUuid
 import encore.utils.types.*
 import io.ktor.http.*
 import io.ktor.http.CookieEncoding
@@ -25,6 +26,7 @@ import io.ktor.util.*
 import io.ktor.util.date.GMTDate
 import kotlinx.serialization.Serializable
 import project.Members
+import project.domain.cafe.toUrlSlug
 import project.domain.cafe.topic.Topic
 import project.domain.cafe.topic.TopicDeletionOutcome
 import project.domain.session.WebsiteSessionSubunit
@@ -78,9 +80,9 @@ data class PostPayload(
 
 data class TopicModel(
     val topicId: String,
+    val link: String,
     val title: String,
     val author: String,
-    val content: String,
     val postedDate: Long
 )
 
@@ -158,7 +160,43 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 
         get("/cafe/{section}") {
             guard(call, optionalAccountGuard) {
-                val path = requireNotNull(call.request.pathVariables["section"])
+                val section = requireNotNull(call.request.pathVariables["section"])
+
+                if (!availableSections.contains(section)) {
+                    call.sectionNotFound()
+                    return@guard
+                }
+
+                val topics = serverContext.subunits.topic.getTopicsOfSection(section).okOrNull()
+                if (topics == null) {
+                    call.respond(HttpStatusCode.InternalServerError, "internal server error")
+                    return@guard
+                }
+
+                val data = CafeInsideModel(
+                    account = call.attributes.getProfileAndMapToAccountModel(),
+                    sectionId = section,
+                    topics = topics.map {
+                        TopicModel(
+                            topicId = it.topicId,
+                            link = "${section}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
+                            title = it.title,
+                            author = it.author,
+                            postedDate = it.postedDate
+                        )
+                    }
+                )
+
+                call.respond(ThymeleafContent("cafe/topiclist", mapOf("data" to data)))
+            }
+        }
+
+        get("/cafe/{section}/{id}/{title}") {
+            guard(call, optionalAccountGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                val id = requireNotNull(call.request.pathVariables["id"])
+                val title = requireNotNull(call.request.pathVariables["title"])
+                Fancam.debug { "Got section=$section id=$id title=$title" }
 
                 if (!availableSections.contains(path)) {
                     call.sectionNotFound()
@@ -174,7 +212,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val data = CafeInsideModel(
                     account = call.attributes.getProfileAndMapToAccountModel(),
                     sectionId = path,
-                    topics = topics.map { TopicModel(it.topicId, it.title, it.author, it.content, it.postedDate) }
+                    topics = topics.map { TopicModel(it.topicId, "", it.title, it.author, it.postedDate) }
                 )
 
                 call.respond(ThymeleafContent("cafe/topiclist", mapOf("data" to data)))
@@ -297,6 +335,8 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 }
 
 val EmptyData = emptyMap<String, String>()
+
+
 
 fun Attributes.getProfileAndMapToAccountModel(): Account? {
     getOrNull(SessionProfileKey)?.let {

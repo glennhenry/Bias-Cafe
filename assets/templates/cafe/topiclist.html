@@ -90,7 +90,7 @@
                 <li class="post-list-item" th:each="topic : ${data.topics}">
                   <div>
                     <div class="topic-title-row">
-                      <a class="topic-title" th:href="${topic.topicId}" th:text="${topic.title}"></a>
+                      <a class="topic-title" th:href="${topic.link}" th:text="${topic.title}"></a>
                       <a class="delete-post" href="#" title="Delete post" th:data-topic-id="${topic.topicId}">
                         <img src="/icons/delete.png" alt="delete" width="16">
                       </a>
