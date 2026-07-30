@@ -1,8 +1,6 @@
 package project.routes
 
 import encore.auth.LoginResult
-import project.context.ServerContext
-import project.domain.profile.Profile
 import encore.fancam.Fancam
 import encore.route.RouteHandler
 import encore.route.guard
@@ -16,20 +14,21 @@ import encore.utils.identifier.Ids
 import encore.utils.identifier.shortUuid
 import encore.utils.types.*
 import io.ktor.http.*
-import io.ktor.http.CookieEncoding
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.thymeleaf.*
 import io.ktor.util.*
-import io.ktor.util.date.GMTDate
+import io.ktor.util.date.*
 import kotlinx.serialization.Serializable
 import project.Members
+import project.context.ServerContext
 import project.domain.cafe.toUrlSlug
 import project.domain.cafe.topic.Topic
 import project.domain.cafe.topic.TopicDeletionOutcome
 import project.domain.session.WebsiteSessionSubunit
+import project.mongo.collection.UserAccount
 import java.text.SimpleDateFormat
 
 data class Account(
@@ -358,11 +357,15 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 val EmptyData = emptyMap<String, String>()
 
 
+fun Attributes.getAccount(): UserAccount? {
+    return getOrNull(SessionAccountKey)
+}
+
 fun Attributes.getProfileAndMapToAccountModel(): Account? {
-    getOrNull(SessionProfileKey)?.let {
+    getOrNull(SessionAccountKey)?.let {
         return Account(
-            username = it.displayName,
-            level = it.level
+            username = it.username,
+            level = it.profile.level
         )
     }
     return null
@@ -413,8 +416,8 @@ suspend fun ApplicationCall.topicNotFound() {
     respond(HttpStatusCode.NotFound, ThymeleafContent("error", mapOf("data" to data)))
 }
 
-// represent profile that is produced from session cookie
-val SessionProfileKey = AttributeKey<Profile>("profile")
+// represent account that is produced from session cookie
+val SessionAccountKey = AttributeKey<UserAccount>("account")
 
 /**
  * This guard will reject the request and return an error page
@@ -443,17 +446,17 @@ class MustNotHaveAccountGuard(private val websiteSessionSubunit: WebsiteSessionS
  * This guard tolerate the absence of session cookie and will always
  * returns a [GuardResult.Welcome].
  *
- * If session cookie is found and valid, it will set the [SessionProfileKey]
- * with the [Profile] of user.
+ * If session cookie is found and valid, it will set the [SessionAccountKey]
+ * with the [UserAccount] of user.
  */
 class OptionalAccountGuard(private val serverContext: ServerContext) : AuthGuard {
     override suspend fun verify(call: ApplicationCall): GuardResult {
         // no account -> no token is found; verify fails by returning null; db failure; or profile not found;
         val token = call.request.cookies["session"] ?: return GuardResult.Welcome
         val userId = serverContext.subunits.websiteSession.verify(token) ?: return GuardResult.Welcome
-        val profile = serverContext.subunits.profile.getProfile(userId).okOrNull() ?: return GuardResult.Welcome
+        val account = serverContext.subunits.account.getAccountByUserId(userId).okOrNull() ?: return GuardResult.Welcome
 
-        call.attributes[SessionProfileKey] = profile
+        call.attributes[SessionAccountKey] = account
         return GuardResult.Welcome
     }
 }
@@ -462,8 +465,8 @@ class OptionalAccountGuard(private val serverContext: ServerContext) : AuthGuard
  * This guard obligates session cookie and will return [GuardResult.Reject]
  * and respond with an error page if it's not found or invalid.
  *
- * It guarantees that [SessionProfileKey] is set on [ApplicationCall.attributes]
- * with the [Profile] of user.
+ * It guarantees that [SessionAccountKey] is set on [ApplicationCall.attributes]
+ * with the [UserAccount] of user.
  */
 class RequireAccountGuard(private val serverContext: ServerContext) : AuthGuard {
     override suspend fun verify(call: ApplicationCall): GuardResult {
@@ -472,8 +475,8 @@ class RequireAccountGuard(private val serverContext: ServerContext) : AuthGuard 
             // no account -> no token is found; verify fails by returning null; db failure; or profile not found;
             val token = call.request.cookies["session"]
             val userId = serverContext.subunits.websiteSession.verify(token!!)
-            val profile = serverContext.subunits.profile.getProfile(userId!!).okOrNull()!!
-            call.attributes[SessionProfileKey] = profile
+            val account = serverContext.subunits.account.getAccountByUserId(userId!!).okOrNull()!!
+            call.attributes[SessionAccountKey] = account
             return GuardResult.Welcome
         }
 
@@ -515,7 +518,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
     override fun Route.install() {
         post("/api/register") {
             handle(call, optionalAccountGuard) {
-                if (call.attributes.getOrNull(SessionProfileKey) != null) {
+                if (call.attributes.getOrNull(SessionAccountKey) != null) {
                     call.respond(HttpStatusCode.Forbidden, mapOf("reason" to "You are already logged in."))
                     return@handle
                 }
@@ -549,7 +552,7 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
 
         post("/api/login") {
             handle(call, optionalAccountGuard) {
-                if (call.attributes.getOrNull(SessionProfileKey) != null) {
+                if (call.attributes.getOrNull(SessionAccountKey) != null) {
                     call.respondText("You are already logged in.")
                     return@handle
                 }
