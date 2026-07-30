@@ -64,8 +64,6 @@
                 <p>Create a topic</p>
                 <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title"
                   maxlength="80"></textarea>
-                <input id="topic-author-input" class="topic-author-input" type="text" placeholder="Author"
-                  maxlength="30" />
                 <div class="post-section">
                   <label for="post-textarea">Content</label>
                   <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
@@ -94,9 +92,8 @@
       changePostStatus(0)
 
       const titleText = $("#topic-title-textarea").val();
-      const authorText = $("#topic-author-input").val();
       const postText = $("#post-textarea").val();
-      const payload = { title: titleText, author: authorText, content: postText }
+      const payload = { title: titleText, content: postText }
       console.log(JSON.stringify(payload))
 
       fetch(window.location.href, {
@@ -107,6 +104,7 @@
           if (response.ok) {
             console.log("Cafe post status: ", response.status)
             changePostStatus(2)
+            window.location.href = new URL('.', window.location.href).href.replace(/\/$/, '')
           }
         })
         .catch(error => {

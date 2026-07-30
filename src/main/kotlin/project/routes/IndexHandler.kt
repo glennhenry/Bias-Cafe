@@ -73,7 +73,6 @@ data class CreateTopicModel(
 @Serializable
 data class PostPayload(
     val title: String,
-    val author: String,
     val content: String
 )
 
@@ -284,13 +283,14 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 val post = JSON.decode<PostPayload>(call.receiveText())
+                val profile = call.attributes.getAccount().profile
 
                 val id = Ids.uuid()
                 val topic = Topic(
                     topicId = id,
                     sectionId = section,
                     title = post.title,
-                    author = post.author,
+                    author = profile.displayName,
                     content = post.content,
                     postedDate = TimeCenter.now(),
                 )
@@ -357,7 +357,23 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 val EmptyData = emptyMap<String, String>()
 
 
-fun Attributes.getAccount(): UserAccount? {
+/**
+ * Get [UserAccount] from the call's attributes.
+ * This should only be called on `requireAccountGuard`.
+ *
+ * @throws IllegalArgumentException if not found.
+ */
+fun Attributes.getAccount(): UserAccount {
+    return requireNotNull(getOrNull(SessionAccountKey)) {
+        "Expected UserAccount but null"
+    }
+}
+
+/**
+ * Get [UserAccount] from the call's attributes.
+ * @return `null` if not found.
+ */
+fun Attributes.getAccountOrNull(): UserAccount? {
     return getOrNull(SessionAccountKey)
 }
 
