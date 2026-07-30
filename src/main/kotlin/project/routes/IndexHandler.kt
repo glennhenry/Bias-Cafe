@@ -532,6 +532,8 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
     private val optionalAccountGuard = OptionalAccountGuard(serverContext)
 
     override fun Route.install() {
+        val usernameRegex = Regex("^[a-z0-9_]+$")
+
         post("/api/register") {
             handle(call, optionalAccountGuard) {
                 if (call.attributes.getOrNull(SessionAccountKey) != null) {
@@ -543,6 +545,11 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 if (data.username.isBlank() || data.password.isBlank() || data.email.isBlank()) {
                     call.respond(HttpStatusCode.BadRequest, mapOf("reason" to "blank credentials"))
+                    return@handle
+                }
+
+                if (data.username.length < 2 || !usernameRegex.matches(data.username)) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("reason" to "invalid username minimum 2 length, only (a-z, 0-9, _)"))
                     return@handle
                 }
 
@@ -577,6 +584,11 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
 
                 if (data.username.isBlank() || data.password.isBlank()) {
                     call.respond(HttpStatusCode.BadRequest, mapOf("reason" to "blank credentials"))
+                    return@handle
+                }
+
+                if (data.username.length < 2 || !usernameRegex.matches(data.username)) {
+                    call.respond(HttpStatusCode.BadRequest, mapOf("reason" to "invalid username minimum 2 length, only (a-z, 0-9, _)"))
                     return@handle
                 }
 

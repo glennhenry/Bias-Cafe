@@ -54,7 +54,7 @@
             <form id="register-form">
               <div>
                 <div class="form-group">
-                  <label for="username">Username:</label>
+                  <label for="username">Username (used for login):</label>
                   <input id="username" class="text-input" type="text" autoComplete="new-password" required />
                 </div>
                 <div id="username-info"></div>
@@ -160,10 +160,20 @@
       }
     }
 
+    const usernameRegex = /^[a-z0-9_]+$/i;
+
     function validateUsername(username) {
       if (username.length < 2) {
         $("#username-info")
           .text("Username must be at least 2 characters.")
+          .css("color", "red")
+
+        isUsernameValid = false;
+        updateSubmitButton();
+        return false;
+      } else if (!usernameRegex.test(username)) {
+        $("#username-info")
+          .text("Username should only contain lowercase a-z, the digit 0-9, and _ (underscore)")
           .css("color", "red")
 
         isUsernameValid = false;
@@ -188,7 +198,7 @@
         const result = await response.text();
         if (result === "yes") {
           $("#username-info")
-            .text("Username is available.")
+            .text(`Username is available. You will be registered as '@${$("#username").val()}'.`)
             .css("color", "green")
 
           isUsernameValid = true;
