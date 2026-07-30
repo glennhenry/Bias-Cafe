@@ -1,6 +1,7 @@
 package encore.account
 
 import encore.auth.AuthSubunit
+import encore.datastore.DocumentNotFoundException
 import project.mongo.collection.UserAccount
 import project.mongo.collection.UserId
 import encore.fancam.Fancam
@@ -32,8 +33,14 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
     suspend fun getAccountByUserId(userId: String): Outcome<UserAccount?> {
         return accountRepository.getAccountByUserId(userId)
             .onFailure {
-                Fancam.error(it, Tags.Account) {
-                    "getAccountByUserId failed: repository scandal for '$userId'"
+                if (it !is DocumentNotFoundException) {
+                    Fancam.error(it, "topic") {
+                        "getAccountByUserId failed: repository scandal for '$userId'"
+                    }
+                } else {
+                    Fancam.warn("topic") {
+                        "getAccountByUserId userId not found 'userId'"
+                    }
                 }
             }
             .toOutcome { account -> return Outcome.Ok(account) }
