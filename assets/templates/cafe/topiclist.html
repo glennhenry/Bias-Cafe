@@ -99,10 +99,7 @@
                       <span class="topic-author-left">
                         Posted by <span class="topic-author-name" th:text="${topic.author}"></span>
                       </span>
-                      <span class="topic-posted-date">
-                        <span>at</span>
-                        <span class="js-format-date" th:data-raw-date="${topic.postedDate}">
-                        </span>
+                      <span class="topic-posted-date js-format-date" th:data-raw-date="${topic.postedDate}">
                       </span>
                     </div>
                   </div>
@@ -119,15 +116,56 @@
   </div>
 
   <script>
-    function formatDate(millis) {
-      const date = new Date(Number(millis))
-      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+    /**
+     * Get formatted date, returning two strings in an array:
+     * - minimal date; e.g., "Today 10:57" or "Yesterday 10:57" or "2026 Jul 28 10:57"
+     * - full date; "2026 Jul 28 10:57"
+     */
+    function getFormattedDate(millis) {
+      const datePosted = new Date(Number(millis))
+
+      const year = datePosted.getFullYear()
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const monthName = months[datePosted.getMonth()];
+      const day = String(datePosted.getDate()).padStart(2, "0")
+
+      const hours = String(datePosted.getHours()).padStart(2, "0");
+      const minutes = String(datePosted.getMinutes()).padStart(2, "0");
+
+      const now = new Date()
+      const isToday = now.getDate() == datePosted.getDate()
+      const isYesterday = now.getDate() - 1 == datePosted.getDate()
+
+      const fullFormat = `${year} ${monthName} ${day} ${hours}:${minutes}`
+
+      if (isToday) {
+        return [`Today ${hours}:${minutes}`, fullFormat]
+      } else if (isYesterday) {
+        return [`Yesterday ${hours}:${minutes}`, fullFormat]
+      } else {
+        return [fullFormat, fullFormat]
+      }
     }
 
     $(document).ready(function () {
       $(".js-format-date").each(function () {
         const rawDate = $(this).attr('data-raw-date')
-        $(this).text(formatDate(rawDate))
+        const [minimalDate, fullDate] = getFormattedDate(rawDate)
+        $(this).text(minimalDate)
+        $(this).prop('title', fullDate)
       })
 
       $(document).on("click", ".delete-post", function (event) {

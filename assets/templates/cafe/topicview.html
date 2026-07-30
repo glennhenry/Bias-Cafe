@@ -93,9 +93,7 @@
                   <p th:text="${data.content}"></p>
                 </div>
                 <div class="post-info">
-                  <span>Posted at</span>
                   <span class="js-format-date" th:data-raw-date="${data.postedDate}">
-                  </span>
                 </div>
               </div>
             </div>
@@ -113,9 +111,7 @@
                   <p th:text="${data.content}"></p>
                 </div>
                 <div class="post-info">
-                  <span>Posted at</span>
                   <span class="js-format-date" th:data-raw-date="${data.postedDate}">
-                  </span>
                 </div>
               </div>
             </div>
@@ -133,9 +129,7 @@
                   <p th:text="${data.content}"></p>
                 </div>
                 <div class="post-info">
-                  <span>Posted at</span>
                   <span class="js-format-date" th:data-raw-date="${data.postedDate}">
-                  </span>
                 </div>
               </div>
             </div>
@@ -149,9 +143,34 @@
   </div>
 
   <script>
-    function formatDate(millis) {
-      const date = new Date(Number(millis))
-      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+    /**
+     * Get formatted date, returning a string in format like "2026 Jul 28 10:57"
+     */
+    function getFormattedDate(millis) {
+      const datePosted = new Date(Number(millis))
+
+      const year = datePosted.getFullYear()
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const monthName = months[datePosted.getMonth()];
+      const day = String(datePosted.getDate()).padStart(2, "0")
+
+      const hours = String(datePosted.getHours()).padStart(2, "0");
+      const minutes = String(datePosted.getMinutes()).padStart(2, "0");
+
+      return `${year} ${monthName} ${day} ${hours}:${minutes}`
     }
 
     $(document).ready(function () {
