@@ -352,9 +352,25 @@ for example:
 - user never open the website again until the next 21 days, still see "logged in as ..." (OptionalAccount guard, remaining session 334 days, refreshed back to 365 days)
 - user never open the website again until the next 365 days, cookie may still exist in the browser, but it's now invalid. so user have to login again.
 
-### Profile
+### Account & Profile
 
-The user can customize profile. A registered account gets a random avatar from the server. The server provides a set of default avatars. The avatars should be neutral, non-offensive, and memorable. It doesn't need to be detailed — a chibi graphics should do it.
+Account (`UserAccount` in code) contains system or operational information about a user such as `userId`, `username`, `email`, `hashedPassword`, `registeredAt`, etc.
+
+`Profile`, on the other hand, is the domain data of users. It includes user's personal information, display name, avatar URL, account level, currencies, etc. It doesn't include a data that keeps growing such as guestbook, scrapbook, mails, etc.
+
+#### Credentials
+
+The username is a unique ID that users use to login and identification. It is created on registration and can be changed later. It should only contain lowercase alphabets, numbers, and underscore (a-z, 0-9, _). It may be shown in user's profile.
+
+On the other hand, the display name will be displayed across the website. It doesn't have to be unique and may be changed often. The user will starts out with their username used as the display name.
+
+A similar system can be found in YouTube and Discord: a user has unique username ID e.g., "@yujin_580" but display name could be "유진 fan 😊".
+
+As for email, it isn't used for identification or login, but is used when user forgot their password (cannot be used without email system in the server).
+
+#### Avatar
+
+A registered account gets a random avatar from the server. The server provides a set of default avatars. The avatars should be neutral, non-offensive, and memorable. It doesn't need to be detailed — a chibi graphics should do it.
 
 Since it's cafe themed, the avatars could be foods:
 
