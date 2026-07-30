@@ -21,7 +21,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.modules.SerializersModule
 import project.context.RealContextFactory
+import project.dummy.DummyActivitySetup
 import project.mongo.RuntimeMongoCollections
+import project.mongo.collection.UserAccount
 import project.routes.AuthRoutes
 import project.routes.IndexHandler
 import java.time.LocalDate
@@ -99,6 +101,9 @@ suspend fun Application.configureApplication() {
 
     // install shutdown hook
     shutdownHook(appScope, serverSubunitScope, serverContext.subunits)
+
+    // dummy setup
+    DummyActivitySetup(db, serverContext).setup()
 }
 
 fun websocketHandlers(serverContext: ServerContext) {

@@ -127,7 +127,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
         "kep1er", "kpop",
         "yujin", "xiaoting", "mashiro",
         "chaehyun", "dayeon", "hikaru",
-        "bahiyyih", "youngeun", "yeseo",
+        "hiyyih", "youngeun", "yeseo",
         "media", "games"
     )
     private val optionalAccountGuard = OptionalAccountGuard(serverContext)

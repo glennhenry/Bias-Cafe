@@ -36,7 +36,6 @@
 
     <!-- Custom config, follow `CustomConfig` definition in code -->
     <custom>
-        <prepareDummyPosts>true</prepareDummyPosts>
-        <deletePostsEveryRestart>false</deletePostsEveryRestart>
+        <setupDummyActivity>true</setupDummyActivity>
     </custom>
 </venue>

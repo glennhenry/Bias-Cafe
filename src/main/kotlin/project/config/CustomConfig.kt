@@ -1,7 +1,6 @@
 package project.config
 
 import encore.annotation.runtime.VenueKey
-import project.domain.cafe.topic.MongoTopicRepository
 
 /**
  * Custom application config definition.
@@ -13,21 +12,10 @@ import project.domain.cafe.topic.MongoTopicRepository
  */
 data class CustomConfig(
     /**
-     * Whether to prepare dummy posts for [MongoTopicRepository].
-     *
-     * This will insert 20 posts during server startup if
-     * fewer than 10 posts are available.
+     * Whether to fabricate dummy activities in the website.
+     * This includes creating dummy accounts, topics, replies, etc.
+     * This will only be done if the accounts database has fewer than 5 accounts.
      */
-    @VenueKey("prepareDummyPosts")
-    val prepareDummyPosts: Boolean = false,
-
-    /**
-     * Whether to delete all stored posts in the topic collection
-     * of [MongoTopicRepository] on every server restart.
-     *
-     * Deletion will be done first before adding the posts
-     * if [prepareDummyPosts] is `true`.
-     */
-    @VenueKey("deletePostsEveryRestart")
-    val deletePostsEveryRestart: Boolean = false
+    @VenueKey("setupDummyActivity")
+    val setupDummyActivity: Boolean = false,
 )

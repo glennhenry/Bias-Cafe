@@ -10,7 +10,7 @@ object Members {
     const val CHAEHYUN = "Chaehyun"
     const val DAYEON = "Dayeon"
     const val HIKARU = "Hikaru"
-    const val BAHIYYIH = "Bahiyyih"
+    const val HIYYIH = "Hiyyih"
     const val YOUNGEUN = "Youngeun"
     const val YESEO = "Yeseo"
 
@@ -21,7 +21,7 @@ object Members {
         CHAEHYUN,
         DAYEON,
         HIKARU,
-        BAHIYYIH,
+        HIYYIH,
         YOUNGEUN,
         YESEO
     )
