@@ -176,7 +176,7 @@
     $(document).ready(function () {
       $(".js-format-date").each(function () {
         const rawDate = $(this).attr('data-raw-date')
-        $(this).text(formatDate(rawDate))
+        $(this).text(getFormattedDate(rawDate))
       })
     })
   </script>
