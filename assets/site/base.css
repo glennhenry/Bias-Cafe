@@ -151,6 +151,7 @@ body {
 
 .content-sidebar {
   width: calc(var(--site-width) - var(--sidebar-width) - var(--content-width));
+  border-left: 1px solid #ccc;
 }
 
 .footer {
