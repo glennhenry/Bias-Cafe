@@ -86,6 +86,7 @@ data class TopicModel(
 
 data class TopicViewModel(
     val account: Account?,
+    val sectionId: String,
     val topicId: String,
     val title: String,
     val author: String,
@@ -227,6 +228,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 
                 val data = TopicViewModel(
                     account = call.attributes.getProfileAndMapToAccountModel(),
+                    sectionId = section,
                     topicId = topic.topicId,
                     title = topic.title,
                     author = topic.author,

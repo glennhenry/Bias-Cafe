@@ -82,10 +82,13 @@
         <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
-            <h1>Cafe.TopicList</h1>
+            <a class="link" href="/cafe">← Back to Cafe</a>
+            <h1 th:text="${#strings.capitalize(data.sectionId)}"></h1>
+            <hr>
             <div class="posted-text">
-              <a class="link" th:href="${data.sectionId} + '/create'">Create topic</a>
-              <h3>All topics:</h3>
+              <div class="space-y-s"></div>
+              <a class="link" th:href="${data.sectionId} + '/create'">Write a topic</a>
+              <div class="space-y-xs"></div>
               <ul class="topic-lists" th:if="${not #lists.isEmpty(data.topics)}">
                 <li class="post-list-item" th:each="topic : ${data.topics}">
                   <div>

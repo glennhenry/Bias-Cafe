@@ -78,6 +78,7 @@
         <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
+            <a class="link backlink" th:text="'← Back to ' + ${#strings.capitalize(data.sectionId)}"></a>
             <h1 th:text="${data.title}"></h1>
             <div class="post-row">
               <div class="author-profile">
@@ -178,6 +179,8 @@
         const rawDate = $(this).attr('data-raw-date')
         $(this).text(getFormattedDate(rawDate))
       })
+
+      $(".backlink").attr('href', new URL('..', window.location.href).href.replace(/\/$/, ''))
     })
   </script>
 </body>

@@ -175,3 +175,15 @@ body {
 .link:hover {
   text-decoration-thickness: 2px;
 }
+
+.space-y-xs {
+  height: 4px;
+}
+
+.space-y-s {
+  height: 8px;
+}
+
+.space-y-md {
+  height: 16px;
+}
