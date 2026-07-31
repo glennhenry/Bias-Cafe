@@ -66,8 +66,9 @@ data class SectionItem(
     val description: String
 )
 
-data class CreateTopicModel(
-    val account: Account?
+data class WriteTopicModel(
+    val account: Account?,
+    val sectionName: String
 )
 
 @Serializable
@@ -86,7 +87,7 @@ data class TopicModel(
 
 data class TopicViewModel(
     val account: Account?,
-    val sectionId: String,
+    val sectionName: String,
     val topicId: String,
     val title: String,
     val author: String,
@@ -124,12 +125,20 @@ data class LoginModel(
 )
 
 class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
-    private val availableSections = listOf(
-        "kep1er", "kpop",
-        "yujin", "xiaoting", "mashiro",
-        "chaehyun", "dayeon", "hikaru",
-        "hiyyih", "youngeun", "yeseo",
-        "media", "games"
+    private val sections = mapOf(
+        "kep1er" to "Kep1er Discussion",
+        "kpop" to "K-pop Discussion",
+        "yujin" to "Yujin's Space",
+        "xiaoting" to "Xiaoting's Space",
+        "mashiro" to "Mashiro's Space",
+        "chaehyun" to "Chaehyun's Space",
+        "dayeon" to "Dayeon's Space",
+        "hikaru" to "Hikaru's Space",
+        "hiyyih" to "Hiyyih's Space",
+        "youngeun" to "Youngeun's Space",
+        "yeseo" to "Yeseo's Space",
+        "media" to "Media",
+        "games" to "Games"
     )
     private val optionalAccountGuard = OptionalAccountGuard(serverContext)
     private val requireAccountGuard = RequireAccountGuard(serverContext)
@@ -170,7 +179,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             guard(call, optionalAccountGuard) {
                 val section = requireNotNull(call.request.pathVariables["section"])
 
-                if (!availableSections.contains(section)) {
+                if (!sections.contains(section)) {
                     call.sectionNotFound()
                     return@guard
                 }
@@ -205,7 +214,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val id = requireNotNull(call.request.pathVariables["id"])
                 val title = requireNotNull(call.request.pathVariables["title"])
 
-                if (!availableSections.contains(section)) {
+                if (!sections.contains(section)) {
                     call.sectionNotFound()
                     return@guard
                 }
@@ -228,7 +237,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 
                 val data = TopicViewModel(
                     account = call.attributes.getProfileAndMapToAccountModel(),
-                    sectionId = section,
+                    sectionName = requireNotNull(sections[section]) { "Ensure sections contains $section" },
                     topicId = topic.topicId,
                     title = topic.title,
                     author = topic.author,
@@ -259,27 +268,32 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
             }
         }
 
-        get("/cafe/{section}/create") {
+        get("/cafe/{section}/write") {
             handle(call, requireAccountGuard) {
                 val section = requireNotNull(call.request.pathVariables["section"])
-                if (!availableSections.contains(section)) {
+                if (!sections.contains(section)) {
                     call.respond(HttpStatusCode.NotFound, "Section not found")
                     return@handle
                 }
 
                 call.respond(
                     ThymeleafContent(
-                        "cafe/create",
-                        mapOf("data" to CreateTopicModel(call.attributes.getProfileAndMapToAccountModel()))
+                        "cafe/write",
+                        mapOf(
+                            "data" to WriteTopicModel(
+                                account = call.attributes.getProfileAndMapToAccountModel(),
+                                sectionName = requireNotNull(sections[section]) { "Ensure sections contains $section" }
+                            )
+                        )
                     )
                 )
             }
         }
 
-        post("/cafe/{section}/create") {
+        post("/cafe/{section}/write") {
             handle(call, requireAccountGuard) {
                 val section = requireNotNull(call.request.pathVariables["section"])
-                if (!availableSections.contains(section)) {
+                if (!sections.contains(section)) {
                     call.respond(HttpStatusCode.NotFound, "Section not found")
                     return@handle
                 }
@@ -551,7 +565,10 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 if (data.username.length < 2 || !usernameRegex.matches(data.username)) {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("reason" to "invalid username minimum 2 length, only (a-z, 0-9, _)"))
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        mapOf("reason" to "invalid username minimum 2 length, only (a-z, 0-9, _)")
+                    )
                     return@handle
                 }
 
@@ -590,7 +607,10 @@ class AuthRoutes(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 if (data.username.length < 2 || !usernameRegex.matches(data.username)) {
-                    call.respond(HttpStatusCode.BadRequest, mapOf("reason" to "invalid username minimum 2 length, only (a-z, 0-9, _)"))
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        mapOf("reason" to "invalid username minimum 2 length, only (a-z, 0-9, _)")
+                    )
                     return@handle
                 }
 

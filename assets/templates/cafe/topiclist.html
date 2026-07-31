@@ -87,7 +87,7 @@
             <hr>
             <div class="posted-text">
               <div class="space-y-s"></div>
-              <a class="link" th:href="${data.sectionId} + '/create'">Write a topic</a>
+              <a class="link" th:href="${data.sectionId} + '/write'">Write a topic</a>
               <div class="space-y-xs"></div>
               <ul class="topic-lists" th:if="${not #lists.isEmpty(data.topics)}">
                 <li class="post-list-item" th:each="topic : ${data.topics}">

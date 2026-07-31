@@ -7,13 +7,21 @@
   <link rel="stylesheet" href="/site/reset.css">
   <link rel="stylesheet" href="/site/base.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <title>Cafe.CreateTopic</title>
+  <title>Cafe.WriteTopic</title>
   <style>
+    .content {
+      padding-left: 0;
+    }
+
+    .backlink {
+      padding-left: 4px;
+    }
+
     .post-container {
       width: fit-content;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      padding: 8px;
     }
 
     .post-section {
@@ -29,14 +37,6 @@
       padding-right: 12px;
     }
 
-    .post-submit {
-      width: fit-content;
-    }
-
-    .post-status {
-      color: black;
-    }
-
     .topic-title-textarea {
       field-sizing: content;
       width: 300px;
@@ -44,8 +44,14 @@
       padding-right: 12px;
     }
 
-    .topic-author-input {
-      width: 200px;
+    .post-submit {
+      width: fit-content;
+      margin-top: 24px;
+    }
+
+    .post-status {
+      color: black;
+      margin-left: 8px;
     }
   </style>
 </head>
@@ -58,20 +64,19 @@
         <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
-            <div class="content">
-              <h1>Cafe.CreateTopic</h1>
-              <form id="post-form" class="post-container">
-                <p>Create a topic</p>
-                <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title"
-                  maxlength="80"></textarea>
-                <div class="post-section">
-                  <label for="post-textarea">Content</label>
-                  <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
-                </div>
-                <button type="submit" class="post-submit">Post</button>
-              </form>
-              <p id="post-status" class="post-status">Status: </p>
-            </div>
+            <div class="space-y-xs"></div>
+            <a class="link backlink" th:text="'← Back to ' + ${#strings.capitalize(data.sectionName)}"></a>
+            <form id="post-form" class="post-container">
+              <p>Write a topic</p>
+              <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title"
+                maxlength="80"></textarea>
+              <div class="post-section">
+                <label for="post-textarea">Content</label>
+                <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
+              </div>
+              <button type="submit" class="post-submit">Post</button>
+            </form>
+            <p id="post-status" class="post-status">Status: </p>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
@@ -85,6 +90,8 @@
       $("#post-form").submit(function (event) {
         postFormSubmitListener(event)
       })
+
+      $(".backlink").attr('href', new URL('.', window.location.href).href.replace(/\/$/, ''))
     })
 
     function postFormSubmitListener(event) {
