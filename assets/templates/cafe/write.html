@@ -24,13 +24,13 @@
       padding: 8px;
     }
 
-    .post-section {
+    .content-section {
       display: flex;
       flex-direction: column;
       margin-top: 16px;
     }
 
-    .post-textarea {
+    .content-textarea {
       width: 300px;
       height: 200px;
       resize: none;
@@ -50,8 +50,8 @@
     }
 
     .post-status {
-      color: black;
-      margin-left: 8px;
+      color: red;
+      margin-top: 8px;
     }
   </style>
 </head>
@@ -70,13 +70,14 @@
               <p>Write a topic</p>
               <textarea id="topic-title-textarea" class="topic-title-textarea" placeholder="Title"
                 maxlength="80"></textarea>
-              <div class="post-section">
-                <label for="post-textarea">Content</label>
-                <textarea id="post-textarea" class="post-textarea" placeholder="Write your topic here..."></textarea>
+              <div class="content-section">
+                <label for="content-textarea">Content</label>
+                <textarea id="content-textarea" class="content-textarea"
+                  placeholder="Write your topic here..."></textarea>
               </div>
               <button type="submit" class="post-submit">Post</button>
+              <p id="post-status" class="post-status"></p>
             </form>
-            <p id="post-status" class="post-status">Status: </p>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
@@ -86,6 +87,9 @@
   </div>
 
   <script>
+    let isTitleValid = false;
+    let isContentValid = false;
+
     $(document).ready(function () {
       $("#post-form").submit(function (event) {
         postFormSubmitListener(event)
@@ -94,13 +98,39 @@
       $(".backlink").attr('href', new URL('.', window.location.href).href.replace(/\/$/, ''))
     })
 
+    function checkForm() {
+      validateTitle()
+      validateContent()
+      return isTitleValid && isContentValid
+    }
+
+    function validateTitle() {
+      const titleText = $("#topic-title-textarea").val();
+      if (titleText.length < 8) {
+        isTitleValid = false;
+        $("#post-status").text("Title must be at least 8 characters.")
+      } else {
+        isTitleValid = true;
+      }
+    }
+
+    function validateContent() {
+      const contentText = $("#content-textarea").val();
+      if (contentText.length < 20) {
+        isContentValid = false;
+        $("#post-status").text("Content should contains at least 20 characters.")
+      } else {
+        isContentValid = true;
+      }
+    }
+
     function postFormSubmitListener(event) {
       event.preventDefault()
-      changePostStatus(0)
+      if (!checkForm()) return
 
       const titleText = $("#topic-title-textarea").val();
-      const postText = $("#post-textarea").val();
-      const payload = { title: titleText, content: postText }
+      const contentText = $("#content-textarea").val();
+      const payload = { title: titleText, content: contentText }
       console.log(JSON.stringify(payload))
 
       fetch(window.location.href, {
@@ -110,32 +140,12 @@
         .then(response => {
           if (response.ok) {
             console.log("Cafe post status: ", response.status)
-            changePostStatus(2)
             window.location.href = new URL('.', window.location.href).href.replace(/\/$/, '')
           }
         })
         .catch(error => {
           console.error('Error:', error)
-          changePostStatus(1)
         });
-    }
-
-    function changePostStatus(code) {
-      if (code == 0) {
-        $("#post-status")
-          .text("Status: Sending")
-          .css("color", "#b68c3e")
-      }
-      if (code == 1) {
-        $("#post-status")
-          .text("Status: Failed")
-          .css("color", "red")
-      }
-      if (code == 2) {
-        $("#post-status")
-          .text("Status: Success")
-          .css("color", "green")
-      }
     }
   </script>
 </body>
