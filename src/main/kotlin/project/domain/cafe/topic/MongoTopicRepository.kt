@@ -8,6 +8,7 @@ import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associate
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
+import org.bson.codecs.pojo.annotations.BsonId
 
 /** `topicId`*/
 val FieldTopicId = Topic::topicId.name
@@ -36,6 +37,22 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
             topicCollection
                 .find(Filters.regex(FieldTopicId, "^$shortTopicId"))
                 .firstOrNull()
+        }
+    }
+
+    override suspend fun getFullTopicId(shortTopicId: String): Result<String?> {
+        return runMongoCatching {
+            topicCollection
+                .withDocumentClass<QueryTopicId>()
+                .find(Filters.regex(FieldTopicId, "^$shortTopicId"))
+                .projection(
+                    Projections.fields(
+                        Projections.include(FieldTopicId),
+                        Projections.excludeId()
+                    )
+                )
+                .firstOrNull()
+                ?.topicId
         }
     }
 
@@ -97,4 +114,9 @@ class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) 
 data class SectionCount(
     val sectionId: String,
     val count: Int
+)
+
+data class QueryTopicId(
+    @field:BsonId val id: String? = null,
+    val topicId: String
 )

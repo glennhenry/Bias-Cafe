@@ -59,6 +59,27 @@ class TopicSubunit(private val topicRepository: TopicRepository) : Subunit<Serve
     }
 
     /**
+     * Returns an [Outcome] containing the full `topicId` from its [shortTopicId].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the `topicId`, or null if it's not found.
+     */
+    suspend fun getFullTopicId(shortTopicId: String): Outcome<String?> {
+        return topicRepository.getFullTopicId(shortTopicId)
+            .onFailure {
+                if (it !is DocumentNotFoundException) {
+                    Fancam.error(it, "topic") {
+                        "getFullTopicId query failed for shortTopicId=$shortTopicId"
+                    }
+                } else {
+                    Fancam.warn("topic") {
+                        "getFullTopicId topic not found for shortTopicId=$shortTopicId"
+                    }
+                }
+            }
+            .toOutcome { topicId -> return Outcome.Ok(topicId) }
+    }
+
+    /**
      * Returns an [Outcome] containing list of topics.
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with the topics.

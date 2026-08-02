@@ -34,6 +34,16 @@ interface TopicRepository {
     suspend fun getTopicByShortId(shortTopicId: String): Result<Topic?>
 
     /**
+     * Get the full `topicId` from its [shortTopicId].
+     *
+     * Returns:
+     * - [Result.success] with the topicId.
+     * - [Result.success] with null if not found.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getFullTopicId(shortTopicId: String): Result<String?>
+
+    /**
      * Get every available topics.
      *
      * Returns:

@@ -38,25 +38,28 @@ class MongoTopicRepositoryTest {
         // 2. getTopicByShortId
         assertNotNull(repo.getTopicByShortId(id.shortUuid()).getOrNull())
 
-        // 3. getTopics
+        // 3. getTopicByShortId
+        assertEquals(id, repo.getFullTopicId(id.shortUuid()).getOrNull())
+
+        // 4. getTopics
         assertNotNull(
             repo.getTopics().getOrThrow().find { it.topicId == targetTopic.topicId }
         )
 
-        // 4. getTopicsOfSection
+        // 5. getTopicsOfSection
         assertNotNull(
             repo.getTopicsOfSection("sectionId123").getOrThrow().find { it.sectionId == targetTopic.sectionId }
         )
 
-        // 5. getTopicsCountForEachSection
+        // 6. getTopicsCountForEachSection
         assertEquals(1, repo.getTopicsCountForEachSection().getOrThrow()["sectionId123"])
 
-        // 6. addTopic
+        // 7. addTopic
         val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0)
         assertNotNull(repo.addTopic(t).getOrNull())
         assertNotNull(repo.getTopic("asdf").getOrNull())
 
-        // 7. deleteTopic
+        // 8. deleteTopic
         assertNotNull(repo.deleteTopic("asdf").getOrNull())
         assertNull(repo.getTopic("asdf").getOrNull())
     }
