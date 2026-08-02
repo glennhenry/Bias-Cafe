@@ -107,7 +107,7 @@
     function validateTitle() {
       const titleText = $("#topic-title-textarea").val();
       if (titleText.length < 8) {
-        isTitleValid = false;
+        isTitleValid = true;
         $("#post-status").text("Title must be at least 8 characters.")
       } else {
         isTitleValid = true;
@@ -142,9 +142,9 @@
         if (response.ok) {
           window.location.href = new URL('.', window.location.href).href.replace(/\/$/, '')
           return
+        } else if (response.status == 400) {
+          $("#post-status").text(await response.text())
         }
-
-        $("#post-status").text(await response.text())
       } catch (err) {
         console.error("Post form error: ", err)
       }
