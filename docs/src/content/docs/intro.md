@@ -223,30 +223,20 @@ We can model topic like:
 ```json
 topics: [
   {
-    topicId: "123e4567-e89b-12d3-a456-426614174000",
+    topicId: "5e60734a-e538-4415-b9f4-4ac2ce7f687e",
     spaceId: "yujin",
     title: "Yujin's Fancam Collection Help",
-    author: "UtokkiForever",
+    authorId: "20129625-c2bb-4113-b3e9-e76a3e41d78a",
 	  content: "I need help finding more fancam of her"
-    replies: [
-      {
-        author: "Yujiniee"
-        content: "I have a tons! Send me a letter.",
-		directReplies: [
-		  {
-		    author: "ThinkingInXiao",
-			content: "Give me too please"
-		  }
-		]
-      }
-    ]
   }
 ]
 ```
 
+#### Topic URL
+
 A request to `/cafe/yujin` would filter every topics of `spaceId == "yujin"`. On a bigger scale though, maybe topics should be partitioned into their respective section. This results in multiple collections of topics grouped by their section.
 
-The `topicId` must be unique and can rely on UUID. The first 8-characters will also be used for URL generation of the topic. In this case, the server should check for possible collision of the first 8-characters of the newly generated UUID.
+The `topicId` and other IDs must be unique and rely on UUID. The first 8-characters will also be used for URL generation of the topic. In this case, the server should check for possible collision of the first 8-characters of the newly generated UUID.
 
 More specifically, the URL of a topic will be a combination of the topic's title and its unique ID.
 
@@ -270,6 +260,79 @@ Key points:
   - There are 4.2 billion unique combinations from the first 8-characters of UUID. Though, collision can still occur, so server should re-generate until the first 8-characters are different.
 
 Any character should be allowed in the topic title. Enforce a minimum of 10 characters.
+
+#### Reply
+
+Topic can be replied. Each reply itself can also be replied. We call a reply to a topic as **top-level reply**, whereas a reply to another reply as **child reply**. The topic's content itself can't be child replied. Child reply can't have another child reply.
+
+Replies are stored in a separate collection from topic, modeled like:
+
+```json
+replies: [
+  {
+    replyId: "fd7a9a4a-8dca-4d36-96a2-06b55fb20055",
+    topicId: "5e60734a-e538-4415-b9f4-4ac2ce7f687e",
+    parentReplyId: null,
+    authorId: "b6718f06-cdea-4290-a8a8-c3f55b899b97",
+    content: "I have a tons! Send me a letter."
+  },
+  {
+    replyId: "60d88da6-f41d-4d97-be19-49778a90ad5b",
+    topicId: "5e60734a-e538-4415-b9f4-4ac2ce7f687e",
+    parentReplyId: "fd7a9a4a-8dca-4d36-96a2-06b55fb20055",
+    authorId: "d1b9829f-a179-41b6-b3e3-100da391afbd",
+    content: "Give me too please."
+  }
+]
+```
+
+Here, since child reply can't have another reply, `parentReplyId` is only a single, nullable UUID referring to any `replyId`. The `topicId` of them must be same.
+
+For example, the users:
+
+```json
+users: [
+  {
+    userId: "20129625-c2bb-4113-b3e9-e76a3e41d78a",
+    username: "utokki_forever"
+  },
+  {
+    userId: "b6718f06-cdea-4290-a8a8-c3f55b899b97",
+    username: "yujinnie"
+  },
+  {
+    userId: "d1b9829f-a179-41b6-b3e3-100da391afbd",
+    username: "thinking_in_xiao"
+  },
+]
+```
+
+Overall, it will be displayed like:
+
+```
+"I need help finding more fancam of her" — "utokki_forever"
+
+"I have a tons! Send me a letter." — "yujinnie"
+ ├─ "Give me too please." — "thinking_in_xiao"
+ └─ "Another child reply..." — "some_username"
+
+"another top-level reply"  — "some_username"
+
+"another top-level reply"  — "some_username"
+ ├─ "Another child reply..." — "some_username"
+ ├─ "Another child reply..." — "some_username"
+ └─ "Another child reply..." — "some_username"
+```
+
+This mean loading a topic generate multiple queries:
+
+1. Query topic by the short ID. This gives topic ID, title, author ID, and content.
+2. Query replies by filtering the same topic ID. This produces N-amount of replies.
+3. Collect every unique author ID (application-level) and query the users collection to obtain their profile information.
+
+The response to frontend would be: the topic model including title and content, a list of replies containing the reply content, a map of user ID to user summary.
+
+The topic model can be rendered easily. The top-level replies will be rendered in the order of the posted date and they must have `parentReplyId` as `null`. Then, of all replies, filter for `parentReplyId` that matches a certain `replyId` and render the child replies.
 
 ### Mailbox (private message)
 
@@ -360,7 +423,7 @@ Account (`UserAccount` in code) contains system or operational information about
 
 #### Credentials
 
-The username is a unique ID that users use to login and identification. It is created on registration and can be changed later. It should only contain lowercase alphabets, numbers, and underscore (a-z, 0-9, _). It may be shown in user's profile.
+The username is a unique ID that users use to login and identification. It is created on registration and can be changed later. It should only contain lowercase alphabets, numbers, and underscore (a-z, 0-9, \_). It may be shown in user's profile.
 
 On the other hand, the display name will be displayed across the website. It doesn't have to be unique and may be changed often. The user will starts out with their username used as the display name.
 
