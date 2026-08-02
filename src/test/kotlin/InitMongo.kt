@@ -12,6 +12,7 @@ val TestCollections = MongoCollections(
     websiteSession = "test_website_session",
 
     topic = "test_topic",
+    reply = "test_reply",
     spaces = "test_spaces",
     sections = "test_sections"
 )
