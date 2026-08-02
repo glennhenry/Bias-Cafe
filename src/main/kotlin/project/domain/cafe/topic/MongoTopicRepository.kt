@@ -22,6 +22,7 @@ val FieldSectionId = Topic::sectionId.name
 class MongoTopicRepository(private val topicCollection: MongoCollection<Topic>) : TopicRepository {
     override suspend fun awaitInit() {
         topicCollection.createIndex(Indexes.text())
+        topicCollection.createIndex(Indexes.descending(FieldPostedDate))
     }
 
     override suspend fun getTopic(topicId: String): Result<Topic?> {

@@ -1,7 +1,6 @@
 package project.domain.cafe.topic.reply
 
 import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Indexes
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.runMongoCatching
 import encore.utils.support.asUnit
@@ -13,10 +12,7 @@ import project.domain.cafe.topic.FieldTopicId
 val FieldReplyId = Reply::replyId.name
 
 class MongoReplyRepository(private val replies: MongoCollection<Reply>) : ReplyRepository {
-    override suspend fun awaitInit() {
-        replies.createIndex(Indexes.text("topicId"))
-        replies.createIndex(Indexes.text("replyId"))
-    }
+    override suspend fun awaitInit() {}
 
     override suspend fun getReply(replyId: String): Result<Reply?> {
         return runMongoCatching {
