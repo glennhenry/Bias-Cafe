@@ -119,6 +119,11 @@
       width: fit-content;
       align-self: end;
     }
+
+    #reply-status {
+      color: red;
+      align-self: end;
+    }
   </style>
 </head>
 
@@ -198,7 +203,8 @@
                     href="/register">register</a> or <a id="login" class="link" href="/login">login</a> before posting a
                   reply.</p>
               </div>
-              <button class="reply-btn" th:if="${data.account != null}">Reply</button>
+              <button id="reply-btn" class="reply-btn" th:if="${data.account != null}">Reply</button>
+              <p id="reply-status"></p>
             </div>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
@@ -209,6 +215,8 @@
   </div>
 
   <script>
+    let isReplyValid = false;
+
     $(document).ready(function () {
       $(".js-format-date").each(function () {
         const rawDate = $(this).attr('data-raw-date')
@@ -222,6 +230,10 @@
       resizeTextarea()
       $("#reply-textarea").on("input", function () {
         resizeTextarea()
+      })
+
+      $("#reply-btn").click(function (event) {
+        replyListener(event)
       })
     })
 
@@ -263,6 +275,45 @@
         $("#reply-textarea").css("overflow-y", "auto")
       } else {
         $("#reply-textarea").css("overflow-y", "hidden")
+      }
+    }
+
+    async function replyListener(event) {
+      if (!checkReplyText()) return
+
+      const replyText = $("#reply-textarea").val();
+      const payload = { reply: replyText }
+
+      try {
+        const response = await fetch(window.location.href, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+
+        if (response.ok) {
+          window.location.reload()
+          return
+        } else if (response.status == 400) {
+          $("#reply-status").text(await response.text())
+        }
+
+      } catch (err) {
+        console.error("Reply error: ", err)
+      }
+    }
+
+    function checkReplyText() {
+      validateReply()
+      return isReplyValid
+    }
+
+    function validateReply() {
+      const replyText = $("#reply-textarea").val();
+      if (replyText.length < 20) {
+        isReplyValid = false;
+        $("#reply-status").text("Your reply should contains at least 20 characters.")
+      } else {
+        isReplyValid = true;
       }
     }
   </script>
