@@ -96,6 +96,10 @@
     }
 
     .reply-box {
+      min-height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 8px;
       border: 1px solid #ccc;
       border-radius: 4px;
@@ -110,9 +114,10 @@
       width: 100%;
       min-height: 200px;
       max-height: 400px;
+      padding-right: 12px;
       overflow-y: hidden;
       resize: none;
-      padding-right: 12px;
+      cursor: text;
     }
 
     .reply-btn {
@@ -204,7 +209,7 @@
                   reply.</p>
               </div>
               <button id="reply-btn" class="reply-btn" th:if="${data.account != null}">Reply</button>
-              <p id="reply-status"></p>
+              <p id="reply-status" th:if="${data.account != null}"></p>
             </div>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
@@ -224,6 +229,7 @@
       })
 
       $(".backlink").attr('href', new URL('..', window.location.href).href.replace(/\/$/, ''))
+
       $("#register").attr('href', `/register?return=${window.location.pathname}`)
       $("#login").attr('href', `/login?return=${window.location.pathname}`)
 
@@ -268,13 +274,15 @@
     }
 
     function resizeTextarea() {
-      $("#reply-textarea").height("0px")
-      $("#reply-textarea").height(Math.min($("#reply-textarea")[0].scrollHeight, 400) + "px")
+      if ($("#reply-textarea").length > 0) {
+        $("#reply-textarea").height("0px")
+        $("#reply-textarea").height(Math.min($("#reply-textarea")[0].scrollHeight, 400) + "px")
 
-      if ($("#reply-textarea")[0].scrollHeight > 400) {
-        $("#reply-textarea").css("overflow-y", "auto")
-      } else {
-        $("#reply-textarea").css("overflow-y", "hidden")
+        if ($("#reply-textarea")[0].scrollHeight > 400) {
+          $("#reply-textarea").css("overflow-y", "auto")
+        } else {
+          $("#reply-textarea").css("overflow-y", "hidden")
+        }
       }
     }
 
