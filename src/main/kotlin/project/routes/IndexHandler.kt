@@ -27,9 +27,11 @@ import project.context.ServerContext
 import project.domain.cafe.toUrlSlug
 import project.domain.cafe.topic.Topic
 import project.domain.cafe.topic.TopicDeletionOutcome
+import project.domain.cafe.topic.reply.Reply
 import project.domain.session.WebsiteSessionSubunit
 import project.mongo.collection.UserAccount
 import java.text.SimpleDateFormat
+import kotlin.String
 
 data class Account(
     val username: String,
@@ -124,6 +126,11 @@ data class LoginModel(
     val account: Account?
 )
 
+@Serializable
+data class ReplyPayload(
+    val reply: String
+)
+
 class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
     private val sections = mapOf(
         "kep1er" to "Kep1er Discussion",
@@ -198,7 +205,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                             topicId = it.topicId,
                             link = "${section}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
                             title = it.title,
-                            author = it.author,
+                            author = it.authorId,
                             postedDate = it.postedDate
                         )
                     }
@@ -240,12 +247,58 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     sectionName = requireNotNull(sections[section]) { "Ensure sections contains $section" },
                     topicId = topic.topicId,
                     title = topic.title,
-                    author = topic.author,
+                    author = topic.authorId,
                     postedDate = topic.postedDate,
                     content = topic.content,
                 )
 
                 call.respond(ThymeleafContent("cafe/topicview", mapOf("data" to data)))
+            }
+        }
+
+        post("/cafe/{section}/{id}/{title}") {
+            guard(call, requireAccountGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                val id = requireNotNull(call.request.pathVariables["id"])
+
+                if (!sections.contains(section)) {
+                    call.sectionNotFound()
+                    return@guard
+                }
+
+                val topicId = serverContext.subunits.topic.getFullTopicId(id).okOrNull()
+                if (topicId == null) {
+                    call.topicNotFound()
+                    return@guard
+                }
+
+                val replyPayload = JSON.decode<ReplyPayload>(call.receiveText())
+                if (replyPayload.reply.length < 20) {
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        "Reply should be at least contains 20 characters."
+                    )
+                    return@guard
+                }
+
+                val replyId = Ids.uuid()
+                val reply = Reply(
+                    replyId = replyId,
+                    topicId = topicId,
+                    parentReplyId = null,
+                    authorId = call.attributes.getAccount().userId,
+                    content = replyPayload.reply,
+                    postedDate = TimeCenter.now(),
+                )
+
+                serverContext.subunits.reply.addReply(reply)
+                    .onFail {
+                        call.respond(HttpStatusCode.InternalServerError, "Failed to reply")
+                        return@guard
+                    }
+
+                Fancam.debug { "Created new replyId=$replyId" }
+                call.respond(HttpStatusCode.OK)
             }
         }
 
@@ -308,14 +361,14 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     return@handle
                 }
 
-                val profile = call.attributes.getAccount().profile
+                val acc = call.attributes.getAccount()
 
                 val id = Ids.uuid()
                 val topic = Topic(
                     topicId = id,
                     sectionId = section,
                     title = post.title,
-                    author = profile.displayName,
+                    authorId = acc.userId,
                     content = post.content,
                     postedDate = TimeCenter.now(),
                 )

@@ -299,6 +299,7 @@
         })
 
         if (response.ok) {
+          $("#reply-textarea").val("")
           window.location.reload()
           return
         } else if (response.status == 400) {
