@@ -87,6 +87,38 @@
     .post-content-container {
       flex: 1;
     }
+
+    .reply-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 24px;
+    }
+
+    .reply-box {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    textarea {
+      all: unset;
+    }
+
+    .reply-textarea {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: hidden;
+      resize: none;
+      padding-right: 12px;
+    }
+
+    .reply-btn {
+      width: fit-content;
+      align-self: end;
+    }
   </style>
 </head>
 
@@ -102,61 +134,72 @@
               <a class="link backlink" th:text="'← Back to ' + ${#strings.capitalize(data.sectionName)}"></a>
               <h1 class="post-title" th:text="${data.title}"></h1>
             </div>
-            <div class="post-row">
-              <div class="author-profile">
-                <div class="avatar-container">
-                  <img class="avatar" style="padding: 4px;" src="/avatars/duck.jpg" alt="profile avatar" width="100">
+            <div class="posts-list">
+              <div class="post-row">
+                <div class="author-profile">
+                  <div class="avatar-container">
+                    <img class="avatar" style="padding: 4px;" src="/avatars/duck.jpg" alt="profile avatar" width="100">
+                  </div>
+                  <div class="author-info-container">
+                    <p class="author-name" th:text="${data.author}"></p>
+                  </div>
                 </div>
-                <div class="author-info-container">
-                  <p class="author-name" th:text="${data.author}"></p>
+                <div class="post-layout">
+                  <div class="post-content-container">
+                    <p th:text="${data.content}"></p>
+                  </div>
+                  <div class="post-info">
+                    <span class="js-format-date" th:data-raw-date="${data.postedDate}">
+                  </div>
                 </div>
               </div>
-              <div class="post-layout">
-                <div class="post-content-container">
-                  <p th:text="${data.content}"></p>
+              <div class="post-row">
+                <div class="author-profile">
+                  <div class="avatar-container">
+                    <img class="avatar" style="padding: 4px;" src="/avatars/duck.jpg" alt="profile avatar" width="100">
+                  </div>
+                  <div class="author-info-container">
+                    <p class="author-name" th:text="${data.author}"></p>
+                  </div>
                 </div>
-                <div class="post-info">
-                  <span class="js-format-date" th:data-raw-date="${data.postedDate}">
+                <div class="post-layout">
+                  <div class="post-content-container">
+                    <p th:text="${data.content}"></p>
+                  </div>
+                  <div class="post-info">
+                    <span class="js-format-date" th:data-raw-date="${data.postedDate}">
+                  </div>
+                </div>
+              </div>
+              <div class="post-row">
+                <div class="author-profile">
+                  <div class="avatar-container">
+                    <img class="avatar" style="padding: 4px;" src="/avatars/duck.jpg" alt="profile avatar" width="100">
+                  </div>
+                  <div class="author-info-container">
+                    <p class="author-name" th:text="${data.author}"></p>
+                  </div>
+                </div>
+                <div class="post-layout">
+                  <div class="post-content-container">
+                    <p th:text="${data.content}"></p>
+                  </div>
+                  <div class="post-info">
+                    <span class="js-format-date" th:data-raw-date="${data.postedDate}">
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="post-row">
-              <div class="author-profile">
-                <div class="avatar-container">
-                  <img class="avatar" style="padding: 4px;" src="/avatars/duck.jpg" alt="profile avatar" width="100">
-                </div>
-                <div class="author-info-container">
-                  <p class="author-name" th:text="${data.author}"></p>
-                </div>
+            <div class="reply-section">
+              <div class="reply-box">
+                <textarea id="reply-textarea" class="reply-textarea" placeholder="Write your reply here..."
+                  th:if="${data.account != null}"></textarea>
+                <p th:if="${data.account == null}">You need to <a id="register" class="link"
+                    href="/register">register</a> or <a id="login" class="link" href="/login">login</a> before posting a
+                  reply.</p>
               </div>
-              <div class="post-layout">
-                <div class="post-content-container">
-                  <p th:text="${data.content}"></p>
-                </div>
-                <div class="post-info">
-                  <span class="js-format-date" th:data-raw-date="${data.postedDate}">
-                </div>
-              </div>
+              <button class="reply-btn" th:if="${data.account != null}">Reply</button>
             </div>
-            <div class="post-row">
-              <div class="author-profile">
-                <div class="avatar-container">
-                  <img class="avatar" style="padding: 4px;" src="/avatars/duck.jpg" alt="profile avatar" width="100">
-                </div>
-                <div class="author-info-container">
-                  <p class="author-name" th:text="${data.author}"></p>
-                </div>
-              </div>
-              <div class="post-layout">
-                <div class="post-content-container">
-                  <p th:text="${data.content}"></p>
-                </div>
-                <div class="post-info">
-                  <span class="js-format-date" th:data-raw-date="${data.postedDate}">
-                </div>
-              </div>
-            </div>
-            <!-- here -->
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
@@ -166,6 +209,22 @@
   </div>
 
   <script>
+    $(document).ready(function () {
+      $(".js-format-date").each(function () {
+        const rawDate = $(this).attr('data-raw-date')
+        $(this).text(getFormattedDate(rawDate))
+      })
+
+      $(".backlink").attr('href', new URL('..', window.location.href).href.replace(/\/$/, ''))
+      $("#register").attr('href', `/register?return=${window.location.pathname}`)
+      $("#login").attr('href', `/login?return=${window.location.pathname}`)
+
+      resizeTextarea()
+      $("#reply-textarea").on("input", function () {
+        resizeTextarea()
+      })
+    })
+
     /**
      * Get formatted date, returning a string in format like "2026 Jul 28 10:57"
      */
@@ -196,14 +255,16 @@
       return `${year} ${monthName} ${day} ${hours}:${minutes}`
     }
 
-    $(document).ready(function () {
-      $(".js-format-date").each(function () {
-        const rawDate = $(this).attr('data-raw-date')
-        $(this).text(getFormattedDate(rawDate))
-      })
+    function resizeTextarea() {
+      $("#reply-textarea").height("0px")
+      $("#reply-textarea").height(Math.min($("#reply-textarea")[0].scrollHeight, 400) + "px")
 
-      $(".backlink").attr('href', new URL('..', window.location.href).href.replace(/\/$/, ''))
-    })
+      if ($("#reply-textarea")[0].scrollHeight > 400) {
+        $("#reply-textarea").css("overflow-y", "auto")
+      } else {
+        $("#reply-textarea").css("overflow-y", "hidden")
+      }
+    }
   </script>
 </body>
 
