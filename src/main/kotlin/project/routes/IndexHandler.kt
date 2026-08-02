@@ -142,7 +142,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
     )
     private val optionalAccountGuard = OptionalAccountGuard(serverContext)
     private val requireAccountGuard = RequireAccountGuard(serverContext)
-    private val mustNotHaveAccountGuard = MustNotHaveAccountGuard(serverContext.subunits.websiteSession)
+    private val mustNotHaveAccountGuard = MustNotHaveAccountGuard(serverContext, serverContext.subunits.websiteSession)
 
     override fun Route.install() {
         get("/") {
@@ -464,14 +464,18 @@ val SessionAccountKey = AttributeKey<UserAccount>("account")
  * This guard will reject the request and return an error page
  * if session cookie is found and valid.
  */
-class MustNotHaveAccountGuard(private val websiteSessionSubunit: WebsiteSessionSubunit) : AuthGuard {
+class MustNotHaveAccountGuard(
+    private val serverContext: ServerContext,
+    private val websiteSessionSubunit: WebsiteSessionSubunit
+) : AuthGuard {
     override suspend fun verify(call: ApplicationCall): GuardResult {
         // no account -> no token is found; verify fails by returning null;
         val token = call.request.cookies["session"] ?: return GuardResult.Welcome
-        websiteSessionSubunit.verify(token) ?: return GuardResult.Welcome
+        val userId = websiteSessionSubunit.verify(token) ?: return GuardResult.Welcome
+        val account = serverContext.subunits.account.getAccountByUserId(userId).okOrNull()
 
         val data = ErrorModel(
-            account = null,
+            account = account?.let { Account(account.username, account.profile.level) },
             title = "Already logged in",
             heading = "Logged in",
             message = "You are already logged in.",
