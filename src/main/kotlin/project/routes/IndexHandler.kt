@@ -299,6 +299,15 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 }
 
                 val post = JSON.decode<PostPayload>(call.receiveText())
+
+                if (post.title.length < 8 || post.content.length < 20) {
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        "Title should be at least 8 characters and content should contains at least 20 characters"
+                    )
+                    return@handle
+                }
+
                 val profile = call.attributes.getAccount().profile
 
                 val id = Ids.uuid()
