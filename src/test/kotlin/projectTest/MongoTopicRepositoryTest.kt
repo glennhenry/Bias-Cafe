@@ -11,6 +11,7 @@ import testUtils.randomString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 /**
  * Test operations of [MongoTopicRepository].
@@ -49,6 +50,15 @@ class MongoTopicRepositoryTest {
 
         // 5. getTopicsCountForEachSection
         assertEquals(1, repo.getTopicsCountForEachSection().getOrThrow()["sectionId123"])
+
+        // 6. addTopic
+        val t = Topic("asdf", "asdf", "asdf", "asdf", "asdf", 0)
+        assertNotNull(repo.addTopic(t).getOrNull())
+        assertNotNull(repo.getTopic("asdf").getOrNull())
+
+        // 7. deleteTopic
+        assertNotNull(repo.deleteTopic("asdf").getOrNull())
+        assertNull(repo.getTopic("asdf").getOrNull())
     }
 
     private fun createTopic(amount: Int): List<Topic> {
