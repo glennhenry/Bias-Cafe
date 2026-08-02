@@ -26,6 +26,9 @@ import project.domain.cafe.collection.CollectionSubunit
 import project.domain.cafe.topic.InMemoryTopicRepository
 import project.domain.cafe.topic.TopicRepository
 import project.domain.cafe.topic.TopicSubunit
+import project.domain.cafe.topic.reply.InMemoryReplyRepository
+import project.domain.cafe.topic.reply.ReplyRepository
+import project.domain.cafe.topic.reply.ReplySubunit
 import project.domain.profile.BlankProfileRepository
 import project.domain.profile.ProfileRepository
 import project.domain.profile.ProfileSubunit
@@ -75,6 +78,7 @@ data class ServerContext(
             profileRepository: ProfileRepository = BlankProfileRepository(),
             collectionRepository: CollectionRepository = BlankCollectionRepository(),
             topicRepository: TopicRepository = InMemoryTopicRepository(),
+            replyRepository: ReplyRepository = InMemoryReplyRepository(),
         ): ServerContext {
             val account = AccountSubunit(accountRepository)
             val session = SessionSubunit.createForTest(parentScope)
@@ -84,6 +88,7 @@ data class ServerContext(
             val profile = ProfileSubunit(profileRepository)
             val collection = CollectionSubunit(collectionRepository)
             val topic = TopicSubunit(topicRepository)
+            val reply = ReplySubunit(replyRepository)
 
             return ServerContext(
                 dataStore = dataStore,
@@ -100,7 +105,8 @@ data class ServerContext(
                     websiteSession = websiteSession,
                     profile = profile,
                     collection = collection,
-                    topic = topic
+                    topic = topic,
+                    reply = reply
                 )
             )
         }
@@ -144,13 +150,14 @@ data class ServerSubunits(
     val websiteSession: WebsiteSessionSubunit,
     val profile: ProfileSubunit,
     val topic: TopicSubunit,
+    val reply: ReplySubunit,
     val collection: CollectionSubunit
 ) {
     /**
      * Return all server subunit instances.
      */
     fun all(): Set<Subunit<ServerScope>> {
-        return setOf(account, auth, creation, presence, session, websiteSession, profile, topic, collection)
+        return setOf(account, auth, creation, presence, session, websiteSession, profile, topic, reply, collection)
     }
 
     /**

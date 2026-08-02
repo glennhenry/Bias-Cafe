@@ -21,6 +21,8 @@ import project.domain.cafe.collection.CollectionSubunit
 import project.domain.cafe.collection.MongoCollectionRepository
 import project.domain.cafe.topic.MongoTopicRepository
 import project.domain.cafe.topic.TopicSubunit
+import project.domain.cafe.topic.reply.MongoReplyRepository
+import project.domain.cafe.topic.reply.ReplySubunit
 import project.domain.profile.MongoProfileRepository
 import project.domain.profile.ProfileSubunit
 import project.domain.session.MongoSessionStore
@@ -79,6 +81,9 @@ class RealContextFactory(
         val topicRepository = MongoTopicRepository(
             topicCollection = mongoDatabase.getCollection(collections.topic)
         ).also { it.awaitInit() }
+        val replyRepository = MongoReplyRepository(
+            replies = mongoDatabase.getCollection(collections.reply)
+        ).also { it.awaitInit() }
         val collectionRepository = MongoCollectionRepository(
             spaceCollection = mongoDatabase.getCollection(collections.spaces),
             sectionCollection = mongoDatabase.getCollection(collections.sections)
@@ -86,6 +91,7 @@ class RealContextFactory(
 
         val websiteSession = WebsiteSessionSubunit(appScope, TimeCenter.source, sessionStore)
         val topicSubunit = TopicSubunit(topicRepository)
+        val replySubunit = ReplySubunit(replyRepository)
         val collectionSubunit = CollectionSubunit(collectionRepository)
 
         val subunits = ServerSubunits(
@@ -98,6 +104,7 @@ class RealContextFactory(
             websiteSession = websiteSession,
             profile = profileSubunit,
             topic = topicSubunit,
+            reply = replySubunit,
             collection = collectionSubunit
         )
 
