@@ -26,7 +26,7 @@ object TopicFactory {
                 topicId = Ids.uuid(),
                 sectionId = sections.random(),
                 title = title(member),
-                author = author,
+                authorId = author,
                 content = content(member),
                 postedDate = postedDate()
             )
