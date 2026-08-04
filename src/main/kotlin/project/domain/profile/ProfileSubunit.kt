@@ -24,6 +24,42 @@ class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit
             .toOutcome { profile -> return Outcome.Ok(profile) }
     }
 
+    /**
+     * Returns an [Outcome] containing [UserSummary] of [userId].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with `null` if the user does not exist.
+     * - [Outcome.Ok] with the summary otherwise.
+     */
+    suspend fun getUserSummary(userId: UserId): Outcome<UserSummary?> {
+        return profileRepository.getUserSummary(userId)
+            .onFailure {
+                Fancam.error(it, "profile") {
+                    "getUserSummary failed: repository scandal for '$userId'"
+                }
+            }
+            .toOutcome { profile -> return Outcome.Ok(profile) }
+    }
+
+    /**
+     * Returns an [Outcome] containing a map of each `userId` in [userIds] to [UserSummary].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the map otherwise.
+     */
+    suspend fun getUserSummaries(userIds: List<UserId>): Outcome<Map<UserId, UserSummary?>> {
+        return profileRepository.getUserSummaries(userIds)
+            .onFailure {
+                Fancam.error(it, "profile") {
+                    "getUserSummaries failed: repository scandal while querying for ${userIds.peek(3).joinToString()}"
+                }
+            }
+            .toOutcome { profile -> return Outcome.Ok(profile) }
+    }
+
+    private fun <T> List<T>.peek(amount: Int): List<T> {
+        val outSize = minOf(amount, size)
+        return subList(0, outSize - 1)
+    }
+
     override suspend fun debut(scope: ServerScope): Result<Unit> {
         return runCatching { }
     }
