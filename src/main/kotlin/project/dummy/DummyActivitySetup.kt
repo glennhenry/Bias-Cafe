@@ -4,8 +4,8 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import encore.fancam.Fancam
 import encore.venue.Venue
 import project.context.ServerContext
+import project.domain.cafe.topic.Topic
 import project.mongo.RuntimeMongoCollections
-import project.mongo.collection.UserAccount
 
 /**
  * Component to prepare dummy activites for the website.
@@ -18,6 +18,8 @@ class DummyActivitySetup(
     private val serverContext: ServerContext
 ) {
     /**
+     * If the topics are less than 5:
+     *
      * Setup:
      * 1. Create 10-15 dummy accounts through with random username and email
      *    produced by [AccountFactory], and password fixed to "dummy".
@@ -25,13 +27,14 @@ class DummyActivitySetup(
      */
     suspend fun setup() {
         val numAccounts = (10..15).random()
-        val numAccountsThresholdToDummy = 5
+        val numTopicsThresholdToDummy = 5
 
         val shouldDummy = mongoDatabase
-            .getCollection<UserAccount>(RuntimeMongoCollections.userAccount)
-            .estimatedDocumentCount() < numAccountsThresholdToDummy
+            .getCollection<Topic>(RuntimeMongoCollections.topic)
+            .estimatedDocumentCount() < numTopicsThresholdToDummy
 
         if (Venue.custom.setupDummyActivity && shouldDummy) {
+            val insertedUsers = mutableListOf<String>()
             try {
                 repeat(numAccounts) {
                     val username = AccountFactory.username()
@@ -40,9 +43,12 @@ class DummyActivitySetup(
                         password = "dummy",
                         email = AccountFactory.email()
                     )
+                    insertedUsers.add(userId)
+                }
 
+                insertedUsers.forEach { userId ->
                     val numPostsEachAccounts = (5..10).random()
-                    val topics = TopicFactory.topics(username, numPostsEachAccounts)
+                    val topics = TopicFactory.topics(userId, numPostsEachAccounts)
                     for (topic in topics) {
                         serverContext.subunits.topic.addTopic(topic)
                     }

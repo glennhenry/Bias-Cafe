@@ -19,14 +19,14 @@ object TopicFactory {
         "media", "games"
     )
 
-    fun topics(author: String, amount: Int): List<Topic> {
+    fun topics(authorId: String, amount: Int): List<Topic> {
         return List(amount) {
             val member = Members.all.random()
             Topic(
                 topicId = Ids.uuid(),
                 sectionId = sections.random(),
                 title = title(member),
-                authorId = author,
+                authorId = authorId,
                 content = content(member),
                 postedDate = postedDate()
             )

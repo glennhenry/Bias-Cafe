@@ -14,7 +14,7 @@ data class CustomConfig(
     /**
      * Whether to fabricate dummy activities in the website.
      * This includes creating dummy accounts, topics, replies, etc.
-     * This will only be done if the accounts database has fewer than 5 accounts.
+     * This will only be done if the topic database has fewer than 5 topics.
      */
     @VenueKey("setupDummyActivity")
     val setupDummyActivity: Boolean = false,
