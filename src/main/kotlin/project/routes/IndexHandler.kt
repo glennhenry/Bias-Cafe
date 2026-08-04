@@ -28,6 +28,7 @@ import project.domain.cafe.toUrlSlug
 import project.domain.cafe.topic.Topic
 import project.domain.cafe.topic.TopicDeletionOutcome
 import project.domain.cafe.topic.reply.Reply
+import project.domain.profile.UserSummary
 import project.domain.session.WebsiteSessionSubunit
 import project.mongo.collection.UserAccount
 import java.text.SimpleDateFormat
@@ -91,10 +92,23 @@ data class TopicViewModel(
     val account: Account?,
     val sectionName: String,
     val topicId: String,
+    val topic: TopicData,
+    val replies: List<ReplyData>,
+    val userSummaries: Map<String, UserSummary?>
+)
+
+data class TopicData(
     val title: String,
-    val author: String,
+    val authorId: String,
     val postedDate: Long,
-    val content: String,
+    val content: String
+)
+
+data class ReplyData(
+    val replyId: String,
+    val authorId: String,
+    val postedDate: Long,
+    val content: String
 )
 
 data class ErrorModel(
@@ -241,15 +255,27 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     )
                     return@guard
                 }
+                val authors = mutableListOf(topic.authorId)
+
+                val replies = serverContext.subunits.reply.getRepliesUnder(topic.topicId).okOrNull() ?: emptyList()
+                for ((_, _, _, authorId) in replies) {
+                    authors.add(authorId)
+                }
+
+                val summary = serverContext.subunits.profile.getUserSummaries(authors).okOrThrow()
 
                 val data = TopicViewModel(
                     account = call.attributes.getProfileAndMapToAccountModel(),
                     sectionName = requireNotNull(sections[section]) { "Ensure sections contains $section" },
                     topicId = topic.topicId,
-                    title = topic.title,
-                    author = topic.authorId,
-                    postedDate = topic.postedDate,
-                    content = topic.content,
+                    topic = TopicData(
+                        title = topic.title,
+                        authorId = topic.authorId,
+                        postedDate = topic.postedDate,
+                        content = topic.content
+                    ),
+                    replies = replies.map { ReplyData(it.replyId, it.authorId, it.postedDate, it.content) },
+                    userSummaries = summary,
                 )
 
                 call.respond(ThymeleafContent("cafe/topicview", mapOf("data" to data)))
