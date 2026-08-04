@@ -1,14 +1,14 @@
 package encoreTest.account
 
 import TestCollections
-import encore.account.MongoAccountRepository
 import encore.account.Credentials
-import project.mongo.collection.UserAccount
-import encore.utils.identifier.Ids
+import encore.account.MongoAccountRepository
 import encore.utils.hash
 import initMongo
 import kotlinx.coroutines.test.runTest
-import testUtils.*
+import project.mongo.collection.UserAccount
+import testUtils.createAccount
+import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -40,7 +40,7 @@ class MongoAccountRepositoryTest {
             profile = createProfile()
         )
 
-        collection.insertMany(List(20) { account() } + account)
+        collection.insertMany(List(20) { createAccount() } + account)
 
         assertEquals(account.username, repo.getAccountByUserId(id).getOrThrow()?.username)
         assertEquals(account.userId, repo.getAccountByUsername(name).getOrThrow()?.userId)
@@ -58,14 +58,5 @@ class MongoAccountRepositoryTest {
 
         assertTrue(repo.usernameExists(name).getOrThrow())
         assertTrue(repo.emailExists(email).getOrThrow())
-    }
-
-    private fun account(): UserAccount {
-        return createAccount(Ids.uuid(), randstr(), randstr())
-    }
-
-    private val charpool = ('a'..'z').toList()
-    private fun randstr(): String {
-        return randomString(8, charpool)
     }
 }

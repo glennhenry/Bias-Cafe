@@ -4,9 +4,14 @@ import project.mongo.collection.UserAccount
 import project.mongo.collection.UserId
 import encore.time.TimeCenter
 import encore.utils.hash
+import encore.utils.identifier.Ids
 import project.domain.profile.Profile
 
-fun createAccount(userId: UserId, username: String, password: String): UserAccount {
+fun createAccount(
+    userId: UserId = Ids.uuid(),
+    username: String = randomString(8),
+    password: String = randomString(8)
+): UserAccount {
     val now = TimeCenter.now()
     return UserAccount(
         userId = userId,
@@ -20,10 +25,13 @@ fun createAccount(userId: UserId, username: String, password: String): UserAccou
     )
 }
 
-fun createProfile(): Profile {
+fun createProfile(
+    displayName: String = randomString(8),
+    avatarUrl: String = randomString(8)
+): Profile {
     return Profile(
-        displayName = "",
-        avatarUrl = "",
+        displayName = displayName,
+        avatarUrl = avatarUrl,
         level = 1
     )
 }
