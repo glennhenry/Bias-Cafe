@@ -93,20 +93,21 @@ data class TopicViewModel(
     val sectionName: String,
     val topicId: String,
     val topic: TopicData,
-    val replies: List<ReplyData>,
-    val userSummaries: Map<String, UserSummary?>
+    val replies: List<ReplyData>
 )
 
 data class TopicData(
     val title: String,
-    val authorId: String,
+    val authorDisplayName: String,
+    val authorAvatarUrl: String,
     val postedDate: Long,
     val content: String
 )
 
 data class ReplyData(
     val replyId: String,
-    val authorId: String,
+    val authorDisplayName: String,
+    val authorAvatarUrl: String,
     val postedDate: Long,
     val content: String
 )
@@ -264,18 +265,28 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
 
                 val summary = serverContext.subunits.profile.getUserSummaries(authors).okOrThrow()
 
+                val topicAuthorSummary = summary[topic.authorId]
                 val data = TopicViewModel(
                     account = call.attributes.getProfileAndMapToAccountModel(),
                     sectionName = requireNotNull(sections[section]) { "Ensure sections contains $section" },
                     topicId = topic.topicId,
                     topic = TopicData(
                         title = topic.title,
-                        authorId = topic.authorId,
+                        authorDisplayName = topicAuthorSummary?.displayName ?: "<NULL>",
+                        authorAvatarUrl = topicAuthorSummary?.avatarUrl ?: "<NULL>",
                         postedDate = topic.postedDate,
                         content = topic.content
                     ),
-                    replies = replies.map { ReplyData(it.replyId, it.authorId, it.postedDate, it.content) },
-                    userSummaries = summary,
+                    replies = replies.map {
+                        val summary = summary[it.authorId]
+                        ReplyData(
+                            replyId = it.replyId,
+                            authorDisplayName = summary?.displayName ?: "<NULL>",
+                            authorAvatarUrl = summary?.avatarUrl ?: "<NULL>",
+                            content = it.content,
+                            postedDate = it.postedDate,
+                        )
+                    }
                 )
 
                 call.respond(ThymeleafContent("cafe/topicview", mapOf("data" to data)))
