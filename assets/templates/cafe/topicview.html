@@ -164,6 +164,25 @@
                   </div>
                 </div>
               </div>
+              <div class="post-row" th:each="reply: ${data.replies}">
+                <div class="author-profile">
+                  <div class="avatar-container">
+                    <img class="avatar" style="padding: 4px;" th:src="'/' + ${reply.authorAvatarUrl}"
+                      alt="profile avatar" width="100">
+                  </div>
+                  <div class="author-info-container">
+                    <p class="author-name" th:text="${reply.authorDisplayName}"></p>
+                  </div>
+                </div>
+                <div class="post-layout">
+                  <div class="post-content-container">
+                    <p th:text="${reply.content}"></p>
+                  </div>
+                  <div class="post-info">
+                    <span class="js-format-date" th:data-raw-date="${reply.postedDate}">
+                  </div>
+                </div>
+              </div>
             </div>
             <div class="reply-section">
               <div class="reply-box">
