@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
  * system information, such as avatar, description, title, mood, etc.
  *
  * @property displayName Display name of the user.
+ * @property avatarUrl Directory path that points to the user's avatar image.
  * @property level example field
  */
 @Serializable

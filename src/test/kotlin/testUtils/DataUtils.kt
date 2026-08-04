@@ -10,7 +10,8 @@ import project.domain.profile.Profile
 fun createAccount(
     userId: UserId = Ids.uuid(),
     username: String = randomString(8),
-    password: String = randomString(8)
+    password: String = randomString(8),
+    profile: Profile = createProfile()
 ): UserAccount {
     val now = TimeCenter.now()
     return UserAccount(
@@ -21,7 +22,7 @@ fun createAccount(
         registeredAt = now,
         lastActiveAt = now,
         extra = emptyMap(),
-        profile = createProfile()
+        profile = profile
     )
 }
 
