@@ -330,9 +330,9 @@ This mean loading a topic generate multiple queries:
 2. Query replies by filtering the same topic ID. This produces N-amount of replies.
 3. Collect every unique author ID (application-level) and query the users collection to obtain their profile information.
 
-The backend summarize everything, then build the frontend model. The response to frontend would be: the topic model including title, content, and author information, a list of replies containing the reply content and author information.
+The backend summarize everything, then build the frontend model. The response to frontend would be: the topic model including title, content, and author information, a list of replies containing the reply content, author information, posted date, and a list of child replies; each child reply would also contain child reply content, author info, and posted date.
 
-The topic model can be rendered easily. The top-level replies will be rendered in the order of the posted date and they must have `parentReplyId` as `null`. Then, of all replies, filter for `parentReplyId` that matches a certain `replyId` and render the child replies.
+The topic post is rendered separately. The top-level replies will be rendered in the order of the posted date. Each top-level reply add a child reply section if the corresponding reply has any child replies.
 
 ### Mailbox (private message)
 

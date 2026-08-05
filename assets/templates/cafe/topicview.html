@@ -9,6 +9,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <title>Cafe.TopicView</title>
   <style>
+    textarea {
+      all: unset;
+    }
+
     .content {
       padding-left: 0;
     }
@@ -28,13 +32,12 @@
       border-top: 1px solid #ccc;
     }
 
-    .post-row {
+    .post {
       display: flex;
-      flex-direction: row;
       border-top: 1px solid #ccc;
     }
 
-    .post-row:last-child {
+    .post:last-child {
       border-bottom: 1px solid #ccc;
     }
 
@@ -73,29 +76,126 @@
     }
 
     .post-layout {
-      display: flex;
-      flex-direction: column;
       flex: 1;
+    }
+
+    .post-content-container:hover .post-context-actions {
+      opacity: 1;
+    }
+
+    .post-content {
+      min-height: 120px;
       padding: 8px;
+    }
+
+    .post-footer {
+      display: flex;
+      flex-direction: row;
+      align-items: end;
+      padding: 8px;
+      margin-top: 32px;
+    }
+
+    .post-context-actions {
+      display: flex;
+      flex: 1;
+      gap: 4px;
+      opacity: 0;
     }
 
     .post-info {
       text-align: end;
-      margin-top: 32px;
     }
 
-    .post-content-container {
+    .child-reply-info-row {
+      display: flex;
+      justify-content: end;
+      gap: 4px;
+    }
+
+    .child-reply-layout {
+      display: flex;
+      flex-direction: column;
+      background: aliceblue;
+      border-top: 1px solid #ccc;
+    }
+
+    .child-reply {
+      display: flex;
+      flex-direction: row;
+      gap: 4px;
+      padding: 12px;
+      padding-left: 16px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .child-reply:hover .child-reply-context-actions {
+      opacity: 1;
+    }
+
+    .child-reply-author-avatar {
+      height: max-content;
+      padding: 1px;
+      border: 1px solid #b3b3b3;
+    }
+
+    .child-reply-author-name {
+      height: max-content;
+      font-weight: bold;
+      color: #975396;
+    }
+
+    .child-reply-content-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .child-reply-content {
       flex: 1;
     }
 
-    .reply-section {
+    .child-reply-context-actions {
+      display: flex;
+      flex-direction: row;
+      justify-content: end;
+      gap: 4px;
+      opacity: 0;
+    }
+
+    .child-reply-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      gap: 8px;
+      padding: 16px;
+    }
+
+    .child-topic-reply-textarea {
+      height: 50px;
+      border: 1px solid #ccc;
+      padding: 4px;
+      padding-right: 16px;
+      overflow-wrap: break-word;
+      overflow-y: auto;
+      resize: none;
+      cursor: text;
+    }
+
+    .child-reply-publish-btn {
+      align-self: end;
+    }
+
+    .topic-reply-section {
       display: flex;
       flex-direction: column;
       gap: 8px;
       padding: 24px;
     }
 
-    .reply-box {
+    .topic-reply-box {
       min-height: 200px;
       display: flex;
       justify-content: center;
@@ -105,11 +205,7 @@
       border-radius: 4px;
     }
 
-    textarea {
-      all: unset;
-    }
-
-    .reply-textarea {
+    .topic-reply-textarea {
       box-sizing: border-box;
       width: 100%;
       min-height: 200px;
@@ -120,12 +216,12 @@
       cursor: text;
     }
 
-    .reply-btn {
+    .topic-reply-publish-btn {
       width: fit-content;
       align-self: end;
     }
 
-    #reply-status {
+    #topic-reply-status {
       color: red;
       align-self: end;
     }
@@ -145,7 +241,9 @@
               <h1 class="post-title" th:text="${data.topic.title}"></h1>
             </div>
             <div class="posts-list">
-              <div class="post-row">
+
+              <!-- Main topic -->
+              <div class="post">
                 <div class="author-profile">
                   <div class="avatar-container">
                     <img class="avatar" style="padding: 4px;" th:src="'/' + ${data.topic.authorAvatarUrl}"
@@ -157,14 +255,26 @@
                 </div>
                 <div class="post-layout">
                   <div class="post-content-container">
-                    <p th:text="${data.topic.content}"></p>
-                  </div>
-                  <div class="post-info">
-                    <span class="js-format-date" th:data-raw-date="${data.topic.postedDate}">
+                    <p class="post-content" th:text="${data.topic.content}"></p>
+                    <div class="post-footer">
+                      <div class="post-context-actions">
+                        <a href="javascript:void(0);">
+                          <img src="/icons/add.png" width="16px">
+                        </a>
+                        <a href="javascript:void(0);">
+                          <img src="/icons/delete.png" width="16px">
+                        </a>
+                      </div>
+                      <div class="post-info">
+                        <span class="js-format-date" th:data-raw-date="${data.topic.postedDate}">
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="post-row" th:each="reply: ${data.replies}">
+
+              <!-- Replies -->
+              <div class="post" th:each="reply: ${data.replies}">
                 <div class="author-profile">
                   <div class="avatar-container">
                     <img class="avatar" style="padding: 4px;" th:src="'/' + ${reply.authorAvatarUrl}"
@@ -176,24 +286,68 @@
                 </div>
                 <div class="post-layout">
                   <div class="post-content-container">
-                    <p th:text="${reply.content}"></p>
+                    <p class="post-content" th:text="${reply.content}"></p>
+                    <div class="post-footer">
+                      <div class="post-context-actions">
+                        <a href="javascript:void(0);">
+                          <img src="/icons/add.png" width="16px">
+                        </a>
+                        <a href="javascript:void(0);">
+                          <img src="/icons/delete.png" width="16px">
+                        </a>
+                      </div>
+                      <div class="post-info">
+                        <div class="child-reply-info-row">
+                          <a class="link" href="javascript:void(0)">See replies</a>
+                          <p>(1)</p>
+                          <a class="child-reply-icon" href="#" title="Reply this"
+                            data-reply-id="bc051e95-0669-40db-85ee-f51caa5806c9">
+                            <img src="/icons/reply.png" alt="delete" width="24">
+                          </a>
+                        </div>
+                        <span class="js-format-date" data-raw-date="1785823428266">2026 Aug 04 13:03</span>
+                      </div>
+                    </div>
                   </div>
-                  <div class="post-info">
-                    <span class="js-format-date" th:data-raw-date="${reply.postedDate}">
+
+                  <!-- Child replies -->
+                  <div class="child-reply-layout">
+                    <div class="child-reply">
+                      <img class="child-reply-author-avatar" src="/avatars/duck.jpg" width="40px">
+                      <a class="child-reply-author-name" href="javascript:void(0)">testacc1</a>
+                      <div class="child-reply-content-container">
+                        <p class="child-reply-content">Hello yes i like her so much too</p>
+                        <div class="child-reply-context-actions">
+                          <a href="javascript:void(0)">
+                            <img src="/icons/delete.png" width="16px">
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Reply to a child reply -->
+                    <div class="child-reply-form">
+                      <textarea class="child-topic-reply-textarea" placeholder="Write a reply..."></textarea>
+                      <button class="child-reply-publish-btn">Publish</button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="reply-section">
-              <div class="reply-box">
-                <textarea id="reply-textarea" class="reply-textarea" placeholder="Write your reply here..."
+
+            <!-- Reply to the topic -->
+            <div class="topic-reply-section">
+              <div class="topic-reply-box">
+                <textarea id="topic-reply-textarea" class="topic-reply-textarea" placeholder="Write your reply here..."
                   th:if="${data.account != null}"></textarea>
                 <p th:if="${data.account == null}">You need to <a id="register" class="link"
-                    href="/register">register</a> or <a id="login" class="link" href="/login">login</a> before posting a
+                    href="/register">register</a>
+                  or <a id="login" class="link" href="/login">login</a> before posting a
                   reply.</p>
               </div>
-              <button id="reply-btn" class="reply-btn" th:if="${data.account != null}">Reply</button>
-              <p id="reply-status" th:if="${data.account != null}"></p>
+              <button id="topic-reply-publish-btn" class="topic-reply-publish-btn"
+                th:if="${data.account != null}">Publish</button>
+              <p id="topic-reply-status" th:if="${data.account != null}"></p>
             </div>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
@@ -212,17 +366,18 @@
         $(this).text(getFormattedDate(rawDate))
       })
 
+
       $(".backlink").attr('href', new URL('..', window.location.href).href.replace(/\/$/, ''))
 
       $("#register").attr('href', `/register?return=${window.location.pathname}`)
       $("#login").attr('href', `/login?return=${window.location.pathname}`)
 
       resizeTextarea()
-      $("#reply-textarea").on("input", function () {
+      $("#topic-reply-textarea").on("input", function () {
         resizeTextarea()
       })
 
-      $("#reply-btn").click(function (event) {
+      $("#topic-reply-publish-btn").click(function (event) {
         replyListener(event)
       })
     })
@@ -258,14 +413,14 @@
     }
 
     function resizeTextarea() {
-      if ($("#reply-textarea").length > 0) {
-        $("#reply-textarea").height("0px")
-        $("#reply-textarea").height(Math.min($("#reply-textarea")[0].scrollHeight, 400) + "px")
+      if ($("#topic-reply-textarea").length > 0) {
+        $("#topic-reply-textarea").height("0px")
+        $("#topic-reply-textarea").height(Math.min($("#topic-reply-textarea")[0].scrollHeight, 400) + "px")
 
-        if ($("#reply-textarea")[0].scrollHeight > 400) {
-          $("#reply-textarea").css("overflow-y", "auto")
+        if ($("#topic-reply-textarea")[0].scrollHeight > 400) {
+          $("#topic-reply-textarea").css("overflow-y", "auto")
         } else {
-          $("#reply-textarea").css("overflow-y", "hidden")
+          $("#topic-reply-textarea").css("overflow-y", "hidden")
         }
       }
     }
@@ -273,7 +428,7 @@
     async function replyListener(event) {
       if (!checkReplyText()) return
 
-      const replyText = $("#reply-textarea").val();
+      const replyText = $("#topic-reply-textarea").val();
       const payload = { reply: replyText }
 
       try {
@@ -283,11 +438,11 @@
         })
 
         if (response.ok) {
-          $("#reply-textarea").val("")
+          $("#topic-reply-textarea").val("")
           window.location.reload()
           return
         } else if (response.status == 400) {
-          $("#reply-status").text(await response.text())
+          $("#topic-reply-status").text(await response.text())
         }
 
       } catch (err) {
@@ -301,10 +456,10 @@
     }
 
     function validateReply() {
-      const replyText = $("#reply-textarea").val();
+      const replyText = $("#topic-reply-textarea").val();
       if (replyText.length < 20) {
         isReplyValid = false;
-        $("#reply-status").text("Your reply should contains at least 20 characters.")
+        $("#topic-reply-status").text("Your reply should contains at least 20 characters.")
       } else {
         isReplyValid = true;
       }
