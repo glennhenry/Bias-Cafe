@@ -20,4 +20,28 @@ class InMemoryReplyRepository(
         replies.add(reply)
         return Result.success(Unit)
     }
+
+    override suspend fun getComments(
+        replyId: String,
+        limit: Int
+    ): Result<List<Comment>> {
+        return Result.success(
+            replies
+                .find { it.replyId == replyId }
+                ?.comments
+                ?.take(limit)
+                .orEmpty()
+        )
+    }
+
+    override suspend fun addComment(
+        replyId: String,
+        comment: Comment
+    ): Result<Unit> {
+        val reply = replies.find { it.replyId == replyId }
+            ?: return Result.failure(Exception("replyId=$replyId not found."))
+        replies.removeIf { it.replyId == replyId }
+        replies.add(reply.copy(comments = reply.comments + comment))
+        return Result.success(Unit)
+    }
 }

@@ -94,23 +94,24 @@ Cafe
       topic1:
           title: "Oh, Yujin is so pretty..."
           author: "UtokkiForever"
-		  content: "I think I have fallen for her..."
+		      content: "I think I have fallen for her..."
           reply1
             author: "ThinkingInXiao"
             content: "Yeah she is!"
-			directReplies: []
+			      comments: []
       topic2:
           title: "Yujin's Fancam Collection Help"
           author: "UtokkiForever"
-		  content: "I need help finding more fancam of her"
+		      content: "I need help finding more fancam of her"
           reply1
             author: "Yujiniee"
             content: "I have a tons! Send me a letter."
-			directReplies: [
-				author: "ThinkingInXiao"
-				content: "Give me too please"
-			]
+			      comments: [
+				      author: "ThinkingInXiao"
+				      content: "Give me too please"
+			      ]
     Xiaoting's Space
+      ...
 
   [Terrace]
     Media
@@ -121,9 +122,10 @@ Cafe
    └─ Section
        └─ Topic
             └─ Reply
+                └─ Comments
 ```
 
-The atomic unit of the cafe system is _topic_. It represents a single forum post. User create a topic with a title and content. Each post within the topic is considered a reply. The author's post itself is not considered as a reply. Each reply may have a direct reply, which is a direct respond to a single reply within a topic.
+The atomic unit of the cafe system is _topic_. It represents a single forum post. User create a topic with a title and content. Each post within the topic is considered a reply. The author's post itself is not considered as a reply. Each reply may have comments, which is a response directed to a particular reply within a topic.
 
 The forum will be divided into _spaces_, then _sections_, and finally individual topics.
 
@@ -138,8 +140,8 @@ The forum will be divided into _spaces_, then _sections_, and finally individual
   - e.g., the topic1 with title "Oh, Yujin is so pretty..."
 - Reply: unit of content within a topic.
   - e.g., reply1 in topic1 with content "Yeah she is!"
-- Direct Reply: a direct response to a reply in a post.
-  - e.g., the content "Give me too please" in reply2
+- Comments: a direct response to a reply in a post.
+  - e.g., the content "Give me too please" in topic2
 
 The internal name does not need to reflect the cosmetic name used in the application. e.g., "Yujin's Space" when technically it's a section.
 
@@ -261,9 +263,13 @@ Key points:
 
 Any character should be allowed in the topic title. Enforce a minimum of 10 characters.
 
-#### Reply
+#### Reply & Comment
 
-Topic can be replied. Each reply itself can also be replied. We call a reply to a topic as **top-level reply**, whereas a reply to another reply as **child reply**. The topic's content itself can't be child replied. Child reply can't have another child reply.
+Topic can be replied. Each reply itself can also be replied. We call a reply to a topic simply as **reply**, whereas a reply to another reply as **comment**.
+
+Adding another reply just to respond to one of the topic's reply can make the post get out of context — comment is created for that. Comment is a direct response to a particular reply in the post.
+
+The topic itself can't be commented — as it should be published as a normal reply instead. The comment contains a flat structure of responses. In other word, a comment can't be replied or be commented further. User can respond to a comment by writing another comment and tagging the user, but not creating another dedicated section. Comments on a reply is limited to the amount of 20.
 
 Replies are stored in a separate collection from topic, modeled like:
 
@@ -272,21 +278,18 @@ replies: [
   {
     replyId: "fd7a9a4a-8dca-4d36-96a2-06b55fb20055",
     topicId: "5e60734a-e538-4415-b9f4-4ac2ce7f687e",
-    parentReplyId: null,
     authorId: "b6718f06-cdea-4290-a8a8-c3f55b899b97",
-    content: "I have a tons! Send me a letter."
+    content: "I have a tons! Send me a letter.",
+    comments: [
+      commentId: "30b35baf-646d-4ce5-ae5d-0c69bb8488c6",
+      authorId: "d1b9829f-a179-41b6-b3e3-100da391afbd",
+      content: "Give me too please."
+    ]
   },
-  {
-    replyId: "60d88da6-f41d-4d97-be19-49778a90ad5b",
-    topicId: "5e60734a-e538-4415-b9f4-4ac2ce7f687e",
-    parentReplyId: "fd7a9a4a-8dca-4d36-96a2-06b55fb20055",
-    authorId: "d1b9829f-a179-41b6-b3e3-100da391afbd",
-    content: "Give me too please."
-  }
 ]
 ```
 
-Here, since child reply can't have another reply, `parentReplyId` is only a single, nullable UUID referring to any `replyId`. The `topicId` of them must be same.
+Since comments are limited, for simplicity, they are embedded directly in the replies.
 
 For example, the users:
 
@@ -314,25 +317,25 @@ Overall, it will be displayed like:
 
 "I have a tons! Send me a letter." — "yujinnie"
  ├─ "Give me too please." — "thinking_in_xiao"
- └─ "Another child reply..." — "some_username"
+ └─ "Another comment..." — "some_username"
 
-"another top-level reply"  — "some_username"
+"another reply"  — "some_username"
 
-"another top-level reply"  — "some_username"
- ├─ "Another child reply..." — "some_username"
- ├─ "Another child reply..." — "some_username"
- └─ "Another child reply..." — "some_username"
+"another reply"  — "some_username"
+ ├─ "Another comment..." — "some_username"
+ ├─ "Another comment..." — "some_username"
+ └─ "Another comment..." — "some_username"
 ```
 
 This mean loading a topic generate multiple queries:
 
-1. Query topic by the short ID. This gives topic ID, title, author ID, and content.
-2. Query replies by filtering the same topic ID. This produces N-amount of replies.
+1. Query topic by the short ID. This gives the full topic ID, title, author ID, and content.
+2. Query replies by filtering the same topic ID. This produces N-amount of replies including its comments.
 3. Collect every unique author ID (application-level) and query the users collection to obtain their profile information.
 
-The backend summarize everything, then build the frontend model. The response to frontend would be: the topic model including title, content, and author information, a list of replies containing the reply content, author information, posted date, and a list of child replies; each child reply would also contain child reply content, author info, and posted date.
+The backend query, summarize everything, and build the frontend model. The response to frontend would be: the topic model including title, content, and author information, a list of replies containing the reply content, author information, posted date, and a list of comments; each comment would also contain the content, author info, and posted date.
 
-The topic post is rendered separately. The top-level replies will be rendered in the order of the posted date. Each top-level reply add a child reply section if the corresponding reply has any child replies.
+The topic post is rendered separately. The replies will be rendered in the order of the posted date. Each reply add a comment section if the corresponding reply has any comments.
 
 ### Mailbox (private message)
 

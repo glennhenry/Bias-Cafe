@@ -63,6 +63,67 @@ class ReplySubunit(private val replyRepository: ReplyRepository) : Subunit<Serve
             .toReport()
     }
 
+    /**
+     * Returns an [Outcome] containing the comment identified by [commentId]
+     * which exists under the reply identified by [replyId].
+     *
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the comment, or null if it's not found.
+     */
+    suspend fun getCommentById(replyId: String, commentId: String): Outcome<Comment?> {
+        return replyRepository.getComments(replyId, 20)
+            .onFailure {
+                if (it !is DocumentNotFoundException) {
+                    Fancam.error(it, "reply") {
+                        "getCommentById query failed for replyId=$replyId"
+                    }
+                } else {
+                    Fancam.warn("reply") {
+                        "getCommentById reply not found for replyId=$replyId"
+                    }
+                }
+            }
+            .toOutcome { comments -> comments.find { it.commentId == commentId } }
+    }
+
+    /**
+     * Returns an [Outcome] containing the comments under [replyId] limited by 20.
+     * The limit is capped at 20, which is also the maximum number of comments
+     * of a reply.
+     *
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the replies, or empty.
+     */
+    suspend fun getCommentsUnder(replyId: String, limit: Int): Outcome<List<Comment>> {
+        return replyRepository.getComments(replyId, minOf(20, limit))
+            .onFailure {
+                Fancam.error(it, "reply") {
+                    "getCommentsUnder query failed for replyId=$replyId"
+                }
+            }
+            .toOutcome { it }
+    }
+
+    /**
+     * Add the [comment] to the reply identified by [replyId].
+     * @return [Report] type denoting success or failure.
+     */
+    suspend fun addComment(replyId: String, comment: Comment): Report {
+        return replyRepository.addComment(replyId, comment)
+            .onFailure {
+                if (it !is DocumentNotFoundException) {
+                    Fancam.error(it, "reply") {
+                        "addComment query failed for replyId=$replyId with comment=$comment"
+                    }
+                } else {
+                    Fancam.warn("reply") {
+                        "addComment reply not found for replyId=$replyId"
+                    }
+                }
+            }
+            .toReport()
+    }
+
     override suspend fun debut(scope: ServerScope): Result<Unit> {
         return runCatching { }
     }

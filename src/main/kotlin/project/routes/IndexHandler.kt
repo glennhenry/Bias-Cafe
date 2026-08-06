@@ -322,10 +322,10 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val reply = Reply(
                     replyId = replyId,
                     topicId = topicId,
-                    parentReplyId = null,
                     authorId = call.attributes.getAccount().userId,
                     content = replyPayload.reply,
                     postedDate = TimeCenter.now(),
+                    comments = emptyList()
                 )
 
                 serverContext.subunits.reply.addReply(reply)
