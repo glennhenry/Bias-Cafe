@@ -70,6 +70,7 @@
       display: -webkit-box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 4;
+      line-clamp: 4;
       overflow-wrap: anywhere;
       word-break: normal;
       overflow: hidden;
@@ -298,8 +299,9 @@
                       </div>
                       <div class="post-info">
                         <div class="child-reply-info-row">
-                          <a class="link" href="javascript:void(0)">See replies</a>
-                          <p>(1)</p>
+                          <a class="link" href="javascript:void(0)"
+                            th:text="${#lists.isEmpty(reply.comments) ? '' : 'Collapse'}"></a>
+                          <p th:text="'(' + ${#lists.size(reply.comments)} + ')'"></p>
                           <a class="child-reply-icon" href="javascript:void(0)" title="Add a comment"
                             data-reply-id="bc051e95-0669-40db-85ee-f51caa5806c9">
                             <img src="/icons/chat.png" alt="Chat bubble" width="24">
@@ -311,12 +313,13 @@
                   </div>
 
                   <!-- Child replies -->
-                  <div class="child-reply-layout">
-                    <div class="child-reply">
-                      <img class="child-reply-author-avatar" src="/avatars/duck.jpg" width="40px">
-                      <a class="child-reply-author-name" href="javascript:void(0)">testacc1</a>
+                  <div class="child-reply-layout" th:unless="${#lists.isEmpty(reply.comments)}">
+                    <div class="child-reply" th:each="comment: ${reply.comments}">
+                      <img class="child-reply-author-avatar" th:src="'/' + ${comment.authorAvatarUrl}" width="40px">
+                      <a class="child-reply-author-name" href="javascript:void(0)"
+                        th:text="${comment.authorDisplayName}"></a>
                       <div class="child-reply-content-container">
-                        <p class="child-reply-content">Hello yes i like her so much too</p>
+                        <p class="child-reply-content" th:text="${comment.content}"></p>
                         <div class="child-reply-context-actions">
                           <a href="javascript:void(0)" title="Report this comment">
                             <img src="/icons/danger.png" alt="Danger sign" width="20px">

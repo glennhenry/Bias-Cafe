@@ -28,11 +28,9 @@ import project.domain.cafe.toUrlSlug
 import project.domain.cafe.topic.Topic
 import project.domain.cafe.topic.TopicDeletionOutcome
 import project.domain.cafe.topic.reply.Reply
-import project.domain.profile.UserSummary
 import project.domain.session.WebsiteSessionSubunit
 import project.mongo.collection.UserAccount
 import java.text.SimpleDateFormat
-import kotlin.String
 
 data class Account(
     val username: String,
@@ -268,7 +266,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val authors = mutableListOf(topic.authorId)
 
                 val replies = serverContext.subunits.reply.getRepliesUnder(topic.topicId).okOrNull() ?: emptyList()
-                for ((_, _, _, authorId, _, comments) in replies) {
+                for ((_, _, authorId, _, _, comments) in replies) {
                     authors.add(authorId)
                     for ((_, authorId2) in comments) {
                         authors.add(authorId2)
