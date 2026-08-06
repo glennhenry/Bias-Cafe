@@ -226,6 +226,10 @@
       color: red;
       align-self: end;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 
@@ -299,8 +303,9 @@
                       </div>
                       <div class="post-info">
                         <div class="child-reply-info-row">
-                          <a class="link" href="javascript:void(0)"
-                            th:text="${#lists.isEmpty(reply.comments) ? '' : 'Collapse'}"></a>
+                          <a class="link see-comment" href="javascript:void(0)"
+                            th:text="${#lists.isEmpty(reply.comments) ? '' : 'Collapse'}"
+                            th:data-child-replyid="${reply.replyId}"></a>
                           <p th:text="'(' + ${#lists.size(reply.comments)} + ')'"></p>
                           <a class="child-reply-icon" href="javascript:void(0)" title="Add a comment"
                             data-reply-id="bc051e95-0669-40db-85ee-f51caa5806c9">
@@ -313,7 +318,8 @@
                   </div>
 
                   <!-- Child replies -->
-                  <div class="child-reply-layout" th:unless="${#lists.isEmpty(reply.comments)}">
+                  <div class="child-reply-layout" th:unless="${#lists.isEmpty(reply.comments)}"
+                    th:data-child-replyid="${reply.replyId}">
                     <div class="child-reply" th:each="comment: ${reply.comments}">
                       <img class="child-reply-author-avatar" th:src="'/' + ${comment.authorAvatarUrl}" width="40px">
                       <a class="child-reply-author-name" href="javascript:void(0)"
@@ -381,6 +387,27 @@
 
       $("#topic-reply-publish-btn").click(function (event) {
         replyListener(event)
+      })
+
+      // install a click listener on each 'collapse' action button
+      $(".see-comment").each(function () {
+        $(this).click(function () {
+          // lookup to find which reply is that collapse button associated with
+          const replyId = $(this).attr("data-child-replyid")
+
+          // find the child reply layout that also associate the same replyId
+          const el = $(`.child-reply-layout[data-child-replyid="${replyId}"]`)
+
+          // hide/show the layout
+          el.toggleClass("hidden")
+
+          // update the text of the action button
+          if (el.hasClass("hidden")) {
+            $(this).text("See comments")
+          } else {
+            $(this).text("Collapse")
+          }
+        })
       })
     })
 
