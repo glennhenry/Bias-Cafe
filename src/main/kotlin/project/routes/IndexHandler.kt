@@ -109,6 +109,15 @@ data class ReplyData(
     val authorDisplayName: String,
     val authorAvatarUrl: String,
     val postedDate: Long,
+    val content: String,
+    val comments: List<CommentData>
+)
+
+data class CommentData(
+    val commentId: String,
+    val authorDisplayName: String,
+    val authorAvatarUrl: String,
+    val postedDate: Long,
     val content: String
 )
 
@@ -259,32 +268,45 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 val authors = mutableListOf(topic.authorId)
 
                 val replies = serverContext.subunits.reply.getRepliesUnder(topic.topicId).okOrNull() ?: emptyList()
-                for ((_, _, _, authorId) in replies) {
+                for ((_, _, _, authorId, _, comments) in replies) {
                     authors.add(authorId)
+                    for ((_, authorId2) in comments) {
+                        authors.add(authorId2)
+                    }
                 }
 
-                val summary = serverContext.subunits.profile.getUserSummaries(authors).okOrThrow()
+                val summaries = serverContext.subunits.profile.getUserSummaries(authors.distinct()).okOrThrow()
 
-                val topicAuthorSummary = summary[topic.authorId]
+                val topicAuthorSummary = summaries[topic.authorId]
                 val data = TopicViewModel(
                     account = call.attributes.getProfileAndMapToAccountModel(),
                     sectionName = requireNotNull(sections[section]) { "Ensure sections contains $section" },
                     topicId = topic.topicId,
                     topic = TopicData(
                         title = topic.title,
-                        authorDisplayName = topicAuthorSummary?.displayName ?: "<NULL>",
-                        authorAvatarUrl = topicAuthorSummary?.avatarUrl ?: "<NULL>",
+                        authorDisplayName = topicAuthorSummary?.displayName ?: "<topicAuthor.displayName:null>",
+                        authorAvatarUrl = topicAuthorSummary?.avatarUrl ?: "<topicAuthor.avatarUrl:null>",
                         postedDate = topic.postedDate,
                         content = topic.content
                     ),
                     replies = replies.map {
-                        val summary = summary[it.authorId]
+                        val replyAuthorSummary = summaries[it.authorId]
                         ReplyData(
                             replyId = it.replyId,
-                            authorDisplayName = summary?.displayName ?: "<NULL>",
-                            authorAvatarUrl = summary?.avatarUrl ?: "<NULL>",
+                            authorDisplayName = replyAuthorSummary?.displayName ?: "<replyAuthor.displayName:null>",
+                            authorAvatarUrl = replyAuthorSummary?.avatarUrl ?: "<replyAuthor.avatarUrl:null>",
                             content = it.content,
                             postedDate = it.postedDate,
+                            comments = it.comments.map { comment ->
+                                val commentAuthorSummary = summaries[comment.authorId]
+                                CommentData(
+                                    commentId = comment.commentId,
+                                    authorDisplayName = commentAuthorSummary?.displayName ?: "<commentAuthor.displayName:null>",
+                                    authorAvatarUrl = commentAuthorSummary?.avatarUrl ?: "<commentAuthor.avatarUrl:null>",
+                                    postedDate = comment.postedDate,
+                                    content = comment.content
+                                )
+                            }
                         )
                     }
                 )
