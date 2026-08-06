@@ -258,11 +258,11 @@
                     <p class="post-content" th:text="${data.topic.content}"></p>
                     <div class="post-footer">
                       <div class="post-context-actions">
-                        <a href="javascript:void(0);">
-                          <img src="/icons/add.png" width="16px">
+                        <a href="javascript:void(0);" title="Report this post">
+                          <img src="/icons/danger.png" alt="Danger sign" width="24px">
                         </a>
-                        <a href="javascript:void(0);">
-                          <img src="/icons/delete.png" width="16px">
+                        <a href="javascript:void(0);" title="Share">
+                          <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
                         </a>
                       </div>
                       <div class="post-info">
@@ -289,20 +289,20 @@
                     <p class="post-content" th:text="${reply.content}"></p>
                     <div class="post-footer">
                       <div class="post-context-actions">
-                        <a href="javascript:void(0);">
-                          <img src="/icons/add.png" width="16px">
+                        <a href="javascript:void(0);" title="Report this post">
+                          <img src="/icons/danger.png" alt="Danger sign" width="24px">
                         </a>
-                        <a href="javascript:void(0);">
-                          <img src="/icons/delete.png" width="16px">
+                        <a href="javascript:void(0);" title="Share">
+                          <img src="/icons/share.png" alt="Blue arrow pointing right" width="24px">
                         </a>
                       </div>
                       <div class="post-info">
                         <div class="child-reply-info-row">
                           <a class="link" href="javascript:void(0)">See replies</a>
                           <p>(1)</p>
-                          <a class="child-reply-icon" href="#" title="Reply this"
+                          <a class="child-reply-icon" href="javascript:void(0)" title="Add a comment"
                             data-reply-id="bc051e95-0669-40db-85ee-f51caa5806c9">
-                            <img src="/icons/reply.png" alt="delete" width="24">
+                            <img src="/icons/chat.png" alt="Chat bubble" width="24">
                           </a>
                         </div>
                         <span class="js-format-date" data-raw-date="1785823428266">2026 Aug 04 13:03</span>
@@ -318,8 +318,8 @@
                       <div class="child-reply-content-container">
                         <p class="child-reply-content">Hello yes i like her so much too</p>
                         <div class="child-reply-context-actions">
-                          <a href="javascript:void(0)">
-                            <img src="/icons/delete.png" width="16px">
+                          <a href="javascript:void(0)" title="Report this comment">
+                            <img src="/icons/danger.png" alt="Danger sign" width="20px">
                           </a>
                         </div>
                       </div>
@@ -365,7 +365,6 @@
         const rawDate = $(this).attr('data-raw-date')
         $(this).text(getFormattedDate(rawDate))
       })
-
 
       $(".backlink").attr('href', new URL('..', window.location.href).href.replace(/\/$/, ''))
 
