@@ -527,7 +527,7 @@
         })
 
         if (response.ok) {
-          $(`.comment-textarea[data-comment-id=${commentId}]`).val("")
+          $(`.comment-textarea[data-comment-textarea-id=${commentId}]`).val("")
           window.location.reload()
           return
         } else if (response.status == 400) {

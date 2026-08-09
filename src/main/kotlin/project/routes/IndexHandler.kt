@@ -27,6 +27,7 @@ import project.context.ServerContext
 import project.domain.cafe.toUrlSlug
 import project.domain.cafe.topic.Topic
 import project.domain.cafe.topic.TopicDeletionOutcome
+import project.domain.cafe.topic.reply.Comment
 import project.domain.cafe.topic.reply.Reply
 import project.domain.session.WebsiteSessionSubunit
 import project.mongo.collection.UserAccount
@@ -151,6 +152,11 @@ data class LoginModel(
 @Serializable
 data class ReplyPayload(
     val reply: String
+)
+
+@Serializable
+data class CommentPayload(
+    val comment: String
 )
 
 class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
@@ -299,8 +305,10 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                                 val commentAuthorSummary = summaries[comment.authorId]
                                 CommentData(
                                     commentId = comment.commentId,
-                                    authorDisplayName = commentAuthorSummary?.displayName ?: "<commentAuthor.displayName:null>",
-                                    authorAvatarUrl = commentAuthorSummary?.avatarUrl ?: "<commentAuthor.avatarUrl:null>",
+                                    authorDisplayName = commentAuthorSummary?.displayName
+                                        ?: "<commentAuthor.displayName:null>",
+                                    authorAvatarUrl = commentAuthorSummary?.avatarUrl
+                                        ?: "<commentAuthor.avatarUrl:null>",
                                     postedDate = comment.postedDate,
                                     content = comment.content
                                 )
@@ -355,6 +363,48 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     }
 
                 Fancam.debug { "Created new replyId=$replyId" }
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+
+        post("/cafe/{section}/{id}/{title}/{replyId}") {
+            guard(call, requireAccountGuard) {
+                val section = requireNotNull(call.request.pathVariables["section"])
+                if (!sections.contains(section)) {
+                    call.sectionNotFound()
+                    return@guard
+                }
+
+                val replyId = requireNotNull(call.request.pathVariables["replyId"])
+                val reply = serverContext.subunits.reply.getReply(replyId).okOrNull() ?: run {
+                    call.respond(HttpStatusCode.NotFound, "reply not found")
+                    return@guard
+                }
+
+                val commentPayload = JSON.decode<CommentPayload>(call.receiveText())
+                if (commentPayload.comment.length < 10) {
+                    call.respond(
+                        HttpStatusCode.BadRequest,
+                        "Comment should be at least contains 10 characters."
+                    )
+                    return@guard
+                }
+
+                val commentId = Ids.uuid()
+                val comment = Comment(
+                    commentId = commentId,
+                    authorId = call.attributes.getAccount().userId,
+                    content = commentPayload.comment,
+                    postedDate = TimeCenter.now()
+                )
+
+                serverContext.subunits.reply.addComment(replyId, comment)
+                    .onFail {
+                        call.respond(HttpStatusCode.InternalServerError, "Failed to post comment")
+                        return@guard
+                    }
+
+                Fancam.debug { "Created new commentId=$commentId" }
                 call.respond(HttpStatusCode.OK)
             }
         }
