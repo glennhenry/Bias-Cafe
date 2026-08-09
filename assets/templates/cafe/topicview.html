@@ -189,6 +189,11 @@
       align-self: end;
     }
 
+    #comment-status {
+      color: red;
+      align-self: end;
+    }
+
     .topic-reply-section {
       display: flex;
       flex-direction: column;
@@ -338,7 +343,8 @@
                     <div class="comment-form">
                       <textarea class="comment-textarea" placeholder="Write a reply..."
                         th:data-comment-textarea-id="${reply.replyId}"></textarea>
-                      <button class="comment-publish-btn">Publish</button>
+                      <button class="comment-publish-btn" th:data-comment-id="${reply.replyId}">Publish</button>
+                      <p id="comment-status" th:data-comment-id="${reply.replyId}"></p>
                     </div>
                   </div>
                 </div>
@@ -417,6 +423,10 @@
 
           textarea.focus()
         })
+      })
+
+      $(".comment-publish-btn").click(function (event) {
+        commentListener(event, $(this).attr("data-comment-id"))
       })
     })
 
@@ -500,6 +510,42 @@
         $("#topic-reply-status").text("Your reply should contains at least 20 characters.")
       } else {
         isReplyValid = true;
+        $("#topic-reply-status").text("")
+      }
+    }
+
+    async function commentListener(event, commentId) {
+      const commentText = $(`.comment-textarea[data-comment-textarea-id=${commentId}]`).val();
+      if (!checkCommentText(commentId, commentText)) return
+
+      const payload = { comment: commentText }
+
+      try {
+        const response = await fetch(`${window.location.href}/${commentId}`, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        })
+
+        if (response.ok) {
+          $(`.comment-textarea[data-comment-id=${commentId}]`).val("")
+          window.location.reload()
+          return
+        } else if (response.status == 400) {
+          $("#comment-status").text(await response.text())
+        }
+
+      } catch (err) {
+        console.error("Comment error: ", err)
+      }
+    }
+
+    function checkCommentText(commentId, commentText) {
+      if (commentText.length < 10) {
+        $(`#comment-status[data-comment-id=${commentId}]`).text("Your comment should contains at least 10 characters.")
+        return false
+      } else {
+        $(`#comment-status[data-comment-id=${commentId}]`).text("")
+        return true
       }
     }
   </script>
