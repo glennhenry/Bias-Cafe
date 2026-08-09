@@ -44,12 +44,6 @@ data class LobbyModel(
     val bias: String = ""
 )
 
-data class CafeInsideModel(
-    val account: Account?,
-    val sectionId: String,
-    val topics: List<TopicModel> = emptyList()
-)
-
 data class CafeLandingModel(
     val account: Account?,
     val spaces: List<SpaceItem>,
@@ -79,11 +73,17 @@ data class PostPayload(
     val content: String
 )
 
+data class TopicListModel(
+    val account: Account?,
+    val sectionId: String,
+    val topics: List<TopicModel> = emptyList()
+)
+
 data class TopicModel(
     val topicId: String,
     val link: String,
     val title: String,
-    val author: String,
+    val authorName: String,
     val postedDate: Long
 )
 
@@ -225,7 +225,14 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
-                val data = CafeInsideModel(
+                val summaries = serverContext.subunits.profile
+                    .getUserSummaries(topics.map { it.authorId })
+                    .okOrNull() ?: run {
+                    call.respond(HttpStatusCode.InternalServerError, "internal server error")
+                    return@guard
+                }
+
+                val data = TopicListModel(
                     account = call.attributes.getProfileAndMapToAccountModel(),
                     sectionId = section,
                     topics = topics.map {
@@ -233,7 +240,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                             topicId = it.topicId,
                             link = "${section}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
                             title = it.title,
-                            author = it.authorId,
+                            authorName = summaries[it.authorId]?.displayName ?: "<authorName:null>",
                             postedDate = it.postedDate
                         )
                     }
