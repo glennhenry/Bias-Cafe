@@ -16,6 +16,14 @@ class InMemoryReplyRepository(
         return Result.success(replies.filter { it.topicId == topicId })
     }
 
+    override suspend fun getReplyCount(topicId: String): Result<Int?> {
+        return Result.success(replies.count { it.topicId == topicId })
+    }
+
+    override suspend fun getReplyCounts(topicIds: List<String>): Result<Map<String, Int?>> {
+        return Result.success(replies.groupingBy { it.topicId }.eachCount())
+    }
+
     override suspend fun addReply(reply: Reply): Result<Unit> {
         replies.add(reply)
         return Result.success(Unit)

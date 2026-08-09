@@ -31,6 +31,27 @@ interface ReplyRepository {
     suspend fun getRepliesUnder(topicId: String): Result<List<Reply>>
 
     /**
+     * Get the amount of replies under certain topic identified by its [topicId].
+     *
+     * Returns:
+     * - [Result.success] with the count or `null` if topic is not found.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getReplyCount(topicId: String): Result<Int?>
+
+    /**
+     * Get the amount of replies under each `topicId` of [topicIds].
+     *
+     * The map guarantees all `topicId` to be present, but any of these may
+     * point to a nullable value when the `topicId` isn't found.
+     *
+     * Returns:
+     * - [Result.success] with a map of each `topicId` to the count.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getReplyCounts(topicIds: List<String>): Result<Map<String, Int?>>
+
+    /**
      * Add the [reply].
      *
      * Returns:

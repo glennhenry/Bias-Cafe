@@ -8,6 +8,7 @@ import encore.utils.types.Outcome
 import encore.utils.types.Report
 import encore.utils.types.toOutcome
 import encore.utils.types.toReport
+import project.utils.peek
 
 /**
  * Server subunits that handles [Reply] concerns from [ReplyRepository].
@@ -47,6 +48,40 @@ class ReplySubunit(private val replyRepository: ReplyRepository) : Subunit<Serve
                 }
             }
             .toOutcome { replies -> return Outcome.Ok(replies) }
+    }
+
+    /**
+     * Returns an [Outcome] containing the reply count of [topicId].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the count or `null` if the topic is not found.
+     */
+    suspend fun getReplyCount(topicId: String): Outcome<Int?> {
+        return replyRepository.getReplyCount(topicId)
+            .onFailure {
+                Fancam.error(it, "reply") {
+                    "getReplyCount query failed for topicId=$topicId"
+                }
+            }
+            .toOutcome { count -> return Outcome.Ok(count) }
+    }
+
+    /**
+     * Returns an [Outcome] containing a map of each `topicId` in [topicIds]
+     * to their reply count. Every `topicId` is guaranteed to be in the map,
+     * but they may point to a `null` value if the `topicId` is not found.
+     *
+     * Returns
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with the map.
+     */
+    suspend fun getReplyCounts(topicIds: List<String>): Outcome<Map<String, Int?>> {
+        return replyRepository.getReplyCounts(topicIds)
+            .onFailure {
+                Fancam.error(it, "reply") {
+                    "getReplyCounts query failed for topicIds=${topicIds.peek(3).joinToString()}"
+                }
+            }
+            .toOutcome { count -> return Outcome.Ok(count) }
     }
 
     /**

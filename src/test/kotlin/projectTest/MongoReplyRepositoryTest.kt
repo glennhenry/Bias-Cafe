@@ -44,7 +44,7 @@ class MongoReplyRepositoryTest {
                 Comment("comment6", "author6", "hello world 6", 0),
             )
         )
-        collection.insertMany(createReply(10) + createReply(10, "fixedTopicId") + targetReply)
+        collection.insertMany(createReply(10, "yesyes") + createReply(10, "fixedTopicId") + targetReply)
 
         // tests
         // 1. getReply
@@ -53,11 +53,20 @@ class MongoReplyRepositoryTest {
         // 2. getRepliesUnder
         assertEquals(11, repo.getRepliesUnder("fixedTopicId").getOrNull()?.size)
 
-        // 3. addReply
+        // 3. getReplyCount
+        assertEquals(11, repo.getReplyCount(topicId = "fixedTopicId").getOrThrow())
+
+        // 4. getReplyCounts
+        assertTrue {
+            val x = repo.getReplyCounts(listOf("fixedTopicId", "yesyes")).getOrThrow()
+            x["fixedTopicId"]!! == 11 && x["yesyes"]!! == 10
+        }
+
+        // 5. addReply
         assertNotNull(repo.addReply(Reply("asdf", "asdf", "asdf", "asdf", 0, emptyList())).getOrNull())
         assertNotNull(repo.getReply("asdf").getOrNull())
 
-        // 4. getComments
+        // 6. getComments
         assertTrue {
             val x = repo.getComments(id, 3).getOrThrow()
             x.find { it.commentId == "comment1" } != null &&

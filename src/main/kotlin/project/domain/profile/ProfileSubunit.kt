@@ -6,6 +6,7 @@ import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.Outcome
 import encore.utils.types.toOutcome
+import project.utils.peek
 
 class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit<ServerScope> {
     /**
@@ -53,11 +54,6 @@ class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit
                 }
             }
             .toOutcome { profile -> return Outcome.Ok(profile) }
-    }
-
-    private fun <T> List<T>.peek(amount: Int): List<T> {
-        val outSize = minOf(amount, size)
-        return subList(0, outSize - 1)
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> {
