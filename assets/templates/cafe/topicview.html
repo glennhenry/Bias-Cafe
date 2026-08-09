@@ -108,20 +108,20 @@
       text-align: end;
     }
 
-    .child-reply-info-row {
+    .comment-info-row {
       display: flex;
       justify-content: end;
       gap: 4px;
     }
 
-    .child-reply-layout {
+    .comment-layout {
       display: flex;
       flex-direction: column;
       background: aliceblue;
       border-top: 1px solid #ccc;
     }
 
-    .child-reply {
+    .comment {
       display: flex;
       flex-direction: row;
       gap: 4px;
@@ -130,34 +130,34 @@
       border-bottom: 1px solid #ccc;
     }
 
-    .child-reply:hover .child-reply-context-actions {
+    .comment:hover .comment-context-actions {
       opacity: 1;
     }
 
-    .child-reply-author-avatar {
+    .comment-author-avatar {
       height: max-content;
       padding: 1px;
       border: 1px solid #b3b3b3;
     }
 
-    .child-reply-author-name {
+    .comment-author-name {
       height: max-content;
       font-weight: bold;
       color: #975396;
     }
 
-    .child-reply-content-container {
+    .comment-content-container {
       width: 100%;
       display: flex;
       flex-direction: column;
       gap: 4px;
     }
 
-    .child-reply-content {
+    .comment-content {
       flex: 1;
     }
 
-    .child-reply-context-actions {
+    .comment-context-actions {
       display: flex;
       flex-direction: row;
       justify-content: end;
@@ -165,7 +165,7 @@
       opacity: 0;
     }
 
-    .child-reply-form {
+    .comment-form {
       width: 100%;
       display: flex;
       flex-direction: column;
@@ -174,7 +174,7 @@
       padding: 16px;
     }
 
-    .child-topic-reply-textarea {
+    .comment-textarea {
       height: 50px;
       border: 1px solid #ccc;
       padding: 4px;
@@ -185,7 +185,7 @@
       cursor: text;
     }
 
-    .child-reply-publish-btn {
+    .comment-publish-btn {
       align-self: end;
     }
 
@@ -302,13 +302,13 @@
                         </a>
                       </div>
                       <div class="post-info">
-                        <div class="child-reply-info-row">
+                        <div class="comment-info-row">
                           <a class="link see-comment" href="javascript:void(0)"
-                            th:text="${#lists.isEmpty(reply.comments) ? '' : 'Collapse'}"
-                            th:data-child-replyid="${reply.replyId}"></a>
+                            th:text="${#lists.isEmpty(reply.comments) ? 'See comments' : 'Collapse'}"
+                            th:data-comment-id="${reply.replyId}"></a>
                           <p th:text="'(' + ${#lists.size(reply.comments)} + ')'"></p>
-                          <a class="child-reply-icon" href="javascript:void(0)" title="Add a comment"
-                            data-reply-id="bc051e95-0669-40db-85ee-f51caa5806c9">
+                          <a class="comment-icon" href="javascript:void(0)" title="Add a comment"
+                            th:data-comment-textarea-id="${reply.replyId}">
                             <img src="/icons/chat.png" alt="Chat bubble" width="24">
                           </a>
                         </div>
@@ -317,16 +317,16 @@
                     </div>
                   </div>
 
-                  <!-- Child replies -->
-                  <div class="child-reply-layout" th:unless="${#lists.isEmpty(reply.comments)}"
-                    th:data-child-replyid="${reply.replyId}">
-                    <div class="child-reply" th:each="comment: ${reply.comments}">
-                      <img class="child-reply-author-avatar" th:src="'/' + ${comment.authorAvatarUrl}" width="40px">
-                      <a class="child-reply-author-name" href="javascript:void(0)"
+                  <!-- Comments -->
+                  <div class="comment-layout" th:classappend="${#lists.isEmpty(reply.comments)} ? 'hidden'"
+                    th:data-comment-id="${reply.replyId}">
+                    <div class="comment" th:each="comment: ${reply.comments}">
+                      <img class="comment-author-avatar" th:src="'/' + ${comment.authorAvatarUrl}" width="40px">
+                      <a class="comment-author-name" href="javascript:void(0)"
                         th:text="${comment.authorDisplayName}"></a>
-                      <div class="child-reply-content-container">
-                        <p class="child-reply-content" th:text="${comment.content}"></p>
-                        <div class="child-reply-context-actions">
+                      <div class="comment-content-container">
+                        <p class="comment-content" th:text="${comment.content}"></p>
+                        <div class="comment-context-actions">
                           <a href="javascript:void(0)" title="Report this comment">
                             <img src="/icons/danger.png" alt="Danger sign" width="20px">
                           </a>
@@ -335,9 +335,10 @@
                     </div>
 
                     <!-- Reply to a child reply -->
-                    <div class="child-reply-form">
-                      <textarea class="child-topic-reply-textarea" placeholder="Write a reply..."></textarea>
-                      <button class="child-reply-publish-btn">Publish</button>
+                    <div class="comment-form">
+                      <textarea class="comment-textarea" placeholder="Write a reply..."
+                        th:data-comment-textarea-id="${reply.replyId}"></textarea>
+                      <button class="comment-publish-btn">Publish</button>
                     </div>
                   </div>
                 </div>
@@ -389,24 +390,32 @@
         replyListener(event)
       })
 
-      // install a click listener on each 'collapse' action button
+      // Show or hide comments
       $(".see-comment").each(function () {
         $(this).click(function () {
-          // lookup to find which reply is that collapse button associated with
-          const replyId = $(this).attr("data-child-replyid")
-
-          // find the child reply layout that also associate the same replyId
-          const el = $(`.child-reply-layout[data-child-replyid="${replyId}"]`)
-
-          // hide/show the layout
+          const commentId = $(this).attr("data-comment-id")
+          const el = $(`.comment-layout[data-comment-id="${commentId}"]`)
           el.toggleClass("hidden")
-
-          // update the text of the action button
           if (el.hasClass("hidden")) {
             $(this).text("See comments")
           } else {
             $(this).text("Collapse")
           }
+        })
+      })
+
+      // Enable focus and show comment textarea
+      $(".comment-icon").each(function () {
+        $(this).click(function () {
+          const commentId = $(this).attr("data-comment-textarea-id")
+          const textarea = $(`.comment-textarea[data-comment-textarea-id="${commentId}"]`)
+          const commentSection = $(`.comment-layout[data-comment-id="${commentId}"]`)
+
+          if (commentSection.hasClass("hidden")) {
+            commentSection.toggleClass("hidden")
+          }
+
+          textarea.focus()
         })
       })
     })
