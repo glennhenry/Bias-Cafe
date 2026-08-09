@@ -84,6 +84,7 @@ data class TopicModel(
     val link: String,
     val title: String,
     val authorName: String,
+    val replyCount: Int,
     val postedDate: Long
 )
 
@@ -225,8 +226,23 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                     return@guard
                 }
 
+                val authorIds = mutableListOf<String>()
+                val topicIds = mutableListOf<String>()
+
+                for ((topicId, _, _, authorId) in topics) {
+                    authorIds.add(authorId)
+                    topicIds.add(topicId)
+                }
+
                 val summaries = serverContext.subunits.profile
-                    .getUserSummaries(topics.map { it.authorId })
+                    .getUserSummaries(authorIds)
+                    .okOrNull() ?: run {
+                    call.respond(HttpStatusCode.InternalServerError, "internal server error")
+                    return@guard
+                }
+
+                val replyCounts = serverContext.subunits.reply
+                    .getReplyCounts(topicIds)
                     .okOrNull() ?: run {
                     call.respond(HttpStatusCode.InternalServerError, "internal server error")
                     return@guard
@@ -240,7 +256,11 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                             topicId = it.topicId,
                             link = "${section}/${it.topicId.shortUuid()}/${it.title.toUrlSlug()}",
                             title = it.title,
-                            authorName = summaries[it.authorId]?.displayName ?: "<authorName:null>",
+                            authorName = summaries[it.authorId]?.displayName ?: run {
+                                Fancam.warn { "authorName of ${it.topicId} (title=${it.title}) is null" }
+                                "<authorName:null>"
+                            },
+                            replyCount = replyCounts[it.topicId] ?: 0,
                             postedDate = it.postedDate
                         )
                     }
@@ -546,8 +566,9 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
     }
 }
 
-val EmptyData = emptyMap<String, String>()
+fun <K, V> Map<K, V>.getOrDefaultAnd(key: K, value: V, action: () -> Unit) {
 
+}
 
 /**
  * Get [UserAccount] from the call's attributes.

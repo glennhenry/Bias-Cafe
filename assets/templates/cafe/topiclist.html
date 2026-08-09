@@ -50,9 +50,8 @@
       width: 100%;
       display: flex;
       justify-content: space-between;
-      align-items: center;
       padding-bottom: 4px;
-      font-size: 12px;
+      font-size: 14px;
     }
 
     .topic-author-left {
@@ -62,10 +61,6 @@
     .topic-author-name {
       font-style: italic;
       flex: 1;
-    }
-
-    .topic-posted-date {
-      text-align: end;
     }
 
     .topic-content {
@@ -99,11 +94,13 @@
                       </a>
                     </div>
                     <div class="topic-author-row">
-                      <span class="topic-author-left">
-                        Posted by <span class="topic-author-name" th:text="${topic.authorName}"></span>
-                      </span>
-                      <span class="topic-posted-date js-format-date" th:data-raw-date="${topic.postedDate}">
-                      </span>
+                      <div>
+                        <span class="topic-author-left">
+                          Posted by <span class="topic-author-name" th:text="${topic.authorName}"></span>
+                        </span>
+                        <p class="topic-posted-date js-format-date" th:data-raw-date="${topic.postedDate}"></p>
+                      </div>
+                      <p th:text="'(Reply: ' + ${topic.replyCount} + ') '"></p>
                     </div>
                   </div>
                 </li>
