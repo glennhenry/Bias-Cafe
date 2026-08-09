@@ -24,7 +24,7 @@ class DummyActivitySetup(
      * Setup:
      * 1. Create 15-20 dummy accounts with random username and email
      *    produced by [AccountFactory], and password fixed to "dummy".
-     * 2. Create 0-5 posts for each previously created dummy accounts;
+     * 2. Create 0-7 posts for each previously created dummy accounts;
      *    20% chance for 0 post for an account.
      * 3. Create 0-6 replies for each posts; 30% chance for 0 reply.
      * 4. Create 0-4 comments for each replies; 50% chance for 0 comment.
@@ -57,7 +57,7 @@ class DummyActivitySetup(
                 insertedUsers.forEach { userId ->
                     // 80% chance of post, 20% chance of no post
                     if (Random.nextDouble() < 0.8) {
-                        val numPostsEachAccounts = (0..5).random()
+                        val numPostsEachAccounts = (1..7).random()
                         val topics = TopicFactory.topics(userId, numPostsEachAccounts)
                         for (topic in topics) {
                             serverContext.subunits.topic.addTopic(topic)
@@ -79,7 +79,7 @@ class DummyActivitySetup(
                                 possibleAmountofComments = 1..4,
                                 possibleCommentAuthors = insertedUsers
                             )
-                        }
+                        }.sortedBy { it.postedDate }
                         replies.forEach { serverContext.subunits.reply.addReply(it) }
                     }
                 }

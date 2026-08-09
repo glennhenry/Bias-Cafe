@@ -6,7 +6,6 @@ import project.Members
 import project.domain.cafe.topic.reply.Comment
 import project.domain.cafe.topic.reply.Reply
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Utilities to create dummy replies and comments for topic.
@@ -44,7 +43,7 @@ object ReplyFactory {
                 .random()
             return List(amount) {
                 comment(authorId = authors.random(), replyPostDate)
-            }
+            }.sortedBy { it.postedDate }
         } else {
             return emptyList()
         }

@@ -42,11 +42,11 @@ object TopicFactory {
     }
 
     /**
-     * Get a random `postedDate` from now up to 7 days ago.
+     * Get a random `postedDate` from now up to 14 days ago.
      */
     private fun postedDate(): Long {
         val now = TimeCenter.now()
-        val from = now.milliseconds - 7.days
+        val from = now.milliseconds - 14.days
         val range = from.inWholeMilliseconds.rangeTo(now)
         return range.random()
     }
