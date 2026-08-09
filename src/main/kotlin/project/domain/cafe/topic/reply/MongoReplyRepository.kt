@@ -55,7 +55,7 @@ class MongoReplyRepository(private val replies: MongoCollection<Reply>) : ReplyR
         }
     }
 
-    override suspend fun getReplyCounts(topicIds: List<String>): Result<Map<String, Int?>> {
+    override suspend fun getReplyCounts(topicIds: List<String>): Result<Map<String, Int>> {
         return runMongoCatching {
             replies
                 .withDocumentClass<ReplyCount>()

@@ -20,8 +20,13 @@ class InMemoryReplyRepository(
         return Result.success(replies.count { it.topicId == topicId })
     }
 
-    override suspend fun getReplyCounts(topicIds: List<String>): Result<Map<String, Int?>> {
-        return Result.success(replies.groupingBy { it.topicId }.eachCount())
+    override suspend fun getReplyCounts(topicIds: List<String>): Result<Map<String, Int>> {
+        val map = mutableMapOf<String, Int>()
+        for ((_, topicId) in replies) {
+            map[topicId] = map.getOrDefault(topicId, 0) + 1
+        }
+
+        return Result.success(map)
     }
 
     override suspend fun addReply(reply: Reply): Result<Unit> {

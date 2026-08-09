@@ -40,16 +40,16 @@ interface ReplyRepository {
     suspend fun getReplyCount(topicId: String): Result<Int?>
 
     /**
-     * Get the amount of replies under each `topicId` of [topicIds].
+     * Get the amount of replies of each `topicId` in [topicIds].
      *
-     * The map guarantees all `topicId` to be present, but any of these may
-     * point to a nullable value when the `topicId` isn't found.
+     * If a `topicId` exists on `topicIds` but is not found in the database,
+     * the behavior should result the `topicId` not being added in the returned map.
      *
      * Returns:
-     * - [Result.success] with a map of each `topicId` to the count.
+     * - [Result.success] with a map of each `topicId` (if really exist) to the count.
      * - [Result.failure] if an error occurs while retrieving the data.
      */
-    suspend fun getReplyCounts(topicIds: List<String>): Result<Map<String, Int?>>
+    suspend fun getReplyCounts(topicIds: List<String>): Result<Map<String, Int>>
 
     /**
      * Add the [reply].
