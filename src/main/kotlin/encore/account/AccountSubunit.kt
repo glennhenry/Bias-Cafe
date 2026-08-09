@@ -39,7 +39,7 @@ class AccountSubunit(private val accountRepository: AccountRepository) : Subunit
                     }
                 } else {
                     Fancam.warn("topic") {
-                        "getAccountByUserId userId not found 'userId'"
+                        "getAccountByUserId userId not found '$userId'"
                     }
                 }
             }
