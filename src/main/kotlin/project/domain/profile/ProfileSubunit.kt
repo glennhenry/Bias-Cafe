@@ -46,7 +46,7 @@ class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit
      * - [Outcome.Fail] when there is internal repository error.
      * - [Outcome.Ok] with the map otherwise.
      */
-    suspend fun getUserSummaries(userIds: List<UserId>): Outcome<Map<UserId, UserSummary?>> {
+    suspend fun getUserSummaries(userIds: List<UserId>): Outcome<Map<UserId, UserSummary>> {
         return profileRepository.getUserSummaries(userIds)
             .onFailure {
                 Fancam.error(it, "profile") {

@@ -32,9 +32,10 @@ interface ProfileRepository {
      * in the [userIds] list.
      *
      * Returns [Result.success] with a map of each `userId`
-     * to a nullable [UserSummary].
+     * to the [UserSummary]. If `userId` is not available in the map, it means
+     * the id is not found.
      *
      * Returns [Result.failure] if an error occurs while retrieving the data.
      */
-    suspend fun getUserSummaries(userIds: List<UserId>): Result<Map<UserId, UserSummary?>>
+    suspend fun getUserSummaries(userIds: List<UserId>): Result<Map<UserId, UserSummary>>
 }

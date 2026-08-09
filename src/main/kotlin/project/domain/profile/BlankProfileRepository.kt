@@ -11,7 +11,7 @@ class BlankProfileRepository: ProfileRepository {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getUserSummaries(userIds: List<UserId>): Result<Map<UserId, UserSummary?>> {
+    override suspend fun getUserSummaries(userIds: List<UserId>): Result<Map<UserId, UserSummary>> {
         TODO("Not yet implemented")
     }
 }

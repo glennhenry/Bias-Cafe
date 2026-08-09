@@ -69,7 +69,7 @@ class MongoProfileRepository(
         }
     }
 
-    override suspend fun getUserSummaries(userIds: List<UserId>): Result<Map<UserId, UserSummary?>> {
+    override suspend fun getUserSummaries(userIds: List<UserId>): Result<Map<UserId, UserSummary>> {
         return runMongoCatching {
             val account = accountCollection.aggregate<QueryUserSummary>(
                 listOf(
