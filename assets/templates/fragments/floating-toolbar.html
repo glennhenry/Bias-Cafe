@@ -4,29 +4,61 @@
 <body>
   <ul class="floating-toolbar" th:fragment="floating-toolbar">
     <li class="floating-toolbar-item">
-      <a href="javascript:void(0)"></a>
+      <a href="javascript:void(0)" id="settings" class="instant-tooltip" data-tooltip="User settings">
+        <img src="/icons/settings.svg" width="28">
+      </a>
     </li>
     <li class="floating-toolbar-item">
-      <a href="javascript:void(0)"></a>
+      <a href="javascript:void(0)" id="theme" class="instant-tooltip" data-tooltip="Switch theme">
+        <img src="/icons/pallete.svg" width="28">
+      </a>
     </li>
     <div class="space-y-md"></div>
     <li class="floating-toolbar-item">
-      <a href="javascript:void(0)"></a>
+      <a href="javascript:void(0)" id="help" class="instant-tooltip" data-tooltip="Help & documentation">
+        <img src="/icons/help.svg" width="30">
+      </a>
     </li>
     <li class="floating-toolbar-item">
-      <a href="javascript:void(0)"></a>
+      <a href="javascript:void(0)" id="feedback" class="instant-tooltip" data-tooltip="Give a feedback">
+        <img src="/icons/feedback.svg" width="28">
+      </a>
     </li>
     <li class="floating-toolbar-item">
-      <a href="javascript:void(0)"></a>
+      <a id="share" class="instant-tooltip" data-tooltip="Share this page">
+        <img src="/icons/share.svg" width="25">
+      </a>
     </li>
     <li class="floating-toolbar-item">
-      <a href="javascript:void(0)" title="Scroll to top">
-        <img src="/icons/scroll-to-top.svg">
+      <a id="scroll" class="instant-tooltip" data-tooltip="Scroll to top">
+        <img src="/icons/scroll-to-top.svg" width="35">
       </a>
     </li>
   </ul>
   <th:block th:fragment="floating-toolbar-script">
     <script th:inline="javascript">
+      $("#settings").click(function () {
+        console.log(`${$(this)} is clicked!`)
+      })
+      $("#theme").click(function () {
+        console.log(`${$(this)} is clicked!`)
+      })
+      $("#help").click(function () {
+        console.log(`${$(this)} is clicked!`)
+      })
+      $("#feedback").click(function () {
+        console.log(`${$(this)} is clicked!`)
+      })
+      $("#share").click(function () {
+        navigator.clipboard.writeText(window.location.href);
+        $(this).attr('data-tooltip', "Link copied to clipboard")
+        setTimeout(() => {
+          $(this).attr('data-tooltip', "Share this page")
+        }, 1000);
+      })
+      $("#scroll").click(function () {
+        window.scrollTo(0, 0);
+      }) 
     </script>
   </th:block>
 </body>

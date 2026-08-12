@@ -171,31 +171,31 @@ body {
 
 @media (min-height: 300px) {
   .floating-toolbar {
-    bottom: 30;
+    bottom: 60;
   }
 }
 
 @media (min-height: 640px) {
   .floating-toolbar {
-    bottom: 80;
+    bottom: 120;
   }
 }
 
 @media (min-height: 760px) {
   .floating-toolbar {
-    bottom: 100;
+    bottom: 180;
   }
 }
 
 @media (min-height: 900px) {
   .floating-toolbar {
-    bottom: 120;
+    bottom: 250;
   }
 }
 
 @media (min-height: 1200px) {
   .floating-toolbar {
-    bottom: 160;
+    bottom: 350;
   }
 }
 
@@ -207,11 +207,33 @@ body {
   border-radius: 4px;
 }
 
+.instant-tooltip {
+  position: relative;
+  cursor: pointer;
+}
+
+.instant-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 110%;
+  background-color: #333c;
+  color: #fff;
+  padding: 4px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.instant-tooltip:hover::after {
+  opacity: 1;
+}
+
 .floating-toolbar-item:hover {
   background-color: var(--toolbar-item-hover-color);
 }
 
-/* The magic happens here */
 .floating-toolbar-item a {
   display: flex;
   width: 100%;
