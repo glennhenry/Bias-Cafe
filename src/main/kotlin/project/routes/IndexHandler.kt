@@ -134,19 +134,7 @@ data class Action(
     val text: String
 )
 
-data class LogoutModel(
-    val account: Account?
-)
-
-data class ProfileModel(
-    val account: Account?
-)
-
-data class RegisterModel(
-    val account: Account?
-)
-
-data class LoginModel(
+data class BasicModel(
     val account: Account?
 )
 
@@ -522,7 +510,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 call.respond(
                     ThymeleafContent(
                         "profile",
-                        mapOf("data" to ProfileModel(call.attributes.getProfileAndMapToAccountModel()))
+                        mapOf("data" to BasicModel(call.attributes.getProfileAndMapToAccountModel()))
                     )
                 )
             }
@@ -533,7 +521,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 call.respond(
                     ThymeleafContent(
                         "login",
-                        mapOf("data" to LoginModel(null))
+                        mapOf("data" to BasicModel(null))
                     )
                 )
             }
@@ -544,7 +532,7 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 call.respond(
                     ThymeleafContent(
                         "register",
-                        mapOf("data" to RegisterModel(null))
+                        mapOf("data" to BasicModel(null))
                     )
                 )
             }
@@ -555,10 +543,21 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 call.respond(
                     ThymeleafContent(
                         "logout", mapOf(
-                            "data" to LogoutModel(
+                            "data" to BasicModel(
                                 account = call.attributes.getProfileAndMapToAccountModel(),
                             )
                         )
+                    )
+                )
+            }
+        }
+
+        get("/about") {
+            handle(call, optionalAccountGuard) {
+                call.respond(
+                    ThymeleafContent(
+                        "about",
+                        mapOf("data" to BasicModel(call.attributes.getProfileAndMapToAccountModel()))
                     )
                 )
             }

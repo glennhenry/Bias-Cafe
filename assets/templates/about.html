@@ -1,0 +1,197 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
+  <link rel="stylesheet" href="/site/reset.css">
+  <link rel="stylesheet" href="/site/base.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <title>About & Credits</title>
+  <style>
+    [id] {
+      scroll-margin-top: 100px;
+    }
+
+    h1,
+    h2 {
+      margin-top: 24px;
+    }
+
+    h1+p,
+    h2+p,
+    h2+ul {
+      margin-top: 8px;
+    }
+
+    .toc {
+      width: max-content;
+      padding: 8px;
+      padding-right: 32px;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+    }
+
+    .toc ul {
+      padding-inline-start: 16px;
+    }
+
+    .content li {
+      list-style: circle;
+      padding: 0;
+      margin-left: 24px;
+    }
+
+    .content li:first-child {
+      margin-top: 6px;
+    }
+
+    .callout {
+      width: fit-content;
+      padding: 8px;
+      margin: 8px;
+      border: 1px dashed black;
+    }
+
+    .collapsible-container {
+      margin-top: 6px;
+    }
+
+    .collapsible-btn {
+      all: unset;
+      width: fit-content;
+      background-color: #ccc;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .collapsible {
+      width: fit-content;
+      padding: 6px 16px;
+      border: 1px solid black;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="layout">
+      <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+      <div class="core">
+        <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
+        <main class="content-container">
+          <div class="content">
+            <div class="space-y-s"></div>
+            <!-- TOC -->
+            <div class="toc">
+              <p>On this page:</p>
+              <ul>
+                <li><a class="link" href="#about">About</a></li>
+                <li><a class="link" href="#credits">Credits</a></li>
+                <ul>
+                  <li><a class="link" href="#inspiration">Inspiration</a></li>
+                  <li><a class="link" href="#assets">Assets</a></li>
+                  <li><a class="link" href="#technology">Technology</a></li>
+                </ul>
+              </ul>
+            </div>
+
+            <!-- About -->
+            <h1 id="about">About</h1>
+            <p>Bias Cafe is...</p>
+            <div class="callout">
+              <p>This project was created as a fan work for the K-pop group <strong>Kep1er</strong>.
+              </p>
+            </div>
+
+            <!-- Spacer -->
+            <div style="height: 48px;"></div>
+
+            <!-- Credits -->
+            <h1 id="credits">Credits</h1>
+            <p>Thanks to anyone who has participated on the development of this social portal platform. See our <a
+                class="link" href="https://github.com/glennhenry/Bias-Cafe" target="_blank">GitHub contributors</a>.</p>
+            <div class="callout">
+              <p>Special recognition for the K-pop group
+                <strong>Kep1er</strong>. We express our appreciation to the members, their music, and everyone involved
+                in their work.
+              </p>
+            </div>
+
+            <h2 id="inspiration">Inspiration</h2>
+            <p>This project is inspired by various old school community websites, social portals, online communities,
+              and services.</p>
+            <ul>
+              <li>
+                <p>The website concept and design is inspired by the Chinese forum <a class="link"
+                    href="https://tieba.baidu.com" target="_blank">Baidu Tieba</a></p>
+              </li>
+            </ul>
+
+            <h2 id="assets">Assets</h2>
+            <p>This project makes use of resources from various online sources:</p>
+            <ul>
+              <li>
+                <p><a class="link" href="https://www.svgrepo.com" target="_blank">SVG Repo</a> for SVG icons;
+                  specifically, the <a class="link" href="https://www.svgrepo.com/collection/solar-linear-icons"
+                    target="_blank">Solar Linear Icons</a> collection.</p>
+              </li>
+              <li>
+                <p><a class="link" href="https://pexels.com" target="_blank">Pexels</a> for stock photography.</p>
+                <div class="collapsible-container">
+                  <button class="collapsible-btn">Various photographers ▶</button>
+                  <div class="collapsible hidden">
+                    <ul>
+                      <li><a class="link"
+                          href="https://www.pexels.com/photo/two-duckling-figurines-standing-on-a-wet-street-14555238"
+                          target="_blank">https://www.pexels.com/photo/two-duckling-figurines-standing-on-a-wet-street-14555238</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+            <h2 id="technology">Technology</h2>
+            <ul>
+              <li>
+                <p><a class="link" href="https://kotlinlang.org" target="_blank">Kotlin</a> with <a class="link"
+                    href="https://ktor.io" target="_blank">Ktor</a> as the backend using the <a class="link"
+                    href="https://www.thymeleaf.org" target="_blank">Thymeleaf</a> templating engine and <a class="link"
+                    href="https://www.mongodb.com" target="_blank">MongoDB</a> database.</p>
+              </li>
+              <li>
+                <p><a class="link" href="https://starlight.astro.build" target="_blank">Starlight Astro</a> as our
+                  documentation tools.</p>
+              </li>
+            </ul>
+          </div>
+          <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
+        </main>
+      </div>
+    </div>
+    <ul th:replace="~{fragments/floating-toolbar :: floating-toolbar}"></ul>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+  </div>
+
+  <th:block th:replace="~{fragments/floating-toolbar :: floating-toolbar-script}"></th:block>
+  <script>
+    $(document).ready(function () {
+      $(".collapsible-btn").click(function () {
+        const el = $(".collapsible")
+        if (el.hasClass("hidden")) {
+          $(this).text("Various photographers ▼")
+        } else {
+          $(this).text("Various photographers ▶")
+        }
+        el.toggleClass("hidden")
+      })
+    })
+  </script>
+</body>
+
+</html>
