@@ -1,5 +1,6 @@
 package project.routes
 
+import bootstrap.errorHtml
 import encore.route.RouteHandler
 import io.ktor.http.*
 import io.ktor.server.http.content.*
@@ -28,12 +29,24 @@ fun Route.fileRoutes() {
     if (File(docsDir, "index.html").exists()) {
         staticFiles("docs", docsDir)
     } else {
-        get("/docs") {
-            call.respond(
-                HttpStatusCode.NotFound,
-                "Docs website not available. Please start it with a separate vite server. " +
-                        "If in prod, build the documentation website to access it."
+        get("/docs/{...}") {
+            call.respondText(
+                text = errorHtml(404, DocsNotFoundMessage),
+                contentType = ContentType.Text.Html,
+                status = HttpStatusCode.NotFound
             )
         }
     }
 }
+
+const val DocsNotFoundMessage = """
+Docs website is not available.<br><br>
+
+If you are in <strong>development mode</strong>, 
+please start with a separate vite server, 
+then access <a href='http://localhost:4321/docs/' target='_blank'>
+http://localhost:4321/docs/</a><br><br>
+
+If you are in <strong>production mode</strong>,
+you need to build the documentation website to access it.<br>
+"""

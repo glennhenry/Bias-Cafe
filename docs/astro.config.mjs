@@ -16,7 +16,12 @@ export default defineConfig({
   integrations: [
     starlight({
       head: [...fontHeadTags],
-      plugins: [starlightThemeObsidian()],
+      plugins: [
+        starlightThemeObsidian({
+          graph: false,
+          backlinks: false,
+        }),
+      ],
       favicon: "favicon.ico",
       customCss: ["./src/assets/custom.css"],
       tableOfContents: { minHeadingLevel: 2, maxHeadingLevel: 6 },
@@ -38,7 +43,17 @@ export default defineConfig({
         },
       ],
       sidebar: [
-        { label: "Intro", slug: "index" }
+        { label: "Intro", slug: "index" },
+        {
+          label: "User Documentation",
+          collapsed: false,
+          items: [{ label: "Overview", slug: "overview" }],
+        },
+        {
+          label: "Developer Documentation",
+          collapsed: true,
+          items: [{ label: "Scratchpad", slug: "scratchpad" }],
+        },
       ],
     }),
   ],
