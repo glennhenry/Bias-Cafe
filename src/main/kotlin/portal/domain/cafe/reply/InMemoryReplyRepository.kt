@@ -1,4 +1,4 @@
-package portal.domain.cafe.topic.reply
+package portal.domain.cafe.reply
 
 /**
  * In-memory implementation for [ReplyRepository].

@@ -1,4 +1,4 @@
-package portal.domain.session
+package portal.domain.auth.session
 
 import encore.fancam.Fancam
 import encore.session.SessionSubunit

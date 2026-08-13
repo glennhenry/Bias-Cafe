@@ -1,4 +1,4 @@
-package portal.domain.cafe.topic.reply
+package portal.domain.cafe.reply
 
 import kotlinx.serialization.Serializable
 import portal.mongo.collection.UserAccount

@@ -26,15 +26,15 @@ import portal.domain.cafe.collection.CollectionSubunit
 import portal.domain.cafe.topic.InMemoryTopicRepository
 import portal.domain.cafe.topic.TopicRepository
 import portal.domain.cafe.topic.TopicSubunit
-import portal.domain.cafe.topic.reply.InMemoryReplyRepository
-import portal.domain.cafe.topic.reply.ReplyRepository
-import portal.domain.cafe.topic.reply.ReplySubunit
+import portal.domain.cafe.reply.InMemoryReplyRepository
+import portal.domain.cafe.reply.ReplyRepository
+import portal.domain.cafe.reply.ReplySubunit
 import portal.domain.profile.BlankProfileRepository
 import portal.domain.profile.ProfileRepository
 import portal.domain.profile.ProfileSubunit
-import portal.domain.session.BlankSessionStore
-import portal.domain.session.SessionStore
-import portal.domain.session.WebsiteSessionSubunit
+import portal.domain.auth.session.BlankSessionStore
+import portal.domain.auth.session.SessionStore
+import portal.domain.auth.session.WebsiteSessionSubunit
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**

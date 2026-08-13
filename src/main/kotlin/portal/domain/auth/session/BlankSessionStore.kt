@@ -1,4 +1,4 @@
-package portal.domain.session
+package portal.domain.auth.session
 
 class BlankSessionStore: SessionStore {
     override suspend fun load(): Result<List<SessionStoreModel>> {

@@ -1,4 +1,4 @@
-package portal.domain.session
+package portal.domain.auth.session
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates

@@ -2,8 +2,8 @@ package portal.domain.cafe.collection
 
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
-import portal.routes.SectionItem
-import portal.routes.SpaceItem
+import portal.domain.cafe.view.model.SectionItem
+import portal.domain.cafe.view.model.SpaceItem
 
 /**
  * Server subunits that handles [Space] and [Section] concerns from [CollectionRepository].

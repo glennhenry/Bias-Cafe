@@ -5,8 +5,8 @@ import encore.utils.identifier.Ids
 import initMongo
 import io.ktor.util.date.getTimeMillis
 import kotlinx.coroutines.test.runTest
-import portal.domain.session.MongoSessionStore
-import portal.domain.session.SessionStoreModel
+import portal.domain.auth.session.MongoSessionStore
+import portal.domain.auth.session.SessionStoreModel
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

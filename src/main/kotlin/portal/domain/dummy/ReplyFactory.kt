@@ -3,8 +3,8 @@ package portal.domain.dummy
 import encore.time.TimeCenter
 import encore.utils.identifier.Ids
 import portal.domain.Members
-import portal.domain.cafe.topic.reply.Comment
-import portal.domain.cafe.topic.reply.Reply
+import portal.domain.cafe.reply.Comment
+import portal.domain.cafe.reply.Reply
 import kotlin.random.Random
 
 /**

@@ -1,4 +1,4 @@
-package portal.domain.cafe.topic.reply
+package portal.domain.cafe.reply
 
 import com.mongodb.client.model.Accumulators
 import com.mongodb.client.model.Aggregates

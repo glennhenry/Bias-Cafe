@@ -1,17 +1,17 @@
-import bootstrap.*
+import bootstrap.acceptsTerminalInput
+import bootstrap.installEncore
+import bootstrap.logStartupInformation
+import bootstrap.shutdownHook
 import encore.EncoreIdentity
 import encore.EncoreIdentity.celebrate
 import encore.backstage.BackstageRoutes
 import encore.backstage.command.ExampleCommand
-import portal.context.ServerContext
 import encore.route.guard.DefaultSecurity
 import encore.subunit.scope.ServerScope
 import encore.time.TimeCenter
 import encore.time.source.SystemTimeSource
 import encore.venue.Venue
 import encore.websocket.handler.WsCommandHandler
-import portal.ProjectIdentity
-import portal.routes.fileRoutes
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -20,11 +20,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.modules.SerializersModule
+import portal.ProjectIdentity
 import portal.context.RealContextFactory
+import portal.context.ServerContext
+import portal.domain.auth.AuthApiRoutes
+import portal.domain.auth.AuthPageRoutes
+import portal.domain.cafe.CafeRoutes
 import portal.domain.dummy.DummyActivitySetup
+import portal.domain.lobby.LobbyRoutes
 import portal.mongo.RuntimeMongoCollections
-import portal.routes.AuthRoutes
-import portal.routes.IndexHandler
+import portal.routes.SiteRoutes
+import portal.routes.fileRoutes
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
@@ -84,8 +90,11 @@ suspend fun Application.configureApplication() {
     routing {
         fileRoutes()
         with(BackstageRoutes(serverContext, backstageToken)) { install() }
-        with(IndexHandler(serverContext)) { install() }
-        with(AuthRoutes(serverContext)) { install() }
+        with(SiteRoutes(serverContext)) { install() }
+        with(LobbyRoutes(serverContext)) { install() }
+        with(AuthPageRoutes(serverContext)) { install() }
+        with(AuthApiRoutes(serverContext)) { install() }
+        with(CafeRoutes(serverContext)) { install() }
     }
 
     // log startup

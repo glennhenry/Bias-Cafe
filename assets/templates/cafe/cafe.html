@@ -78,7 +78,7 @@
                         <span th:inline="text">
                           <a th:href="'cafe/' + ${section.id}" class="section-name" th:text="${section.name}">
                           </a>
-                          ([[${data.counts.getOrDefault(section.id, 0)}]] posts)
+                          ([[${data.topicCounts.getOrDefault(section.id, 0)}]] posts)
                         </span>
                         <p class="section-description" th:text="${section.description}"></p>
                       </div>

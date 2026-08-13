@@ -1,4 +1,4 @@
-package portal.domain.session
+package portal.domain.auth.session
 
 /**
  * Represent a persistent session storage.

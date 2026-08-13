@@ -21,12 +21,12 @@ import portal.domain.cafe.collection.CollectionSubunit
 import portal.domain.cafe.collection.MongoCollectionRepository
 import portal.domain.cafe.topic.MongoTopicRepository
 import portal.domain.cafe.topic.TopicSubunit
-import portal.domain.cafe.topic.reply.MongoReplyRepository
-import portal.domain.cafe.topic.reply.ReplySubunit
+import portal.domain.cafe.reply.MongoReplyRepository
+import portal.domain.cafe.reply.ReplySubunit
 import portal.domain.profile.MongoProfileRepository
 import portal.domain.profile.ProfileSubunit
-import portal.domain.session.MongoSessionStore
-import portal.domain.session.WebsiteSessionSubunit
+import portal.domain.auth.session.MongoSessionStore
+import portal.domain.auth.session.WebsiteSessionSubunit
 import portal.mongo.MongoCollections
 
 /**

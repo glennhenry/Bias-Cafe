@@ -1,4 +1,4 @@
-package portal.domain.cafe.topic.reply
+package portal.domain.cafe.reply
 
 import encore.datastore.DocumentNotFoundException
 import encore.fancam.Fancam
