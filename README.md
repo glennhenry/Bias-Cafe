@@ -44,7 +44,7 @@ You can also run the server from IntelliJ IDE run plugin on `Application.kt`.
 
 ## Build
 
-To build the server, simply run the `build.bat/sh` script. Output will be in `deploy/`. Run the deployment server using `java -jar encore.jar`.
+To build the server, simply run the `build.bat/sh` script. Output will be in `deploy/`. Run the deployment server using `java -jar cafe.jar`.
 
 For manual build:
 
@@ -61,9 +61,9 @@ Various server settings can be configured from `venue.xml`. Secret version of th
 Every variables can be overriden from OS environment variables. For example, in PowerShell (Windows):
 
 ```ps1
-$env:ENCORE_DEV_MODE = "false"
+$env:ENCORE_DEVMODE = "false"
 $env:ENCORE_SERVER_HOST = "127.0.0.1"
-java -jar encore.jar
+java -jar cafe.jar
 ```
 
 More information in [Venue.kt](https://github.com/glennhenry/Encore/blob/main/src/main/kotlin/encore/venue/Venue.kt)
