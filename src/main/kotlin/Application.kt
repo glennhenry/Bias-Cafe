@@ -23,7 +23,6 @@ import kotlinx.serialization.modules.SerializersModule
 import project.context.RealContextFactory
 import project.dummy.DummyActivitySetup
 import project.mongo.RuntimeMongoCollections
-import project.mongo.collection.UserAccount
 import project.routes.AuthRoutes
 import project.routes.IndexHandler
 import java.time.LocalDate

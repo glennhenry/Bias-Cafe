@@ -562,6 +562,17 @@ class IndexHandler(private val serverContext: ServerContext) : RouteHandler {
                 )
             }
         }
+
+        get("/feedback") {
+            handle(call, optionalAccountGuard) {
+                call.respond(
+                    ThymeleafContent(
+                        "feedback",
+                        mapOf("data" to BasicModel(call.attributes.getProfileAndMapToAccountModel()))
+                    )
+                )
+            }
+        }
     }
 }
 

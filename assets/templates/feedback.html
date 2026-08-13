@@ -1,0 +1,38 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
+  <link rel="stylesheet" href="/site/reset.css">
+  <link rel="stylesheet" href="/site/base.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <title>Feedback</title>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="layout">
+      <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+      <div class="core">
+        <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
+        <main class="content-container">
+          <div class="content">
+            <h1>Feedback</h1>
+            <p>Send us a feedback!</p>
+            <textarea placeholder="Not implemented..."></textarea>
+          </div>
+          <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
+        </main>
+      </div>
+    </div>
+    <ul th:replace="~{fragments/floating-toolbar :: floating-toolbar}"></ul>
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+  </div>
+
+  <th:block th:replace="~{fragments/floating-toolbar :: floating-toolbar-script}"></th:block>
+</body>
+
+</html>
