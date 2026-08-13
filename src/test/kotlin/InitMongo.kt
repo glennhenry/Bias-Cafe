@@ -1,7 +1,7 @@
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import org.bson.Document
-import project.mongo.MongoCollections
+import portal.mongo.MongoCollections
 
 const val BIAS_CAFE_TEST_DB_NAME = "BIAS_CAFE-test-DB"
 const val MONGO_TEST_URL = "mongodb://localhost:27017"

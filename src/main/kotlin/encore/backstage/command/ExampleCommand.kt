@@ -4,7 +4,7 @@ import encore.backstage.command.types.ArgumentCollection
 import encore.backstage.command.types.ArgumentDescriptor
 import encore.backstage.command.types.CommandResult
 import encore.backstage.command.types.CommandVariant
-import project.context.ServerContext
+import portal.context.ServerContext
 
 /**
  * An example implementation of command.

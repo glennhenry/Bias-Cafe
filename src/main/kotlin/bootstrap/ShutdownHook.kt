@@ -1,6 +1,6 @@
 package bootstrap
 
-import project.context.ServerSubunits
+import portal.context.ServerSubunits
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.subunit.scope.ServerScope

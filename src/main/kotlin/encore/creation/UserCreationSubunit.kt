@@ -7,8 +7,7 @@ import encore.fancam.Tags
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.isOk
-import project.Globals
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserId
 
 /**
  * Server-scoped subunit responsible for user creation.

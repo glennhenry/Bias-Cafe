@@ -67,7 +67,7 @@ Has:
   - badges are quests only, while photocard can be bought through gacha
   - display single photocard on forum profile
 
-- Homepage should look like a project, aggregating various content such as forum board, birthday,
+- Homepage should look like a portal, aggregating various content such as forum board, birthday,
 
 ## Terminology
 

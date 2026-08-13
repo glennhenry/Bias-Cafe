@@ -4,9 +4,9 @@ import TestCollections
 import encore.utils.hash
 import initMongo
 import kotlinx.coroutines.test.runTest
-import project.domain.profile.MongoProfileRepository
-import project.domain.profile.Profile
-import project.mongo.collection.UserAccount
+import portal.domain.profile.MongoProfileRepository
+import portal.domain.profile.Profile
+import portal.mongo.collection.UserAccount
 import testUtils.createAccount
 import testUtils.createProfile
 import kotlin.test.Test
@@ -14,7 +14,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * Test operations of [project.domain.profile.MongoProfileRepository].
+ * Test operations of [portal.domain.profile.MongoProfileRepository].
  */
 class MongoProfileRepositoryTest {
     @Test

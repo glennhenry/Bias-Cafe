@@ -1,6 +1,6 @@
 package encoreTest.backstage
 
-import project.context.ServerContext
+import portal.context.ServerContext
 import encore.backstage.command.types.ArgumentCollection
 import encore.backstage.command.types.ArgumentDescriptor
 import encore.backstage.command.Command

@@ -1,8 +1,8 @@
 package encore.creation
 
 import encore.utils.types.Report
-import project.mongo.collection.UserAccount
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserAccount
+import portal.mongo.collection.UserId
 
 class BlankUserCreationFactory: UserCreationFactory {
     override fun userId(isAdmin: Boolean): UserId {

@@ -1,13 +1,12 @@
 package projectTest
 
 import TestCollections
-import encore.utils.toJsonString
 import initMongo
 import io.ktor.util.date.*
 import kotlinx.coroutines.test.runTest
-import project.domain.cafe.topic.reply.Comment
-import project.domain.cafe.topic.reply.MongoReplyRepository
-import project.domain.cafe.topic.reply.Reply
+import portal.domain.cafe.topic.reply.Comment
+import portal.domain.cafe.topic.reply.MongoReplyRepository
+import portal.domain.cafe.topic.reply.Reply
 import testUtils.randomString
 import kotlin.test.Test
 import kotlin.test.assertEquals

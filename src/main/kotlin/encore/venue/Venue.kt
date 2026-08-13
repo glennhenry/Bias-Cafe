@@ -2,13 +2,10 @@ package encore.venue
 
 import encore.EncoreConfig
 import encore.annotation.runtime.VenueKey
-import encore.venue.Venue.custom
-import encore.venue.Venue.encore
-import encore.venue.Venue.secret
 import encore.fancam.Fancam
 import encore.fancam.Tags
-import project.config.CustomConfig
-import project.config.SecretConfig
+import portal.config.CustomConfig
+import portal.config.SecretConfig
 import java.io.File
 
 /**

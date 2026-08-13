@@ -9,8 +9,8 @@ import encore.account.MongoAccountRepository
 import encore.auth.AuthSubunit
 import encore.auth.LoginResult
 import encore.datastore.MongoDataStore
-import project.mongo.collection.UserAccount
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserAccount
+import portal.mongo.collection.UserId
 import encore.utils.types.Outcome
 import encore.utils.types.isFail
 import encore.utils.types.okOrThrow
@@ -19,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import project.RealUserCreationFactory
+import portal.RealUserCreationFactory
 import testUtils.createProfile
 import kotlin.test.Test
 import kotlin.test.assertFalse

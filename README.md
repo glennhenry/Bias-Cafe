@@ -2,7 +2,7 @@
 
 **Bias Cafe** is a social portal platform designed for fan communities. It's inspired by the look and culture of the old-school internet, forums, and social platforms of the late 2000s and 2010s. The goal is to discover the engineering aspect behind social portal applications and to explore old school web designs.
 
-Particularly, this project focuses on creating a fan-centered environment around the K-pop girl group **Kep1er**.
+Particularly, this portal focuses on creating a fan-centered environment around the K-pop girl group **Kep1er**.
 
 Latest progress:
 
@@ -134,7 +134,7 @@ description: example
 │   │   ├── websocket/              # WebSocket communication components
 │   │   ├── EncoreConfig.kt         # Encore configuration
 │   │   └── EncoreIdentity.kt       # Encore version and flavor metadata
-│   ├── project/                     # Portal implementation source
+│   ├── portal/                     # Portal implementation source
 │   │   ├── config/                 # User-defined configuration
 │   │   ├── FileRoutes.kt           # Static file serving routes
 │   │   ├── ProjectIdentity.kt      # Implementation version and flavor metadata

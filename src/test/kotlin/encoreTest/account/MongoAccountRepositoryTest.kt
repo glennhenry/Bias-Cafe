@@ -6,7 +6,7 @@ import encore.account.MongoAccountRepository
 import encore.utils.hash
 import initMongo
 import kotlinx.coroutines.test.runTest
-import project.mongo.collection.UserAccount
+import portal.mongo.collection.UserAccount
 import testUtils.createAccount
 import testUtils.createProfile
 import kotlin.test.Test

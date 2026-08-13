@@ -1,7 +1,7 @@
 package encore.extra
 
-import project.mongo.collection.UserAccount
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserAccount
+import portal.mongo.collection.UserId
 
 /**
  * Repository handling [UserAccount.extra] concern.

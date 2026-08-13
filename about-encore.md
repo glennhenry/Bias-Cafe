@@ -19,7 +19,7 @@ What I noticed, the development process is very different from learning a tutori
 It was pretty much "obsession-driven development," we don't care how bad is the codebase, we just want the game to run. This what makes the development fun, it's unserious, non-formal while also being extremely meaningful. A player wouldn't care if we didn't follow the SOLID principle, but they care when the loading screen progresses by 1%.
 </p>
 
-The days to several weeks dealing with the project lets me develop a mental model of private server development loops. Overtime, I get interested into private server development in general, and wanted to try implementing for other games. While doing so, I noticed a heavy copy-pasting on the server code. I don't want to reimplement things I did before. I just clone old projects, delete the implementation part, and reuse the code for new projects. It wasn't smooth as many adaptations, deletions, and changes has to be done.
+The days to several weeks dealing with the portal lets me develop a mental model of private server development loops. Overtime, I get interested into private server development in general, and wanted to try implementing for other games. While doing so, I noticed a heavy copy-pasting on the server code. I don't want to reimplement things I did before. I just clone old projects, delete the implementation part, and reuse the code for new projects. It wasn't smooth as many adaptations, deletions, and changes has to be done.
 
 During reverse engineering context, I always encounter the similar problems and patterns:
 
@@ -40,11 +40,11 @@ At that time, the codebase wasn't a template or framework yet, I simply kep1 ref
 
 ### Beginning of the Framework
 
-On Nov 2025, I got the idea of creating a skeleton version of the code. I stripped down the implementation layer of my most advanced project. This results in an "empty game server template." Adapation becomes easier as I only need to rename some identifiers and start implementing the game behavior with the same mental model.
+On Nov 2025, I got the idea of creating a skeleton version of the code. I stripped down the implementation layer of my most advanced portal. This results in an "empty game server template." Adapation becomes easier as I only need to rename some identifiers and start implementing the game behavior with the same mental model.
 
 However, updating the template becomes a chore. Whenever something is lacking, I have to modify the template code, and then update every implementations. I didn't want the extra effort managing a library, so I just kep1 doing this manually.
 
-I realize that many things are still missing from the template, and I want an easier way to adapt to new projects. On Feb 2026, I thought of doing a mass refactor and upgrade while making the project "cooler" with the notion of framework.
+I realize that many things are still missing from the template, and I want an easier way to adapt to new projects. On Feb 2026, I thought of doing a mass refactor and upgrade while making the portal "cooler" with the notion of framework.
 
 ### Inspiration
 

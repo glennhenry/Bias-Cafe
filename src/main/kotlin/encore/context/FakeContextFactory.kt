@@ -2,7 +2,7 @@ package encore.context
 
 import encore.subunit.scope.ServerScope
 import kotlinx.coroutines.CoroutineScope
-import project.context.ServerContext
+import portal.context.ServerContext
 
 /**
  * Fake implementation of [ContextFactory]

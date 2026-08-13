@@ -3,7 +3,7 @@ package encore.backstage.command
 import encore.backstage.command.types.CommandRequest
 import encore.backstage.command.types.CommandResult
 import encore.backstage.command.types.CommandVariant
-import project.context.ServerContext
+import portal.context.ServerContext
 import encore.fancam.Fancam
 import encore.fancam.Tags
 

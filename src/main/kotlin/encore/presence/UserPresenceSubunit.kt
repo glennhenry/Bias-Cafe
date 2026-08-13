@@ -1,6 +1,6 @@
 package encore.presence
 
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserId
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.subunit.Subunit

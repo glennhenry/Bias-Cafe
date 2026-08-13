@@ -5,8 +5,8 @@ import com.mongodb.client.model.Projections
 import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.datastore.*
-import project.mongo.collection.UserAccount
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserAccount
+import portal.mongo.collection.UserId
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.codecs.pojo.annotations.BsonId
 

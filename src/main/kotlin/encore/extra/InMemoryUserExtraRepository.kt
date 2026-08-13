@@ -1,6 +1,6 @@
 package encore.extra
 
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserId
 
 class InMemoryUserExtraRepository(
     private val initialMap: MutableMap<String, MutableMap<String, String>> = mutableMapOf()

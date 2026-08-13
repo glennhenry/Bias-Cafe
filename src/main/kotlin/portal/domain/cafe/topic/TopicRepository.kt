@@ -1,0 +1,99 @@
+package portal.domain.cafe.topic
+
+/**
+ * Repository for [Topic] collection.
+ *
+ * Implementation abstract access to the topics underlying store.
+ */
+interface TopicRepository {
+    /**
+     * Ensures the repository is fully initialized.
+     *
+     * Use this for repository initialization that may utilize suspendable code.
+     */
+    suspend fun awaitInit()
+
+    /**
+     * Get the topic identified by [topicId].
+     *
+     * Returns:
+     * - [Result.success] with the topic.
+     * - [Result.success] with null if not found.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getTopic(topicId: String): Result<Topic?>
+
+    /**
+     * Get the topic identified by its first 8-characters of `topicId`.
+     *
+     * Returns:
+     * - [Result.success] with the topic.
+     * - [Result.success] with null if not found.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getTopicByShortId(shortTopicId: String): Result<Topic?>
+
+    /**
+     * Get the full `topicId` from its [shortTopicId].
+     *
+     * Returns:
+     * - [Result.success] with the topicId.
+     * - [Result.success] with null if not found.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getFullTopicId(shortTopicId: String): Result<String?>
+
+    /**
+     * Get every available topics.
+     *
+     * Returns:
+     * - [Result.success] with the list of topic, or empty.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getTopics(): Result<List<Topic>>
+
+    /**
+     * Get every available topics on a specific section identified by [sectionId].
+     *
+     * Returns:
+     * - [Result.success] with the list of topic, or empty.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getTopicsOfSection(sectionId: String): Result<List<Topic>>
+
+    /**
+     * Get the amount of topic that exist on each section of the cafe.
+     *
+     * Returns:
+     * - [Result.success] with map of each `sectionId` to its count.
+     * - [Result.failure] if an error occurs while retrieving the data.
+     */
+    suspend fun getTopicsCountForEachSection(): Result<Map<String, Int>>
+
+    /**
+     * Add the [topic].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if an error occurs during the operation.
+     */
+    suspend fun addTopic(topic: Topic): Result<Unit>
+
+    /**
+     * Delete the topic identified by [topicId].
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if an error occurs during the operation.
+     */
+    suspend fun deleteTopic(topicId: String): Result<Unit>
+
+    /**
+     * Delete all topics.
+     *
+     * Returns:
+     * - [Result.success] if the operation succeeded.
+     * - [Result.failure] if an error occurs during the operation.
+     */
+    suspend fun deleteAllTopics(): Result<Unit>
+}

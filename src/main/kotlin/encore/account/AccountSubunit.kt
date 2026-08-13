@@ -2,8 +2,8 @@ package encore.account
 
 import encore.auth.AuthSubunit
 import encore.datastore.DocumentNotFoundException
-import project.mongo.collection.UserAccount
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserAccount
+import portal.mongo.collection.UserId
 import encore.fancam.Fancam
 import encore.fancam.Tags
 import encore.subunit.Subunit

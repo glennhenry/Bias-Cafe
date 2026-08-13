@@ -1,7 +1,7 @@
 package encore.account
 
-import project.mongo.collection.UserAccount
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserAccount
+import portal.mongo.collection.UserId
 
 /**
  * No-operation implementation of [AccountRepository] used for testing purposes.

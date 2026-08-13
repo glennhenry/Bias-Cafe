@@ -8,7 +8,7 @@ import encore.utils.types.Outcome
 import encore.utils.types.Report
 import encore.utils.types.toOutcome
 import encore.utils.types.toReport
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserId
 
 /**
  * Server subunit for [UserExtraRepository].

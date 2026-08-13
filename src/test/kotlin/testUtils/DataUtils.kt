@@ -1,11 +1,11 @@
 package testUtils
 
-import project.mongo.collection.UserAccount
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserAccount
+import portal.mongo.collection.UserId
 import encore.time.TimeCenter
 import encore.utils.hash
 import encore.utils.identifier.Ids
-import project.domain.profile.Profile
+import portal.domain.profile.Profile
 
 fun createAccount(
     userId: UserId = Ids.uuid(),

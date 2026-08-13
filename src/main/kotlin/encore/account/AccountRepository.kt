@@ -1,7 +1,7 @@
 package encore.account
 
-import project.mongo.collection.UserAccount
-import project.mongo.collection.UserId
+import portal.mongo.collection.UserAccount
+import portal.mongo.collection.UserId
 
 /**
  * Repository for [UserAccount] core collection.
