@@ -6,7 +6,9 @@
   <link rel="icon" type="image/x-icon" href="/site/favicon.ico">
   <link rel="stylesheet" href="/site/reset.css">
   <link rel="stylesheet" href="/site/base.css">
+  <link rel="stylesheet" href="/site/toast.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="/site/toast.js"></script>
   <title>Cafe.TopicView</title>
   <style>
     textarea {
@@ -385,6 +387,7 @@
       </div>
     </div>
     <ul th:replace="~{fragments/floating-toolbar :: floating-toolbar}"></ul>
+    <div class="toast-container"></div>
     <footer th:replace="~{fragments/footer :: footer}"></footer>
   </div>
 

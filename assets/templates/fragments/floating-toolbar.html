@@ -51,10 +51,7 @@
       })
       $("#share").click(function () {
         navigator.clipboard.writeText(window.location.href);
-        $(this).attr('data-tooltip', "Link copied to clipboard")
-        setTimeout(() => {
-          $(this).attr('data-tooltip', "Share this page")
-        }, 1000);
+        Toast.info("Link copied to clipboard", "", true)
       })
       $("#scroll").click(function () {
         window.scrollTo(0, 0);
