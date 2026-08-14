@@ -60,23 +60,25 @@ class Toast {
 
     const toastClose = $("<a></a>")
       .addClass("toast-close")
-      .append($("<img>").attr("src", "/icons/delete.png"));
+      .append(
+        $("<img>").attr("src", "/icons/close.png").attr("title", "Dismiss"),
+      );
     const toastIcon = $("<img>").addClass("toast-icon");
     const toastTitle = $("<p></p>").text(title).addClass("toast-title");
     const toastMsg = $("<p></p>").text(msg).addClass("toast-text");
     const toastContent = $("<div></div>").append(toastTitle).append(toastMsg);
 
     if (level == 1) {
-      toastIcon.attr("src", "/icons/delete.png");
+      toastIcon.attr("src", "/icons/success.png");
       toastElement.addClass("toast-success");
     } else if (level == 2) {
-      toastIcon.attr("src", "/icons/delete.png");
+      toastIcon.attr("src", "/icons/info.png");
       toastElement.addClass("toast-info");
     } else if (level == 3) {
-      toastIcon.attr("src", "/icons/delete.png");
+      toastIcon.attr("src", "/icons/warn.png");
       toastElement.addClass("toast-warn");
     } else if (level == 4) {
-      toastIcon.attr("src", "/icons/delete.png");
+      toastIcon.attr("src", "/icons/error.png");
       toastElement.addClass("toast-error");
     } else {
       console.warn("Unexpected level: ", level);
