@@ -39,6 +39,7 @@
 
 .toast-text {
   font-size: 11px;
+  white-space: pre-line;
 }
 
 .toast-icon {
