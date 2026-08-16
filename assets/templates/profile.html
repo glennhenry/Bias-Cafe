@@ -12,6 +12,129 @@
   <script src="/site/utils.js"></script>
   <title>Profile</title>
   <style>
+    .content {
+      padding: 0;
+      display: flex;
+    }
+
+    .profile-left {
+      width: 200px;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 24px;
+      border-right: 1px solid #ccc;
+    }
+
+    .avatar-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border: 1px solid #ccc;
+    }
+
+    .avatar img {
+      padding: 4px;
+    }
+
+    .bias-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 8px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    .bias-item {
+      width: fit-content;
+      padding: 4px;
+      background-color: #fbf4ff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .badge-list {
+      max-height: 250px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .badge-item {
+      width: 20px;
+      height: 20px;
+      background-color: #ccc;
+    }
+
+    .profile-right {
+      flex: 1;
+      padding-bottom: 20px;
+    }
+
+    .profile-info {
+      padding: 8px;
+      line-height: 2;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .bio-box {
+      width: 300px;
+      min-height: 200px;
+      color: #565656;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 4px;
+    }
+
+    .profile-actions {
+      display: flex;
+      justify-content: end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .save-changes-btn {
+      width: max-content;
+      padding: 2px 4px;
+      border-radius: 4px;
+      background: linear-gradient(to bottom, #c19be3, #af87d7);
+      color: #000;
+      border: 1px solid #9b6bc8;
+      text-shadow: 0 1px rgba(255, 255, 255, 0.35);
+      box-shadow:
+        rgba(0, 0, 0, 0.08) 0 6px 24px,
+        inset 0 1px rgba(255, 255, 255, 0.25);
+    }
+
+    .save-changes-btn:hover {
+      cursor: pointer;
+      background: linear-gradient(to bottom, #caa7e8, #b78ddd);
+    }
+
+    .save-changes-btn:active {
+      background-image: linear-gradient(to top, #c19be3, #af87d7);
+      box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-contents {
+      padding: 8px
+    }
   </style>
 </head>
 
@@ -23,7 +146,150 @@
         <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
-            <h1>Profile</h1>
+            <div class="profile-left">
+              <div class="avatar-container">
+                <div class="avatar">
+                  <img src="/avatars/duck.jpg">
+                </div>
+              </div>
+              <div class="bias-list">
+                <p class="full-width">My Bias</p>
+                <div class="bias-item">
+                  <p>#Xiaoting</p>
+                </div>
+                <div class="bias-item">
+                  <p>#Yeseo</p>
+                </div>
+                <div class="bias-item">
+                  <p>#Yujin</p>
+                </div>
+                <div class="bias-item">
+                  <p>#Mashiro</p>
+                </div>
+                <div class="bias-item">
+                  <p>#Chaehyun</p>
+                </div>
+                <div class="bias-item">
+                  <p>#Dayeon</p>
+                </div>
+                <div class="bias-item">
+                  <p>#Hikaru</p>
+                </div>
+                <div class="bias-item">
+                  <p>#Youngeun</p>
+                </div>
+                <div class="bias-item">
+                  <p>#Hiyyih</p>
+                </div>
+              </div>
+              <div class="badge-list">
+                <p class="full-width">My badges</p>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+              </div>
+            </div>
+            <div class="profile-right">
+              <div class="profile-info">
+                <p><strong>Username</strong>: yujin_582</p>
+                <p><strong>Display name</strong>: Yujin Fan 😊 582</p>
+                <p><strong>Country</strong>: Indonesia</p>
+                <p><strong>Birthday</strong>: 16 August 2026</p>
+                <div>
+                  <p><strong>Bio</strong>:
+                  <div class="bio-box">
+                    <p>This user is too lazy to write anything here</p>
+                  </div>
+                </div>
+                <div class="profile-actions">
+                  <button class="save-changes-btn">
+                    <p>Save changes</p>
+                  </button>
+                </div>
+              </div>
+              <div class="user-contents">
+                <p>List</p>
+              </div>
+            </div>
           </div>
           <div th:replace="~{fragments/content-sidebar :: content-sidebar}"></div>
         </main>
