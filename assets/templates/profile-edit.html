@@ -10,7 +10,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="/site/toast.js"></script>
   <script src="/site/utils.js"></script>
-  <title>Profile</title>
+  <title>Edit Profile</title>
   <style>
     .content {
       padding: 0;
@@ -156,26 +156,27 @@
       margin-top: 16px;
     }
 
-    .edit-profile-btn {
+    .save-changes-btn {
       width: max-content;
       padding: 2px 4px;
-      color: #333;
-      background: linear-gradient(to bottom, #f4f4f4, #dcdcdc);
-      text-shadow: 0 1px #fff;
-      box-shadow:
-        rgba(0, 0, 0, 0.05) 0 6px 24px 0,
-        rgba(0, 0, 0, 0.05) 0 0 0 1px;
-      border: 1px solid #aaa;
       border-radius: 4px;
+      background: linear-gradient(to bottom, #c19be3, #af87d7);
+      color: #000;
+      border: 1px solid #9b6bc8;
+      text-shadow: 0 1px rgba(255, 255, 255, 0.35);
+      box-shadow:
+        rgba(0, 0, 0, 0.08) 0 6px 24px,
+        inset 0 1px rgba(255, 255, 255, 0.25);
     }
 
-    .edit-profile-btn:hover {
-      background-image: linear-gradient(to bottom, #f6f6f6, #e3e3e3);
+    .save-changes-btn:hover {
       cursor: pointer;
+      background: linear-gradient(to bottom, #caa7e8, #b78ddd);
     }
 
-    .edit-profile-btn:active {
-      background-image: linear-gradient(to top, #f4f4f4, #dcdcdc);
+    .save-changes-btn:active {
+      background-image: linear-gradient(to top, #c19be3, #af87d7);
+      box-shadow: inset 1px 1px 1px rgba(0, 0, 0, 0.1);
     }
 
     .user-contents {
@@ -234,6 +235,54 @@
                     <p>Yujin</p>
                   </div>
                 </div>
+                <div class="bias-list-action">
+                  <button id="edit-bias-btn">Edit</button>
+                </div>
+                <div class="bias-checkbox-selector hidden">
+                  <p class="checkbox-title">Members</p>
+                  <ul class="checkbox-list">
+                    <li class="checkbox-item">
+                      <input type="checkbox" id="Yujin">
+                      <label for="Yujin">Yujin</label>
+                    </li>
+                    <li class="checkbox-item">
+                      <input type="checkbox" id="Xiaoting">
+                      <label for="Xiaoting">Xiaoting</label>
+                    </li>
+                    <li class="checkbox-item">
+                      <input type="checkbox" id="Mashiro">
+                      <label for="Mashiro">Mashiro</label>
+                    </li>
+                    <li class="checkbox-item">
+                      <input type="checkbox" id="Chaehyun">
+                      <label for="Chaehyun">Chaehyun</label>
+                    </li>
+                    <li class="checkbox-item">
+                      <input type="checkbox" id="Dayeon">
+                      <label for="Dayeon">Dayeon</label>
+                    </li>
+                    <li class="checkbox-item">
+                      <input type="checkbox" id="Hikaru">
+                      <label for="Hikaru">Hikaru</label>
+                    </li>
+                    <li class="checkbox-item">
+                      <input type="checkbox" id="Hiyyih">
+                      <label for="Hiyyih">Hiyyih</label>
+                    </li>
+                    <li class="checkbox-item">
+                      <input type="checkbox" id="Youngeun">
+                      <label for="Youngeun">Youngeun</label>
+                    </li>
+                    <li class="checkbox-item">
+                      <input type="checkbox" id="Yeseo">
+                      <label for="Yeseo">Yeseo</label>
+                    </li>
+                  </ul>
+                  <div class="checkbox-footer">
+                    <button class="checkbox-cancel">Cancel</button>
+                    <button class="checkbox-submit">Done</button>
+                  </div>
+                </div>
               </div>
               <div class="badge-list">
                 <p class="full-width">My badges</p>
@@ -264,8 +313,8 @@
                   </div>
                 </div>
                 <div class="profile-actions">
-                  <a class="edit-profile-btn" href="/profile/edit">
-                    <p>Edit profile</p>
+                  <a class="save-changes-btn" href="/profile">
+                    <p>Save changes</p>
                   </a>
                 </div>
               </div>

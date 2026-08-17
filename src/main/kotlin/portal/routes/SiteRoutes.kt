@@ -29,6 +29,17 @@ class SiteRoutes(serverContext: ServerContext) : RouteHandler {
             }
         }
 
+        get("/profile/edit") {
+            handle(call, optionalAccountGuard) {
+                call.respond(
+                    ThymeleafContent(
+                        "profile-edit",
+                        mapOf("data" to BasicModel(call.attributes.getAccountData()))
+                    )
+                )
+            }
+        }
+
         get("/about") {
             handle(call, optionalAccountGuard) {
                 call.respond(
