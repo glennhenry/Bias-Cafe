@@ -445,3 +445,21 @@ The purpose of default avatar is to give the site a memorable icon. There should
 Every avatar images goes to `assets/avatars/...`. When user upload avatar, it is saved in that directory. Default avatar is also saved there. On user's profile, the `avatarUrl` field will point to the link, for example `avatarUrl = avatars/smile.png`.
 
 Uploading an avatar will generate a UUID for the avatar file name. For example, `avatarUrl = avatars/123e4567-e89b-12d3-a456-426614174000`. The user's profile field will also be updated accordingly.
+
+#### Profile View
+
+The left side of profile will be user's avatar, display name, and badge view. User can edit the badge view, choosing which badges to show in the profile and cafe.
+
+Profile information can be grouped:
+
+- Overview (editable): Username, display name, country, birthday, site join date, last active, bio, and a special guestbook down below where other users can left comment. When editing this, guestbook will be hide.
+- Fan Identity (editable): my bias, favorite song, favorite era, started stanning at, what you like about them text field, etc.
+- Status: user's level, coins, attendance, ranking, badges, achievements, and other cosmetics.
+- Social (remove friend, unblock user button): friends, friend request, blocked users
+- Activity: user's activity from posts, comments, likes, quests completed, badges earned, achievements completed, etc. This is filterable.
+- Scrapbook (remove bookmark button): bookmark of contents.
+- Statistics: number of posts, comments, likes, completed polls, day streak, number of completed quests. every numbers is listed here.
+
+As for user's setting, it will be on another page.
+
+- Settings: user setting of the site, change username, change email, change preferences, etc.
