@@ -28,6 +28,7 @@ import portal.domain.auth.AuthPageRoutes
 import portal.domain.cafe.CafeRoutes
 import portal.domain.dummy.DummyActivitySetup
 import portal.domain.lobby.LobbyRoutes
+import portal.domain.profile.ProfileRoutes
 import portal.mongo.RuntimeMongoCollections
 import portal.routes.SiteRoutes
 import portal.routes.fileRoutes
@@ -95,6 +96,7 @@ suspend fun Application.configureApplication() {
         with(AuthPageRoutes(serverContext)) { install() }
         with(AuthApiRoutes(serverContext)) { install() }
         with(CafeRoutes(serverContext)) { install() }
+        with(ProfileRoutes(serverContext)) { install() }
     }
 
     // log startup

@@ -1,0 +1,202 @@
+
+    .bias-container {
+      position: relative;
+      display: flex;
+      gap: 4px;
+      padding: 8px;
+      border-bottom: 1px solid #ccc;
+      flex-direction: column;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    .bias-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .bias-item {
+      width: fit-content;
+      padding: 4px;
+      background-color: #fbf4ff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .bias-list-action {
+      text-align: end;
+    }
+
+    .bias-checkbox-selector {
+      width: 150px;
+      position: absolute;
+      top: -1;
+      right: 0;
+      transform: translateX(100%);
+      background-color: #fff;
+      border: 1px solid #ccc;
+      z-index: 100;
+    }
+
+    .checkbox-title {
+      padding: 4px;
+      font-size: 16px;
+      background-color: #f2f2f2;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px;
+      border-top: 1px solid #ccc;
+    }
+
+    .checkbox-footer {
+      padding: 4px;
+      border-top: 1px solid #ccc;
+      text-align: end;
+    }
+
+    .badge-list {
+      max-height: 250px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .badge-item {
+      width: 20px;
+      height: 20px;
+      background-color: #ccc;
+    }
+
+<div class="bias-container">
+                <p class="full-width">My Bias</p>
+                <div class="bias-list">
+                  <div class="bias-item" data-member-name="Chaehyun">
+                    <p>Chaehyun</p>
+                  </div>
+                  <div class="bias-item" data-member-name="Dayeon">
+                    <p>Dayeon</p>
+                  </div>
+                  <div class="bias-item" data-member-name="Hikaru">
+                    <p>Hikaru</p>
+                  </div>
+                  <div class="bias-item" data-member-name="Hiyyih">
+                    <p>Hiyyih</p>
+                  </div>
+                  <div class="bias-item" data-member-name="Mashiro">
+                    <p>Mashiro</p>
+                  </div>
+                  <div class="bias-item" data-member-name="Xiaoting">
+                    <p>Xiaoting</p>
+                  </div>
+                  <div class="bias-item" data-member-name="Yeseo">
+                    <p>Yeseo</p>
+                  </div>
+                  <div class="bias-item" data-member-name="Youngeun">
+                    <p>Youngeun</p>
+                  </div>
+                  <div class="bias-item" data-member-name="Yujin">
+                    <p>Yujin</p>
+                  </div>
+                </div>
+              </div>
+              <div class="badge-list">
+                <p class="full-width">My badges</p>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+                <div class="badge-item"></div>
+              </div>
+            </div>
+
+
+            
+    function getCurrentBiasList() {
+      const l = []
+      $(".bias-list").children().each(function () {
+        l.push($(this).attr("data-member-name"))
+      })
+      return l
+    }
+
+    function initializeBiasCheckbox() {
+      const biasList = getCurrentBiasList()
+      $(".checkbox-list").children().each(function () {
+        const checkbox = $(this).children(`input[type="checkbox"]`)
+        if (biasList.includes(checkbox.attr("id"))) {
+          checkbox.prop("checked", true)
+        } else {
+          checkbox.prop("checked", false)
+        }
+      })
+    }
+
+    function getCheckedBias() {
+      const biasList = []
+      $(".checkbox-list").children().each(function () {
+        const member = $(this).children(`input[type="checkbox"]:checked`).attr("id")
+        if (member) biasList.push(member)
+      })
+      return biasList
+    }
+
+    function updateBiasList(newBiases) {
+      $(".bias-list").empty()
+      for (const bias of newBiases.sort((a, b) => a.localeCompare(b))) {
+        $(".bias-list").append(
+          $("<div></div>").addClass("bias-item").attr("data-member-name", bias).append($("<p></p>").text(bias))
+        )
+      }
+    }
+
+        $(document).ready(function () {
+      $("#edit-bias-btn").click(function (event) {
+        event.stopPropagation();
+        initializeBiasCheckbox()
+        $(".bias-checkbox-selector").removeClass("hidden");
+      });
+
+      $(".bias-checkbox-selector").click(function (event) {
+        event.stopPropagation();
+      });
+
+      $(document).click(function (event) {
+        const clickedInsideSelector =
+          $(event.target).closest(".bias-checkbox-selector").length;
+
+        const clickedEditButton =
+          $(event.target).closest("#edit-bias-btn").length;
+
+        if (!clickedInsideSelector && !clickedEditButton) {
+          $(".bias-checkbox-selector").addClass("hidden");
+        }
+      });
+
+      $(".checkbox-cancel").click(function () {
+        $(".bias-checkbox-selector").addClass("hidden");
+      });
+
+      $(".checkbox-submit").click(function () {
+        const biasList = getCheckedBias();
+        $(".bias-checkbox-selector").addClass("hidden");
+        updateBiasList(biasList)
+      });
+    })

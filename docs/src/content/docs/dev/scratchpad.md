@@ -453,7 +453,7 @@ The left side of profile will be user's avatar, display name, and badge view. Us
 Profile information can be grouped:
 
 - Overview (editable): Username, display name, country, birthday, site join date, last active, bio, and a special guestbook down below where other users can left comment. When editing this, guestbook will be hide.
-- Fan Identity (editable): my bias, favorite song, favorite era, started stanning at, what you like about them text field, etc.
+- Fan Profile (editable): my bias, favorite song, favorite era, started stanning at, what you like about them text field, etc.
 - Status: user's level, coins, attendance, ranking, badges, achievements, and other cosmetics.
 - Social (remove friend, unblock user button): friends, friend request, blocked users
 - Activity: user's activity from posts, comments, likes, quests completed, badges earned, achievements completed, etc. This is filterable.
