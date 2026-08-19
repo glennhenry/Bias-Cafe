@@ -475,7 +475,7 @@ MongoDB has 16MB document limit, so for non-growing data, we should separate it 
 Unless the data is limited, small (although may grow indefinitely), or related, separate them into collections.
 
 - Account would be simple data and system administration. It contains `userId`, `username`, `displayName`, `email`, `hashedPassword`, etc.
-- Profile is where everything about user is located. It's basically the `PlayerObjects`, like the game data. It contains `username` and `displayName` (duplicated), `bio`, `country`, `birthday`, statistics data, blocked users, fan profile such as `bias`, `favoriteSong`, etc; and game profile such as `level`, `xp`, `coins`, `badges`, `achievements`, etc.
+- Profile is where everything about user is located. It's basically the `PlayerObjects`, like the game data. It contains `displayName` (duplicated), `bio`, `country`, `birthday`, statistics data, blocked users, fan profile such as `bias`, `favoriteSong`, etc; and game profile such as `level`, `xp`, `coins`, `badges`, `achievements`, etc.
 - Growing data like friends, guestbook, scrapbook, and activity will be in a separate collection.
   - Friendship is interesting, it's actually small enough to be embedded. But if we ever need function like 'find all users friend with userB', embedded model will suffer hardly because the only way is scanning every user's documents.
   - Guestbook itself is like another topic-reply-comment system. It would be in separate collection like reply, with `guestbookEntry` being the item. Guestbook's reply would be embedded on each entry, similar to how comments are stored in reply.
@@ -490,3 +490,34 @@ User and system statistics should be separated with the actual count. For exampl
 
 - User statistics can be placed on profile. This contains basically everything from posts count, replies count, likes/dislikes casted, comments, polls joined, etc.
 - Server statistics can be placed on `ServerObjects`.
+
+#### Attendance
+
+When the user logs in, they attended that day. This would increase the login streak by 1. There would also be longest streak and total day attended.
+
+We may not be place attendance on each user's profile, because it grows indefinitely and becomes a log rather than an identity. Instead, we create an attendance table of every users.
+
+For example:
+
+- `userId123`, `2026-8-19` -> represent an attendance done by `userId123` at 19 August 2026.
+
+However, this little data can eventually balloon, and a good way to reduce is by making attendance per month. This is also intuitive because you would be updating attendance or querying attendance per-month anyway.
+
+- `userId123`, `2026`, `08`, `[1, 2, 3, 4, 5, 6, 8, 9, 10, 11]` -> represent an attendance of `userId123` at August 2026 at day 1, 2, 3, and so on.
+
+Alternatively, it can be further reduced to one per year or even a single attendance model for every users.
+
+#### Profile Stats & Summary
+
+Since the data is separated around collections, and we do not want to rely on querying those collections just to get simple data like count, we should make a summarized view or stats tracker of user's data.
+
+This can be placed in profile and separated per domain, such as:
+
+- `GeneralStats`: time active, and many random facts;
+- `CafeStats`: num posts, num comments, num votes, polls casted;
+- `AttendanceStats`: total attendance, current streak, longest streak;
+
+A non-personal stats like user's ranking on the cafe may not be placed here, but instead in `ServerObjects`. This mean few updates to multiple collections must be made, such as:
+
+- user posted in cafe -> insert topic -> update cafe stats -> update ranking in `ServerObjects`.
+- user logged in -> update attendance table -> update personal attendance stats -> update ranking in `ServerObjects`.
