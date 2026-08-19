@@ -19,12 +19,6 @@
       display: flex;
     }
 
-    ul,
-    li {
-      padding: 0;
-      margin: 0;
-    }
-
     .tab-view {
       width: 100%;
       display: flex;
@@ -97,10 +91,6 @@
     .user-contents {
       padding: 8px
     }
-
-    .hidden {
-      display: none;
-    }
   </style>
 </head>
 
@@ -112,7 +102,9 @@
         <header th:replace="~{fragments/topbar :: topbar(account=${data.account})}"></header>
         <main class="content-container">
           <div class="content">
-            <div th:replace="~{profile/side-profile :: side-profile(avatarUrl='/avatars/duck.jpg', displayName='Yujin Fan 😊 582')}"></div>
+            <div
+              th:replace="~{profile/side-profile :: side-profile(avatarUrl='/avatars/duck.jpg', displayName='Yujin Fan 😊 582')}">
+            </div>
             <div class="profile-content">
               <ul class="tab-view">
                 <li class="tab-item selected"><a href="#">Overview</a></li>
@@ -123,14 +115,12 @@
                 <p><strong>Display name</strong>: Yujin Fan 😊 582</p>
                 <p><strong>Country</strong>: Indonesia</p>
                 <p><strong>Birthday</strong>: 16 August 2026</p>
-                <div>
-                  <p><strong>Bio</strong>:
-                  <div class="bio-box">
-                    <p>This user is too lazy to write anything here</p>
-                  </div>
+                <p><strong>Bio</strong>:
+                <div class="bio-box">
+                  <p>This user is too lazy to write anything here</p>
                 </div>
                 <div class="profile-actions">
-                  <a class="edit-profile-btn" href="/profile/edit">
+                  <a class="edit-profile-btn" href="javascript:void(0)">
                     <p>Edit profile</p>
                   </a>
                 </div>
@@ -149,11 +139,6 @@
   </div>
 
   <th:block th:replace="~{fragments/floating-toolbar :: floating-toolbar-script}"></th:block>
-  <script>
-    $(document).ready(function () {
-
-    })
-  </script>
 </body>
 
 </html>

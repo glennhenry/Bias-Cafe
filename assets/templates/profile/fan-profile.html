@@ -49,12 +49,14 @@
       background-color: #adadad;
     }
 
-    .bias-container {
-      position: relative;
-      display: flex;
-      gap: 4px;
+    .fan-profile {
       padding: 8px;
+      line-height: 2;
       border-bottom: 1px solid #ccc;
+    }
+
+    .bias-container {
+      display: flex;
       flex-direction: column;
     }
 
@@ -74,10 +76,6 @@
       background-color: #fbf4ff;
       border: 1px solid #ccc;
       border-radius: 4px;
-    }
-
-    .bias-list-action {
-      text-align: end;
     }
 
     .bio-box {
@@ -122,10 +120,6 @@
     .user-contents {
       padding: 8px
     }
-
-    .hidden {
-      display: none;
-    }
   </style>
 </head>
 
@@ -146,9 +140,11 @@
                 <li class="tab-item selected"><a href="#">Fan Profile</a></li>
               </ul>
               <div class="fan-profile">
-                <p>Started stan: ...</p>
+                <p><strong>Started stan:</strong> 19 August 2026</p>
+                <p><strong>Favorite song:</strong> WA DA DA</p>
+                <p><strong>Favorite era:</strong> First Impact</p>
                 <div class="bias-container">
-                  <p class="full-width">My Bias</p>
+                  <p class="full-width"><strong>My bias</strong></p>
                   <div class="bias-list">
                     <div class="bias-item" data-member-name="Chaehyun">
                       <p>Chaehyun</p>
@@ -179,11 +175,14 @@
                     </div>
                   </div>
                 </div>
-                <p>Favorite Song: ...</p>
-                <p>Favorite Era: ...</p>
-                <p>About Kep1er:</p>
+                <p><strong>About Kep1er:</strong></p>
                 <div class="bio-box">
                   <p>Write your story about Kep1er!</p>
+                </div>
+                <div class="profile-actions">
+                  <a class="edit-profile-btn" href="javascript:void(0)">
+                    <p>Edit profile</p>
+                  </a>
                 </div>
               </div>
             </div>
@@ -197,11 +196,6 @@
   </div>
 
   <th:block th:replace="~{fragments/floating-toolbar :: floating-toolbar-script}"></th:block>
-  <script>
-    $(document).ready(function () {
-
-    })
-  </script>
 </body>
 
 </html>
