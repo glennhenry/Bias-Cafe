@@ -44,13 +44,17 @@ class MongoProfileRepositoryTest {
         // 1. getProfile
         assertEquals("UserABC", repo.getProfile(id).getOrNull()?.displayName)
 
-        // 2. getUserSummary
+        // 2. insert
+        repo.insert(createProfile(userId = "xyzasdf"))
+        assertEquals("xyzasdf", repo.getProfile("xyzasdf").getOrNull()?.userId)
+
+        // 3. getUserSummary
         assertTrue {
             val x = repo.getUserSummary(id).getOrThrow()
             x?.userId == id && x.displayName == "UserABC" && x.avatarUrl == "avatars/duck.jpg"
         }
 
-        // 3. getUserSummaries
+        // 4. getUserSummaries
         assertTrue {
             val x = repo.getUserSummaries(listOf(id, "otherId")).getOrThrow()
             x[id]?.displayName == "UserABC" && x[id]?.avatarUrl == "avatars/duck.jpg" && x["otherId"]?.displayName == "otherDisplayName"

@@ -4,6 +4,10 @@ import portal.domain.profile.model.Profile
 import portal.mongo.collection.UserId
 
 class BlankProfileRepository: ProfileRepository {
+    override suspend fun insert(profile: Profile): Result<Unit> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun getProfile(userId: UserId): Result<Profile?> {
         TODO("Not yet implemented")
     }

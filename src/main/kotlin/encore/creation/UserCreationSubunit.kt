@@ -7,6 +7,8 @@ import encore.fancam.Tags
 import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.isOk
+import portal.domain.profile.subunits.BlankProfileRepository
+import portal.domain.profile.subunits.ProfileRepository
 import portal.mongo.collection.UserId
 
 /**
@@ -21,6 +23,7 @@ import portal.mongo.collection.UserId
  */
 class UserCreationSubunit(
     private val dataStore: DataStore,
+    private val profileRepository: ProfileRepository,
     private val factory: UserCreationFactory
 ) : Subunit<ServerScope> {
     /**
@@ -38,20 +41,27 @@ class UserCreationSubunit(
     ): UserId {
         val userId = factory.userId(false)
         val account = factory.account(userId, username, password, email)
+        val profile = factory.profile(userId, username)
 
-        val dataStoreResult = dataStore.insert(account)
+        val accountInsertResult = dataStore.insert(account)
+        val profileInsertResult = profileRepository.insert(profile)
         val serverObjReport = factory.updateServerObjects(account)
 
-        if (dataStoreResult.isSuccess && serverObjReport.isOk()) {
+        if (accountInsertResult.isSuccess &&
+            profileInsertResult.isSuccess &&
+            serverObjReport.isOk()
+        ) {
             return userId
         }
 
         Fancam.error(tag = Tags.Creation) {
-            "Account creation failed for $username (dataStoreResult.isSuccess=${dataStoreResult.isSuccess}, serverObjReport.isOk=${serverObjReport.isOk()})"
+            "Account creation failed for $username (" +
+                    "accountInsertResult.isSuccess=${accountInsertResult.isSuccess}, " +
+                    "profileInsertResult.isSuccess=${profileInsertResult.isSuccess}, " +
+                    "serverObjReport.isOk=${serverObjReport.isOk()})"
         }
 
-        throw dataStoreResult.exceptionOrNull()
-            ?: IllegalStateException("Account creation failed with unknown scandal (exception was null)")
+        throw IllegalStateException("Account creation failed with unknown scandal (exception was null)")
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> = Result.success(Unit)
@@ -67,9 +77,10 @@ class UserCreationSubunit(
          */
         fun createForTest(
             dataStore: DataStore = BlankDataStore(),
+            profileRepository: ProfileRepository = BlankProfileRepository(),
             factory: UserCreationFactory = BlankUserCreationFactory()
         ): UserCreationSubunit {
-            return UserCreationSubunit(dataStore, factory)
+            return UserCreationSubunit(dataStore, profileRepository, factory)
         }
     }
 }

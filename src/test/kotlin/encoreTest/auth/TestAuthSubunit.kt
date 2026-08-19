@@ -20,7 +20,7 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import portal.RealUserCreationFactory
-import testUtils.createProfile
+import portal.domain.profile.subunits.BlankProfileRepository
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -48,7 +48,7 @@ class TestAuthSubunit {
         val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
+        val pcs = UserCreationSubunit(db, BlankProfileRepository(), RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         val account = UserAccount(
@@ -77,7 +77,7 @@ class TestAuthSubunit {
         val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
+        val pcs = UserCreationSubunit(db, BlankProfileRepository(), RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         assertTrue(auth.isUsernameAvailable("xyz").okOrThrow())
@@ -94,7 +94,7 @@ class TestAuthSubunit {
         val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
+        val pcs = UserCreationSubunit(db, BlankProfileRepository(), RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")
@@ -112,7 +112,7 @@ class TestAuthSubunit {
         val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
+        val pcs = UserCreationSubunit(db, BlankProfileRepository(), RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld1", "kotlinktor", "helloworld1@email.com")
@@ -136,7 +136,7 @@ class TestAuthSubunit {
         val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
+        val pcs = UserCreationSubunit(db, BlankProfileRepository(), RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         val session = auth.login("asdf", "fdsa")
@@ -154,7 +154,7 @@ class TestAuthSubunit {
         val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
+        val pcs = UserCreationSubunit(db, BlankProfileRepository(), RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")
@@ -182,7 +182,7 @@ class TestAuthSubunit {
             override suspend fun emailExists(email: String): Result<Boolean> = TODO()
         }
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
+        val pcs = UserCreationSubunit(db, BlankProfileRepository(), RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")
@@ -201,7 +201,7 @@ class TestAuthSubunit {
         val db = MongoDataStore(mongoDb, TestCollections)
         val repo = MongoAccountRepository(collection)
         val accountSubunit = AccountSubunit(repo)
-        val pcs = UserCreationSubunit(db, RealUserCreationFactory())
+        val pcs = UserCreationSubunit(db, BlankProfileRepository(), RealUserCreationFactory())
         val auth = AuthSubunit(accountSubunit, pcs)
 
         auth.register("helloworld", "kotlinktor", "helloworld@email.com")

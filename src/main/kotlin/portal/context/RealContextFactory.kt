@@ -73,7 +73,7 @@ class RealContextFactory(
         )
         val profileSubunit = ProfileSubunit(profileRepository)
 
-        val userCreationSubunit = UserCreationSubunit(dataStore, RealUserCreationFactory())
+        val userCreationSubunit = UserCreationSubunit(dataStore, profileRepository, RealUserCreationFactory())
         val authSubunit = AuthSubunit(accountSubunit, userCreationSubunit)
 
         val sessionStore = MongoSessionStore(mongoDatabase.getCollection(collections.websiteSession))

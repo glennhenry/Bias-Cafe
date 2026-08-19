@@ -6,7 +6,7 @@ import com.mongodb.client.model.Projections
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.account.FieldUserId
 import encore.datastore.runMongoCatching
-import encore.utils.toJsonString
+import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associateBy
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.codecs.pojo.annotations.BsonId
@@ -23,6 +23,12 @@ val FieldAvatarUrl = Profile::avatarUrl.name
 class MongoProfileRepository(
     private val profiles: MongoCollection<Profile>
 ) : ProfileRepository {
+    override suspend fun insert(profile: Profile): Result<Unit> {
+        return runMongoCatching {
+            profiles.insertOne(profile).asUnit()
+        }
+    }
+
     override suspend fun getProfile(userId: UserId): Result<Profile?> {
         return runMongoCatching {
             profiles

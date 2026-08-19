@@ -5,6 +5,12 @@ import portal.mongo.collection.UserId
 
 interface ProfileRepository {
     /**
+     * Insert a new profile.
+     * @return [Result] type denoting success or failure.
+     */
+    suspend fun insert(profile: Profile): Result<Unit>
+
+    /**
      * Returns [Profile] associated with the given [userId], if it exists.
      *
      * Returns [Result.success] with:
