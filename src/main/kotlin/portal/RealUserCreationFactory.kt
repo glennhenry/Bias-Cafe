@@ -5,7 +5,11 @@ import encore.time.TimeCenter
 import encore.utils.hash
 import encore.utils.identifier.Ids
 import encore.utils.types.Report
-import portal.domain.profile.Profile
+import portal.domain.profile.model.FanProfile
+import portal.domain.profile.model.GameProfile
+import portal.domain.profile.model.Profile
+import portal.domain.profile.model.UserLevel
+import portal.domain.profile.model.UsersStats
 import portal.mongo.collection.UserAccount
 import portal.mongo.collection.UserId
 
@@ -29,17 +33,42 @@ class RealUserCreationFactory : UserCreationFactory {
         val account = UserAccount(
             userId = userId,
             username = username,
+            displayName = username,
             email = email,
             hashedPassword = hash(password),
             registeredAt = now,
             lastActiveAt = now,
             extra = emptyMap(),
-            profile = Profile(
-                displayName = username,
-                level = 1
-            )
         )
         return account
+    }
+
+    override fun profile(userId: UserId, username: String): Profile {
+        return Profile(
+            userId = userId,
+            displayName = username,
+            // avatarUrl = ,
+            country = "",
+            birthday = "",
+            bio = "This user is too lazy to write anything here",
+            fanProfile = FanProfile(
+                bias = emptyList(),
+                favoriteSong = "",
+                favoriteEra = "",
+                story = "Write your story about Kep1er!"
+            ),
+            gameProfile = GameProfile(
+                level = UserLevel(1, 0),
+                coins = 100,
+                badges = emptyList(),
+                achievements = emptyList()
+            ),
+            blockedUsers = emptyList(),
+            stats = UsersStats(
+                numTopics = 0,
+                numReplies = 0
+            )
+        )
     }
 
     override fun updateServerObjects(account: UserAccount): Report {

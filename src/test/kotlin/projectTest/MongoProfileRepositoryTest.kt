@@ -4,9 +4,8 @@ import TestCollections
 import encore.utils.hash
 import initMongo
 import kotlinx.coroutines.test.runTest
-import portal.domain.profile.MongoProfileRepository
-import portal.domain.profile.Profile
-import portal.mongo.collection.UserAccount
+import portal.domain.profile.subunits.MongoProfileRepository
+import portal.domain.profile.model.Profile
 import testUtils.createAccount
 import testUtils.createProfile
 import kotlin.test.Test
@@ -14,40 +13,31 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
- * Test operations of [portal.domain.profile.MongoProfileRepository].
+ * Test operations of [MongoProfileRepository].
  */
 class MongoProfileRepositoryTest {
     @Test
     fun `test all`() = runTest {
         val mongoDb = initMongo()
-        val collection = mongoDb.getCollection<UserAccount>(TestCollections.userAccount)
+        val collection = mongoDb.getCollection<Profile>(TestCollections.profiles)
         collection.drop()
-        mongoDb.createCollection(TestCollections.userAccount)
+        mongoDb.createCollection(TestCollections.profiles)
 
         val repo = MongoProfileRepository(collection)
 
         // setup
         val id = "5ab0980c-e2cb-990a-427a-5ad9b0311b7f"
-        val targetAcc = UserAccount(
+        val targetProfile = createProfile(
             userId = id,
-            username = "user123",
-            email = "email123@a",
-            hashedPassword = hash("yesyes"),
-            registeredAt = 0,
-            lastActiveAt = 0,
-            extra = emptyMap(),
-            profile = Profile(
-                displayName = "UserABC",
-                avatarUrl = "avatars/duck.jpg",
-                level = 1
-            )
+            displayName = "UserABC",
+            avatarUrl = "avatars/duck.jpg"
         )
-        val targetAcc2 = createAccount(
+        val targetProfile2 = createProfile(
             userId = "otherId",
-            profile = createProfile(displayName = "otherDisplayName")
+            displayName = "otherDisplayName"
         )
         collection.insertMany(
-            listOf(targetAcc) + targetAcc2 + List(10) { createAccount() }
+            listOf(targetProfile) + targetProfile2 + List(10) { createProfile() }
         )
 
         // tests
@@ -63,7 +53,7 @@ class MongoProfileRepositoryTest {
         // 3. getUserSummaries
         assertTrue {
             val x = repo.getUserSummaries(listOf(id, "otherId")).getOrThrow()
-            x[id]?.displayName == "UserABC" && x["otherId"]?.displayName == "otherDisplayName"
+            x[id]?.displayName == "UserABC" && x[id]?.avatarUrl == "avatars/duck.jpg" && x["otherId"]?.displayName == "otherDisplayName"
         }
     }
 }

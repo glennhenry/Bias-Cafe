@@ -32,12 +32,12 @@ class MongoAccountRepositoryTest {
         val account = UserAccount(
             id,
             name,
+            name,
             email,
             hash("pw123"),
             registeredAt = 1,
             lastActiveAt = 1,
             extra = emptyMap(),
-            profile = createProfile()
         )
 
         collection.insertMany(List(20) { createAccount() } + account)

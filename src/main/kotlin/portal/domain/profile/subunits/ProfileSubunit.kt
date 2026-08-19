@@ -1,4 +1,4 @@
-package portal.domain.profile
+package portal.domain.profile.subunits
 
 import portal.mongo.collection.UserId
 import encore.fancam.Fancam
@@ -6,6 +6,7 @@ import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.Outcome
 import encore.utils.types.toOutcome
+import portal.domain.profile.model.Profile
 import portal.utils.peek
 
 class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit<ServerScope> {

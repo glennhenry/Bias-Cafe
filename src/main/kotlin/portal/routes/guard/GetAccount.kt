@@ -37,8 +37,7 @@ fun Attributes.getUserAccountOrNull(): UserAccount? {
 fun Attributes.getAccountData(): AccountData? {
     getOrNull(SessionAccountKey)?.let {
         return AccountData(
-            username = it.username,
-            level = it.profile.level
+            username = it.username
         )
     }
     return null

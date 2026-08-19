@@ -1,5 +1,6 @@
-package portal.domain.profile
+package portal.domain.profile.subunits
 
+import portal.domain.profile.model.Profile
 import portal.mongo.collection.UserId
 
 class BlankProfileRepository: ProfileRepository {

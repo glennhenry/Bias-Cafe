@@ -5,34 +5,63 @@ import portal.mongo.collection.UserId
 import encore.time.TimeCenter
 import encore.utils.hash
 import encore.utils.identifier.Ids
-import portal.domain.profile.Profile
+import portal.domain.Members
+import portal.domain.profile.model.FanProfile
+import portal.domain.profile.model.GameProfile
+import portal.domain.profile.model.Profile
+import portal.domain.profile.model.UserLevel
+import portal.domain.profile.model.UsersStats
 
 fun createAccount(
     userId: UserId = Ids.uuid(),
     username: String = randomString(8),
-    password: String = randomString(8),
-    profile: Profile = createProfile()
+    displayName: String = randomString(8),
+    password: String = randomString(8)
 ): UserAccount {
     val now = TimeCenter.now()
     return UserAccount(
         userId = userId,
         username = username,
+        displayName = displayName,
         email = "$username@email.com",
         hashedPassword = hash(password),
         registeredAt = now,
         lastActiveAt = now,
         extra = emptyMap(),
-        profile = profile
     )
 }
 
 fun createProfile(
+    userId: UserId = Ids.uuid(),
     displayName: String = randomString(8),
     avatarUrl: String = randomString(8)
 ): Profile {
     return Profile(
+        userId = userId,
         displayName = displayName,
         avatarUrl = avatarUrl,
-        level = 1
+        country = "Indonesia",
+        birthday = "20220103",
+        bio = "Catch your eye",
+        fanProfile = FanProfile(
+            bias = Members.all.toList(),
+            favoriteSong = "WA DA DA",
+            favoriteEra = "First Impact",
+            story = "I like em"
+        ),
+        gameProfile = GameProfile(
+            level = UserLevel(
+                currentLevel = 1,
+                xp = 10
+            ),
+            coins = 100,
+            badges = emptyList(),
+            achievements = emptyList()
+        ),
+        blockedUsers = emptyList(),
+        stats = UsersStats(
+            numTopics = 0,
+            numReplies = 0
+        ),
     )
 }

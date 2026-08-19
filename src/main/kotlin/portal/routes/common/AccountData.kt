@@ -8,9 +8,7 @@ package portal.routes.common
  * this typically happens when user is not logged in yet.
  *
  * @property username The username.
- * @property level Example data.
  */
 data class AccountData(
-    val username: String,
-    val level: Int
+    val username: String
 )

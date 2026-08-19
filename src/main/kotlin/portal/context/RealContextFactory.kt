@@ -23,8 +23,8 @@ import portal.domain.cafe.topic.MongoTopicRepository
 import portal.domain.cafe.topic.TopicSubunit
 import portal.domain.cafe.reply.MongoReplyRepository
 import portal.domain.cafe.reply.ReplySubunit
-import portal.domain.profile.MongoProfileRepository
-import portal.domain.profile.ProfileSubunit
+import portal.domain.profile.subunits.MongoProfileRepository
+import portal.domain.profile.subunits.ProfileSubunit
 import portal.domain.auth.session.MongoSessionStore
 import portal.domain.auth.session.WebsiteSessionSubunit
 import portal.mongo.MongoCollections
@@ -69,7 +69,7 @@ class RealContextFactory(
         val sessionSubunit = SessionSubunit(appScope, TimeCenter.source)
 
         val profileRepository = MongoProfileRepository(
-            accountCollection = mongoDatabase.getCollection(collections.userAccount)
+            profiles = mongoDatabase.getCollection(collections.profiles)
         )
         val profileSubunit = ProfileSubunit(profileRepository)
 

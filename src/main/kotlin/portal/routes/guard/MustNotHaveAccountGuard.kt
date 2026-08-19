@@ -28,7 +28,7 @@ class MustNotHaveAccountGuard(
         val account = serverContext.subunits.account.getAccountByUserId(userId).okOrNull()
 
         val data = ErrorModel(
-            account = account?.let { AccountData(account.username, account.profile.level) },
+            account = account?.let { AccountData(account.username) },
             title = "Already logged in",
             heading = "Logged in",
             message = "You are already logged in.",

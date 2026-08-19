@@ -1,4 +1,4 @@
-package portal.domain.profile
+package portal.domain.profile.subunits
 
 import com.mongodb.client.model.Aggregates
 import com.mongodb.client.model.Filters
@@ -6,14 +6,13 @@ import com.mongodb.client.model.Projections
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import encore.account.FieldUserId
 import encore.datastore.runMongoCatching
+import encore.utils.toJsonString
 import kotlinx.coroutines.flow.associateBy
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.codecs.pojo.annotations.BsonId
+import portal.domain.profile.model.Profile
 import portal.mongo.collection.UserAccount
 import portal.mongo.collection.UserId
-
-/** `profile`*/
-val FieldProfile = UserAccount::profile.name
 
 /** `displayName`*/
 val FieldDisplayName = Profile::displayName.name
@@ -22,64 +21,50 @@ val FieldDisplayName = Profile::displayName.name
 val FieldAvatarUrl = Profile::avatarUrl.name
 
 class MongoProfileRepository(
-    private val accountCollection: MongoCollection<UserAccount>
+    private val profiles: MongoCollection<Profile>
 ) : ProfileRepository {
     override suspend fun getProfile(userId: UserId): Result<Profile?> {
         return runMongoCatching {
-            val account = accountCollection
-                .withDocumentClass<QueryProfile>()
+            profiles
                 .find(Filters.eq(FieldUserId, userId))
-                .projection(
-                    Projections.fields(
-                        Projections.include(FieldProfile),
-                        Projections.excludeId()
-                    )
-                )
                 .firstOrNull()
-
-            if (account == null) {
-                return Result.success(null)
-            }
-
-            return Result.success(account.profile)
         }
     }
 
     override suspend fun getUserSummary(userId: UserId): Result<UserSummary?> {
         return runMongoCatching {
-            val account = accountCollection.aggregate<QueryUserSummary>(
-                listOf(
-                    Aggregates.match(Filters.eq(FieldUserId, userId)),
-                    Aggregates.project(
-                        Projections.fields(
-                            Projections.excludeId(),
-                            Projections.include(FieldUserId),
-                            Projections.computed(FieldDisplayName, $$"$profile.displayName"),
-                            Projections.computed(FieldAvatarUrl, $$"$profile.avatarUrl")
-                        )
+            val query = profiles
+                .withDocumentClass<QueryUserSummary>()
+                .find(Filters.eq(FieldUserId, userId))
+                .projection(
+                    Projections.fields(
+                        Projections.excludeId(),
+                        Projections.include(FieldUserId),
+                        Projections.include(FieldDisplayName),
+                        Projections.include(FieldAvatarUrl)
                     )
                 )
-            ).firstOrNull()
+                .firstOrNull()
 
-            if (account == null) {
-                return Result.success(null)
+            return if (query != null) {
+                Result.success(UserSummary(query.userId, query.displayName, query.avatarUrl))
+            } else {
+                Result.success(null)
             }
-
-            return Result.success(UserSummary(account.userId, account.displayName, account.avatarUrl))
         }
     }
 
     override suspend fun getUserSummaries(userIds: List<UserId>): Result<Map<UserId, UserSummary>> {
         return runMongoCatching {
-            val account = accountCollection.aggregate<QueryUserSummary>(
+            val profile = profiles.aggregate<QueryUserSummary>(
                 listOf(
                     Aggregates.match(Filters.`in`(FieldUserId, userIds)),
                     Aggregates.project(
                         Projections.fields(
                             Projections.excludeId(),
                             Projections.include(FieldUserId),
-                            Projections.computed(FieldDisplayName, $$"$profile.displayName"),
-                            Projections.computed(FieldAvatarUrl, $$"$profile.avatarUrl")
+                            Projections.include(FieldDisplayName),
+                            Projections.include(FieldAvatarUrl)
                         )
                     )
                 )
@@ -88,18 +73,10 @@ class MongoProfileRepository(
                 valueTransform = { UserSummary(it.userId, it.displayName, it.avatarUrl) }
             )
 
-            return Result.success(account)
+            return Result.success(profile)
         }
     }
 }
-
-/**
- * Mongo projection class to query the `profile` of [UserAccount].
- */
-data class QueryProfile(
-    @field:BsonId val id: String? = null,
-    val profile: Profile
-)
 
 /**
  * Mongo projection class to query various field of [UserAccount] and [Profile].

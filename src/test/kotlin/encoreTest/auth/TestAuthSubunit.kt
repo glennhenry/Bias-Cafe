@@ -54,12 +54,12 @@ class TestAuthSubunit {
         val account = UserAccount(
             userId = "pid12345",
             username = "name",
+            displayName = "name",
             email = "anyemail",
             hashedPassword = "anypassword",
             registeredAt = 0,
             lastActiveAt = 0,
             extra = emptyMap(),
-            profile = createProfile()
         )
         collection.insertOne(account)
 

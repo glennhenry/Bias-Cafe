@@ -12,6 +12,7 @@ data class MongoCollections(
     val websiteSession: String,
 
     // domain collection
+    val profiles: String,
     val topic: String,
     val reply: String,
     val spaces: String,
@@ -24,6 +25,7 @@ val RuntimeMongoCollections = MongoCollections(
 
     websiteSession = "website_session",
 
+    profiles = "profiles",
     topic = "topic",
     reply = "reply",
     spaces = "spaces",

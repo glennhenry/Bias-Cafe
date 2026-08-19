@@ -1,7 +1,6 @@
 package portal.mongo.collection
 
 import kotlinx.serialization.Serializable
-import portal.domain.profile.Profile
 
 /**
  * Representation of a user's account.
@@ -10,6 +9,7 @@ import portal.domain.profile.Profile
  *
  * @property userId Unique identifier of the user.
  * @property username Unique identifier of the user, which is also used for login.
+ * @property displayName Display name of the user, non-unique.
  * @property email Email address associated with this account.
  * @property hashedPassword Hashed version of the account's password.
  * @property registeredAt Epoch millis of the account's registration date.
@@ -17,18 +17,17 @@ import portal.domain.profile.Profile
  *                        This denotes the last time the user send a network
  *                        message to the server.
  * @property extra Any extra or uncategorized information about the user.
- * @property profile Profile information of user.
  */
 @Serializable
 data class UserAccount(
     val userId: UserId,
     val username: String,
+    val displayName: String,
     val email: String,
     val hashedPassword: String,
     val registeredAt: Long,
     val lastActiveAt: Long,
     val extra: Map<String, String> = emptyMap(),
-    val profile: Profile
 )
 
 /**

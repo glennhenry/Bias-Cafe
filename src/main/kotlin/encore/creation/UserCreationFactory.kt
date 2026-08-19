@@ -1,6 +1,7 @@
 package encore.creation
 
 import encore.utils.types.Report
+import portal.domain.profile.model.Profile
 import portal.mongo.collection.UserAccount
 import portal.mongo.collection.UserId
 import portal.mongo.collection.ServerObjects
@@ -27,6 +28,12 @@ interface UserCreationFactory {
         userId: UserId, username: String,
         password: String, email: String
     ): UserAccount
+
+    /**
+     * Produce [Profile] for the user with the given
+     * [userId] and [username].
+     */
+    fun profile(userId: UserId, username: String): Profile
 
     /**
      * Invoke side effects to the [ServerObjects] collection

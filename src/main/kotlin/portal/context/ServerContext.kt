@@ -29,9 +29,9 @@ import portal.domain.cafe.topic.TopicSubunit
 import portal.domain.cafe.reply.InMemoryReplyRepository
 import portal.domain.cafe.reply.ReplyRepository
 import portal.domain.cafe.reply.ReplySubunit
-import portal.domain.profile.BlankProfileRepository
-import portal.domain.profile.ProfileRepository
-import portal.domain.profile.ProfileSubunit
+import portal.domain.profile.subunits.BlankProfileRepository
+import portal.domain.profile.subunits.ProfileRepository
+import portal.domain.profile.subunits.ProfileSubunit
 import portal.domain.auth.session.BlankSessionStore
 import portal.domain.auth.session.SessionStore
 import portal.domain.auth.session.WebsiteSessionSubunit

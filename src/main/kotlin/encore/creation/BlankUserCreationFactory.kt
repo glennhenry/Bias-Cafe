@@ -1,6 +1,7 @@
 package encore.creation
 
 import encore.utils.types.Report
+import portal.domain.profile.model.Profile
 import portal.mongo.collection.UserAccount
 import portal.mongo.collection.UserId
 
@@ -18,6 +19,12 @@ class BlankUserCreationFactory: UserCreationFactory {
         TODO("Not yet implemented")
     }
 
+    override fun profile(
+        userId: UserId,
+        username: String
+    ): Profile {
+        TODO("Not yet implemented")
+    }
 
     override fun updateServerObjects(
         account: UserAccount
