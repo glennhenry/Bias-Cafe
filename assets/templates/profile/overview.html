@@ -103,7 +103,7 @@
         <main class="content-container">
           <div class="content">
             <div
-              th:replace="~{profile/side-profile :: side-profile(avatarUrl='/avatars/duck.jpg', displayName='Yujin Fan 😊 582')}">
+              th:replace="~{profile/side-profile :: side-profile(avatarUrl='/' + ${data.avatarUrl}, displayName=${data.displayName})}">
             </div>
             <div class="profile-content">
               <ul class="tab-view">
@@ -111,13 +111,13 @@
                 <li class="tab-item"><a href="fan-profile">Fan Profile</a></li>
               </ul>
               <div class="profile-overview">
-                <p><strong>Username</strong>: yujin_582</p>
-                <p><strong>Display name</strong>: Yujin Fan 😊 582</p>
-                <p><strong>Country</strong>: Indonesia</p>
-                <p><strong>Birthday</strong>: 16 August 2026</p>
+                <p><strong>Username:</strong> [[${data.username}]]</p>
+                <p><strong>Display name</strong>: [[${data.displayname}]]</p>
+                <p><strong>Country</strong>: [[${data.country}]]</p>
+                <p><strong>Birthday</strong>: [[${data.birthday}]]</p>
                 <p><strong>Bio</strong>:
                 <div class="bio-box">
-                  <p>This user is too lazy to write anything here</p>
+                  <p>[[${data.bio}]]</p>
                 </div>
                 <div class="profile-actions">
                   <a class="edit-profile-btn" href="javascript:void(0)">

@@ -132,7 +132,7 @@
         <main class="content-container">
           <div class="content">
             <div
-              th:replace="~{profile/side-profile :: side-profile(avatarUrl='/avatars/duck.jpg', displayName='Yujin Fan 😊 582')}">
+              th:replace="~{profile/side-profile :: side-profile(avatarUrl='/' + ${data.avatarUrl}, displayName=${data.displayName})}">
             </div>
             <div class="profile-content">
               <ul class="tab-view">
@@ -140,44 +140,21 @@
                 <li class="tab-item selected"><a href="#">Fan Profile</a></li>
               </ul>
               <div class="fan-profile">
-                <p><strong>Started stan:</strong> 19 August 2026</p>
-                <p><strong>Favorite song:</strong> WA DA DA</p>
-                <p><strong>Favorite era:</strong> First Impact</p>
+                <p><strong>Started stan</strong>: [[${data.startedStan}]]</p>
+                <p><strong>Favorite song</strong>: [[${data.favoriteSong}]]</p>
+                <p><strong>Favorite era</strong>: [[${data.favoriteEra}]]</p>
                 <div class="bias-container">
                   <p class="full-width"><strong>My bias</strong></p>
                   <div class="bias-list">
-                    <div class="bias-item" data-member-name="Chaehyun">
-                      <p>Chaehyun</p>
-                    </div>
-                    <div class="bias-item" data-member-name="Dayeon">
-                      <p>Dayeon</p>
-                    </div>
-                    <div class="bias-item" data-member-name="Hikaru">
-                      <p>Hikaru</p>
-                    </div>
-                    <div class="bias-item" data-member-name="Hiyyih">
-                      <p>Hiyyih</p>
-                    </div>
-                    <div class="bias-item" data-member-name="Mashiro">
-                      <p>Mashiro</p>
-                    </div>
-                    <div class="bias-item" data-member-name="Xiaoting">
-                      <p>Xiaoting</p>
-                    </div>
-                    <div class="bias-item" data-member-name="Yeseo">
-                      <p>Yeseo</p>
-                    </div>
-                    <div class="bias-item" data-member-name="Youngeun">
-                      <p>Youngeun</p>
-                    </div>
-                    <div class="bias-item" data-member-name="Yujin">
-                      <p>Yujin</p>
+                    <div class="bias-item" th:each="biasItem: ${data.bias}"
+                      data-member-name="${#strings.capitalize(biasItem)}">
+                      <p th:text="${#strings.capitalize(biasItem)}"></p>
                     </div>
                   </div>
                 </div>
                 <p><strong>About Kep1er:</strong></p>
                 <div class="bio-box">
-                  <p>Write your story about Kep1er!</p>
+                  <p th:text="${data.story}"></p>
                 </div>
                 <div class="profile-actions">
                   <a class="edit-profile-btn" href="javascript:void(0)">

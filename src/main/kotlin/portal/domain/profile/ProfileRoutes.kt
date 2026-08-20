@@ -83,9 +83,10 @@ class ProfileRoutes(private val serverContext: ServerContext) : RouteHandler {
                     account = call.attributes.getAccountData(),
                     displayName = summary.displayName,
                     avatarUrl = summary.avatarUrl,
-                    bias = summary.bias,
+                    startedStan = summary.startedStan,
                     favoriteSong = summary.favoriteSong,
                     favoriteEra = summary.favoriteEra,
+                    bias = summary.bias,
                     story = summary.story,
                 )
                 call.respond(ThymeleafContent("profile/fan-profile", mapOf("data" to model)))

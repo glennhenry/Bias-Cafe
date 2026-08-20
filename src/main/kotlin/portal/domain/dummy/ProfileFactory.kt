@@ -70,7 +70,7 @@ object ProfileFactory {
 
     private val bio = listOf(
         "Hello, I'm {1}. I bias {2} the most. She is the prettiest!",
-        "I love {2} than anyone else (including my girlfriend 😀😀😀 hahahahahahahaha)",
+        "I love {2} more than anyone else (including my girlfriend 😀😀😀 hahahahahahahaha)",
         "I'm new in the cafe",
         "whatever",
         "...why are you reading this?",
@@ -130,7 +130,7 @@ object ProfileFactory {
             startedStan = formatter.format(groupAge.random()),
             favoriteSong = songs.random(),
             favoriteEra = eras.random() + " Era",
-            bias = bias,
+            bias = bias.sorted(),
             story = story.random().replace("{1}", bias.first())
         )
     }
