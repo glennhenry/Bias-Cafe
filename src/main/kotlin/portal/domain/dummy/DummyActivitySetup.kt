@@ -1,11 +1,17 @@
 package portal.domain.dummy
 
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import encore.creation.UserCreationSubunit
 import encore.fancam.Fancam
+import encore.utils.types.Report
 import encore.venue.Venue
 import portal.context.ServerContext
 import portal.domain.cafe.topic.Topic
+import portal.domain.profile.model.Profile
+import portal.domain.profile.subunits.MongoProfileRepository
 import portal.mongo.RuntimeMongoCollections
+import portal.mongo.collection.UserAccount
+import portal.mongo.collection.UserId
 import kotlin.random.Random
 
 /**
@@ -41,16 +47,30 @@ class DummyActivitySetup(
             val insertedUsers = mutableListOf<String>()
             val addedTopics = mutableListOf<Pair<String, Long>>()
 
+            val accounts = mutableMapOf<UserId, UserAccount>()
+            val profiles = mutableMapOf<UserId, Profile>()
+            val idsToUse = ArrayDeque<UserId>()
+
+            val profileRepository = MongoProfileRepository(
+                profiles = mongoDatabase.getCollection(RuntimeMongoCollections.profiles)
+            )
+
+            val creation = UserCreationSubunit(
+                dataStore = serverContext.dataStore,
+                profileRepository = profileRepository,
+                factory = FakeCreationFactory(nextUserId = {
+                    idsToUse.removeFirst()
+                }, accounts, profiles) { Report.Ok }
+            )
+
             try {
                 // 1. create accounts
                 repeat(numAccounts) {
-                    val username = AccountFactory.username()
-                    val userId = serverContext.subunits.creation.createUser(
-                        username = username,
-                        password = "dummy",
-                        email = AccountFactory.email()
-                    )
-                    insertedUsers.add(userId)
+                    val acc = AccountFactory.account()
+                    accounts[acc.userId] = acc
+                    profiles[acc.userId] = ProfileFactory.profile(acc.userId, acc.displayName)
+                    idsToUse.add(acc.userId)
+                    insertedUsers.add(creation.createUser("ignored", "ignored", "ignored"))
                 }
 
                 // 2. create topics
