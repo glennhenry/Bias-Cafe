@@ -54,14 +54,14 @@ class UserCreationSubunit(
             return userId
         }
 
-        Fancam.error(tag = Tags.Creation) {
-            "Account creation failed for $username (" +
+        Fancam.error(accountInsertResult.exceptionOrNull(), Tags.Creation) {
+            "Account creation failed for '$username' (" +
                     "accountInsertResult.isSuccess=${accountInsertResult.isSuccess}, " +
                     "profileInsertResult.isSuccess=${profileInsertResult.isSuccess}, " +
                     "serverObjReport.isOk=${serverObjReport.isOk()})"
         }
 
-        throw IllegalStateException("Account creation failed with unknown scandal (exception was null)")
+        throw IllegalStateException("Account creation failed with unknown scandal")
     }
 
     override suspend fun debut(scope: ServerScope): Result<Unit> = Result.success(Unit)
