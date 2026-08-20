@@ -1,5 +1,6 @@
 package portal.domain.dummy
 
+import encore.time.TimeCenter
 import portal.domain.Members
 import portal.domain.profile.model.FanProfile
 import portal.domain.profile.model.GameProfile
@@ -120,12 +121,16 @@ object ProfileFactory {
         return Members.all.shuffled().take(numBias)
     }
 
+    // 22 October 2021 until now
+    private val groupAge = 1634860800000..TimeCenter.now()
+
     fun fanProfile(): FanProfile {
         val bias = bias()
         return FanProfile(
-            bias = bias,
+            startedStan = formatter.format(groupAge.random()),
             favoriteSong = songs.random(),
             favoriteEra = eras.random() + " Era",
+            bias = bias,
             story = story.random().replace("{1}", bias.first())
         )
     }

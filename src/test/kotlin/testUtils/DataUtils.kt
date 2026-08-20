@@ -44,9 +44,10 @@ fun createProfile(
         birthday = "20220103",
         bio = "Catch your eye",
         fanProfile = FanProfile(
-            bias = Members.all.toList(),
+            startedStan = "3 January 2022",
             favoriteSong = "WA DA DA",
             favoriteEra = "First Impact",
+            bias = Members.all.toList(),
             story = "I like em"
         ),
         gameProfile = GameProfile(

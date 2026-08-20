@@ -85,9 +85,10 @@ class MongoProfileRepository(
                         Projections.excludeId(),
                         Projections.include(FieldDisplayName),
                         Projections.include(FieldAvatarUrl),
-                        Projections.computed("bias", $$"$fanProfile.bias"),
+                        Projections.computed("startedStan", $$"$fanProfile.startedStan"),
                         Projections.computed("favoriteSong", $$"$fanProfile.favoriteSong"),
                         Projections.computed("favoriteEra", $$"$fanProfile.favoriteEra"),
+                        Projections.computed("bias", $$"$fanProfile.bias"),
                         Projections.computed("story", $$"$fanProfile.story")
                     )
                 ).firstOrNull()
@@ -97,9 +98,10 @@ class MongoProfileRepository(
                     FanProfileSummary(
                         query.displayName,
                         query.avatarUrl,
-                        query.bias,
+                        query.startedStan,
                         query.favoriteSong,
                         query.favoriteEra,
+                        query.bias,
                         query.story
                     )
                 )
@@ -186,8 +188,9 @@ data class QueryFanProfile(
     @field:BsonId val id: String? = null,
     val displayName: String,
     val avatarUrl: String,
-    val bias: List<String>,
+    val startedStan: String,
     val favoriteSong: String,
     val favoriteEra: String,
+    val bias: List<String>,
     val story: String
 )

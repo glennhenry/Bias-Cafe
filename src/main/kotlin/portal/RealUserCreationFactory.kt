@@ -52,9 +52,10 @@ class RealUserCreationFactory : UserCreationFactory {
             birthday = "",
             bio = "This user is too lazy to write anything here",
             fanProfile = FanProfile(
-                bias = emptyList(),
+                startedStan = "",
                 favoriteSong = "",
                 favoriteEra = "",
+                bias = emptyList(),
                 story = "Write your story about Kep1er!"
             ),
             gameProfile = GameProfile(
