@@ -2,9 +2,7 @@ package portal.domain.dummy
 
 import encore.creation.UserCreationFactory
 import encore.creation.UserCreationSubunit
-import encore.utils.identifier.Ids
 import encore.utils.types.Report
-import portal.Globals
 import portal.RealUserCreationFactory
 import portal.domain.profile.model.Profile
 import portal.mongo.collection.UserAccount
@@ -34,13 +32,13 @@ import portal.mongo.collection.UserId
  * @param updateServerObject Lambda to be invoked for [updateServerObjects]
  */
 class FakeCreationFactory(
+    private val nextUserId: () -> UserId,
     private val accounts: MutableMap<UserId, UserAccount>,
     private val profiles: MutableMap<UserId, Profile>,
     private val updateServerObject: (UserAccount) -> Report
 ) : UserCreationFactory {
     override fun userId(isAdmin: Boolean): UserId {
-        if (isAdmin) return Globals.ADMIN_PLAYER_ID
-        return Ids.uuid()
+        return nextUserId()
     }
 
     override fun account(
