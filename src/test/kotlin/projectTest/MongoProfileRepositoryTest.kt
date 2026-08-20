@@ -59,6 +59,12 @@ class MongoProfileRepositoryTest {
             val x = repo.getUserSummaries(listOf(id, "otherId")).getOrThrow()
             x[id]?.displayName == "UserABC" && x[id]?.avatarUrl == "avatars/duck.jpg" && x["otherId"]?.displayName == "otherDisplayName"
         }
+
+        // 5. getProfileOverview
+        assertEquals(targetProfile.birthday, repo.getProfileOverview(id).getOrThrow()?.birthday)
+
+        // 5. getFanProfile
+        assertEquals(targetProfile.fanProfile.favoriteSong, repo.getFanProfile(id).getOrThrow()?.favoriteSong)
     }
 }
 

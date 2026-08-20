@@ -6,6 +6,8 @@ import encore.subunit.Subunit
 import encore.subunit.scope.ServerScope
 import encore.utils.types.Outcome
 import encore.utils.types.toOutcome
+import portal.domain.profile.model.FanProfileSummary
+import portal.domain.profile.model.OverviewSummary
 import portal.domain.profile.model.Profile
 import portal.utils.peek
 
@@ -24,6 +26,38 @@ class ProfileSubunit(private val profileRepository: ProfileRepository) : Subunit
                 }
             }
             .toOutcome { profile -> return Outcome.Ok(profile) }
+    }
+
+    /**
+     * Returns an [Outcome] containing [OverviewSummary] associated with [userId].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with `null` if account does not exist.
+     * - [Outcome.Ok] with the summary otherwise.
+     */
+    suspend fun getProfileOverview(userId: UserId): Outcome<OverviewSummary?> {
+        return profileRepository.getProfileOverview(userId)
+            .onFailure {
+                Fancam.error(it, "profile") {
+                    "getProfileOverview failed: repository scandal for '$userId'"
+                }
+            }
+            .toOutcome { summary -> return Outcome.Ok(summary) }
+    }
+
+    /**
+     * Returns an [Outcome] containing [FanProfileSummary] associated with [userId].
+     * - [Outcome.Fail] when there is internal repository error.
+     * - [Outcome.Ok] with `null` if account does not exist.
+     * - [Outcome.Ok] with the summary otherwise.
+     */
+    suspend fun getFanProfile(userId: UserId): Outcome<FanProfileSummary?> {
+        return profileRepository.getFanProfile(userId)
+            .onFailure {
+                Fancam.error(it, "profile") {
+                    "getFanProfile failed: repository scandal for '$userId'"
+                }
+            }
+            .toOutcome { summary -> return Outcome.Ok(summary) }
     }
 
     /**

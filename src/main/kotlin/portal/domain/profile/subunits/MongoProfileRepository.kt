@@ -10,9 +10,14 @@ import encore.utils.support.asUnit
 import kotlinx.coroutines.flow.associateBy
 import kotlinx.coroutines.flow.firstOrNull
 import org.bson.codecs.pojo.annotations.BsonId
+import portal.domain.profile.model.FanProfile
+import portal.domain.profile.model.FanProfileSummary
 import portal.domain.profile.model.Profile
+import portal.domain.profile.model.OverviewSummary
 import portal.mongo.collection.UserAccount
 import portal.mongo.collection.UserId
+import kotlin.String
+import kotlin.collections.List
 
 /** `displayName`*/
 val FieldDisplayName = Profile::displayName.name
@@ -34,6 +39,73 @@ class MongoProfileRepository(
             profiles
                 .find(Filters.eq(FieldUserId, userId))
                 .firstOrNull()
+        }
+    }
+
+    override suspend fun getProfileOverview(userId: UserId): Result<OverviewSummary?> {
+        return runMongoCatching {
+            val query = profiles
+                .withDocumentClass<QueryProfileOverview>()
+                .find(Filters.eq(FieldUserId, userId))
+                .projection(
+                    Projections.fields(
+                        Projections.excludeId(),
+                        Projections.include(FieldDisplayName),
+                        Projections.include(FieldAvatarUrl),
+                        Projections.include("country"),
+                        Projections.include("birthday"),
+                        Projections.include("bio")
+                    )
+                )
+                .firstOrNull()
+
+            return if (query != null) {
+                Result.success(
+                    OverviewSummary(
+                        query.displayName,
+                        query.avatarUrl,
+                        query.country,
+                        query.birthday,
+                        query.bio
+                    )
+                )
+            } else {
+                Result.success(null)
+            }
+        }
+    }
+
+    override suspend fun getFanProfile(userId: UserId): Result<FanProfileSummary?> {
+        return runMongoCatching {
+            val query = profiles
+                .withDocumentClass<QueryFanProfile>()
+                .find(Filters.eq(FieldUserId, userId))
+                .projection(
+                    Projections.fields(
+                        Projections.excludeId(),
+                        Projections.include(FieldDisplayName),
+                        Projections.include(FieldAvatarUrl),
+                        Projections.computed("bias", $$"$fanProfile.bias"),
+                        Projections.computed("favoriteSong", $$"$fanProfile.favoriteSong"),
+                        Projections.computed("favoriteEra", $$"$fanProfile.favoriteEra"),
+                        Projections.computed("story", $$"$fanProfile.story")
+                    )
+                ).firstOrNull()
+
+            return if (query != null) {
+                Result.success(
+                    FanProfileSummary(
+                        query.displayName,
+                        query.avatarUrl,
+                        query.bias,
+                        query.favoriteSong,
+                        query.favoriteEra,
+                        query.story
+                    )
+                )
+            } else {
+                Result.success(null)
+            }
         }
     }
 
@@ -92,4 +164,30 @@ data class QueryUserSummary(
     val userId: UserId,
     val displayName: String,
     val avatarUrl: String
+)
+
+/**
+ * Mongo projection class to query various field of [Profile].
+ */
+data class QueryProfileOverview(
+    @field:BsonId val id: String? = null,
+    val displayName: String,
+    val avatarUrl: String,
+    val country: String,
+    val birthday: String,
+    val bio: String
+)
+
+/**
+ * Mongo projection class to query `displayName`, `avatarUrl`, and
+ * [FanProfile] field of [Profile.fanProfile].
+ */
+data class QueryFanProfile(
+    @field:BsonId val id: String? = null,
+    val displayName: String,
+    val avatarUrl: String,
+    val bias: List<String>,
+    val favoriteSong: String,
+    val favoriteEra: String,
+    val story: String
 )
